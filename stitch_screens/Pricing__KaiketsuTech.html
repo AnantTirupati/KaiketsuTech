@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Pricing | KaiketsuTech</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Sora:wght@600&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary": "#ffb77d",
+                    "tertiary-fixed-dim": "#93ccff",
+                    "secondary-fixed": "#ffdcc3",
+                    "secondary-container": "#fd8b00",
+                    "surface-variant": "#40322a",
+                    "secondary-fixed-dim": "#ffb77d",
+                    "on-secondary-fixed": "#2f1500",
+                    "background": "#1c110b",
+                    "inverse-primary": "#9d4300",
+                    "tertiary-fixed": "#cde5ff",
+                    "on-surface": "#f6ded3",
+                    "on-primary-fixed": "#341100",
+                    "inverse-on-surface": "#3c2d26",
+                    "surface-dim": "#1c110b",
+                    "on-secondary-container": "#603100",
+                    "on-tertiary-fixed-variant": "#004b74",
+                    "on-secondary": "#4d2600",
+                    "outline": "#a78b7d",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-highest": "#40322a",
+                    "surface": "#1c110b",
+                    "inverse-surface": "#f6ded3",
+                    "error-container": "#93000a",
+                    "on-tertiary": "#003351",
+                    "primary-fixed": "#ffdbca",
+                    "surface-container-lowest": "#160c06",
+                    "surface-container": "#291d16",
+                    "outline-variant": "#584237",
+                    "on-tertiary-container": "#003554",
+                    "tertiary-container": "#00a2f4",
+                    "on-tertiary-fixed": "#001d32",
+                    "surface-tint": "#ffb690",
+                    "primary-fixed-dim": "#ffb690",
+                    "on-primary-fixed-variant": "#783200",
+                    "tertiary": "#93ccff",
+                    "primary-container": "#f97316",
+                    "on-secondary-fixed-variant": "#6e3900",
+                    "on-error": "#690005",
+                    "surface-container-low": "#251913",
+                    "primary": "#ffb690",
+                    "on-primary": "#552100",
+                    "on-surface-variant": "#e0c0b1",
+                    "on-background": "#f6ded3",
+                    "surface-container-high": "#352720",
+                    "on-primary-container": "#582200",
+                    "surface-bright": "#45362f",
+                    "error": "#ffb4ab"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "section-gap": "120px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "64px",
+                    "stack-sm": "8px",
+                    "gutter": "24px",
+                    "max-width": "1280px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Space Grotesk"],
+                    "headline-lg": ["Space Grotesk"],
+                    "mono-sm": ["Geist Mono"],
+                    "body-lg": ["Inter"],
+                    "display-lg-mobile": ["Space Grotesk"],
+                    "label-md": ["Inter"],
+                    "headline-xl": ["Space Grotesk"],
+                    "section-label": ["Sora"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["72px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "headline-lg": ["32px", { "lineHeight": "1.3", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                    "mono-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+                    "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400" }],
+                    "display-lg-mobile": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                    "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                    "headline-xl": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                    "section-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "600" }],
+                    "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Atmospheric gradient for premium feel */
+        .hero-glow {
+            background: radial-gradient(circle at 50% 0%, rgba(249, 115, 22, 0.15) 0%, rgba(28, 17, 11, 0) 50%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop py-stack-md max-w-max-width mx-auto">
+<div class="font-display-lg text-body-lg font-bold text-on-surface tracking-tighter">
+                KaiketsuTech
+            </div>
+<div class="hidden md:flex gap-gutter items-center">
+<a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" href="#">Services</a>
+<a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" href="#">Case Studies</a>
+<a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" href="#">Ecosystem</a>
+<a class="font-label-md text-label-md uppercase tracking-wider text-on-surface-variant hover:text-on-surface transition-colors" href="#">About</a>
+</div>
+<button class="font-label-md text-label-md uppercase tracking-wider bg-surface border border-outline-variant text-primary px-4 py-2 rounded scale-95 active:scale-90 transition-transform hover:bg-surface-container-high transition-all duration-300">
+                Start a Project
+            </button>
+</div>
+</nav>
+<main class="flex-grow pt-[100px]">
+<!-- Pricing Hero -->
+<section class="relative pt-section-gap pb-stack-lg hero-glow flex flex-col items-center justify-center text-center px-margin-mobile md:px-margin-desktop">
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-stack-md">
+                Precision Scalability.
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+                Enterprise-grade architecture tailored to your operational complexity. Choose the tier that aligns with your digital transformation phase.
+            </p>
+</section>
+<!-- Pricing Packages Grid -->
+<section class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg mb-section-gap">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter items-stretch">
+<!-- Starter Package -->
+<div class="bg-surface-container-lowest border border-outline-variant p-stack-lg flex flex-col transition-all duration-300 hover:border-outline">
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-stack-sm">Starter</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-lg flex-grow">Essential digital infrastructure for focused operational upgrades.</p>
+<div class="mb-stack-lg">
+<span class="font-display-lg-mobile md:font-headline-xl text-display-lg-mobile md:text-headline-xl text-on-surface">$4k</span>
+<span class="font-body-md text-body-md text-on-surface-variant">/mo</span>
+</div>
+<ul class="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface-variant">
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-[20px]">check</span> Core API Integrations</li>
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-[20px]">check</span> Standard SLA (48hr)</li>
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-[20px]">check</span> 2 Analytics Dashboards</li>
+</ul>
+<button class="w-full py-3 bg-surface-container-low border border-outline-variant text-on-surface font-label-md text-label-md hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container">
+                        Select Starter
+                    </button>
+</div>
+<!-- Enterprise Package (Highlighted) -->
+<div class="bg-surface-container border border-primary-container p-stack-lg flex flex-col relative transform md:-translate-y-4 shadow-2xl shadow-primary-container/10">
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container font-section-label text-section-label px-4 py-1 uppercase tracking-widest">
+                        Recommended
+                    </div>
+<h3 class="font-headline-lg text-headline-lg text-primary mb-stack-sm">Enterprise</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-lg flex-grow">Bespoke architecture, dedicated engineering squads, and limitless scale.</p>
+<div class="mb-stack-lg">
+<span class="font-display-lg-mobile md:font-headline-xl text-display-lg-mobile md:text-headline-xl text-on-surface">Custom</span>
+</div>
+<ul class="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface">
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary-container text-[20px]">check</span> Dedicated Engineering Squad</li>
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary-container text-[20px]">check</span> Custom Architecture Design</li>
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary-container text-[20px]">check</span> 24/7 Priority SLA (1hr)</li>
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary-container text-[20px]">check</span> Unlimited Data Pipelines</li>
+</ul>
+<button class="w-full py-3 bg-primary-container text-on-primary-container font-label-md text-label-md hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-primary-container">
+                        Contact Sales
+                    </button>
+</div>
+<!-- Business Package -->
+<div class="bg-surface-container-lowest border border-outline-variant p-stack-lg flex flex-col transition-all duration-300 hover:border-outline">
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-stack-sm">Business</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-stack-lg flex-grow">Advanced workflows and multi-system orchestration for growing teams.</p>
+<div class="mb-stack-lg">
+<span class="font-display-lg-mobile md:font-headline-xl text-display-lg-mobile md:text-headline-xl text-on-surface">$12k</span>
+<span class="font-body-md text-body-md text-on-surface-variant">/mo</span>
+</div>
+<ul class="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface-variant">
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-[20px]">check</span> Multi-system Orchestration</li>
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-[20px]">check</span> Priority SLA (12hr)</li>
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-[20px]">check</span> Custom ETL Pipelines</li>
+<li class="flex items-start gap-3"><span class="material-symbols-outlined text-primary text-[20px]">check</span> SSO &amp; Advanced Security</li>
+</ul>
+<button class="w-full py-3 bg-surface-container-low border border-outline-variant text-on-surface font-label-md text-label-md hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container">
+                        Select Business
+                    </button>
+</div>
+</div>
+</section>
+<!-- Feature Comparison Table -->
+<section class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop mb-section-gap overflow-x-auto">
+<h2 class="font-headline-xl text-headline-xl text-on-surface mb-stack-lg">Feature Comparison</h2>
+<div class="min-w-[800px]">
+<div class="grid grid-cols-4 border-b border-outline-variant pb-stack-sm mb-stack-sm font-section-label text-section-label text-on-surface-variant uppercase tracking-widest">
+<div class="col-span-1">Features</div>
+<div class="col-span-1 text-center">Starter</div>
+<div class="col-span-1 text-center">Business</div>
+<div class="col-span-1 text-center text-primary">Enterprise</div>
+</div>
+<!-- Table Rows -->
+<div class="grid grid-cols-4 border-b border-surface-container-highest py-stack-md items-center font-body-md text-body-md text-on-surface transition-colors hover:bg-surface-container-lowest">
+<div class="col-span-1 text-on-surface-variant">API Requests/mo</div>
+<div class="col-span-1 text-center">1 Million</div>
+<div class="col-span-1 text-center">10 Million</div>
+<div class="col-span-1 text-center">Unlimited</div>
+</div>
+<div class="grid grid-cols-4 border-b border-surface-container-highest py-stack-md items-center font-body-md text-body-md text-on-surface transition-colors hover:bg-surface-container-lowest">
+<div class="col-span-1 text-on-surface-variant">Data Retention</div>
+<div class="col-span-1 text-center">30 Days</div>
+<div class="col-span-1 text-center">1 Year</div>
+<div class="col-span-1 text-center">Indefinite</div>
+</div>
+<div class="grid grid-cols-4 border-b border-surface-container-highest py-stack-md items-center font-body-md text-body-md text-on-surface transition-colors hover:bg-surface-container-lowest">
+<div class="col-span-1 text-on-surface-variant">Custom Webhooks</div>
+<div class="col-span-1 text-center flex justify-center"><span class="material-symbols-outlined text-outline">remove</span></div>
+<div class="col-span-1 text-center flex justify-center"><span class="material-symbols-outlined text-on-surface">check</span></div>
+<div class="col-span-1 text-center flex justify-center"><span class="material-symbols-outlined text-primary">check</span></div>
+</div>
+<div class="grid grid-cols-4 border-b border-surface-container-highest py-stack-md items-center font-body-md text-body-md text-on-surface transition-colors hover:bg-surface-container-lowest">
+<div class="col-span-1 text-on-surface-variant">Dedicated Account Manager</div>
+<div class="col-span-1 text-center flex justify-center"><span class="material-symbols-outlined text-outline">remove</span></div>
+<div class="col-span-1 text-center flex justify-center"><span class="material-symbols-outlined text-outline">remove</span></div>
+<div class="col-span-1 text-center flex justify-center"><span class="material-symbols-outlined text-primary">check</span></div>
+</div>
+</div>
+</section>
+<!-- Consultation CTA -->
+<section class="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop mb-section-gap text-center">
+<div class="bg-surface-container-low border border-outline-variant p-section-gap rounded-lg relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container/10 to-transparent pointer-events-none"></div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface mb-stack-md relative z-10">Unsure of your architectural needs?</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-lg max-w-xl mx-auto relative z-10">
+                    Speak directly with a Principal Engineer to map out a deployment strategy that fits your precise requirements.
+                </p>
+<button class="relative z-10 px-8 py-4 bg-primary-container text-on-primary-container font-label-md text-label-md tracking-wider hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-container-low focus:ring-primary-container">
+                    Schedule Technical Consultation
+                </button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-section-gap bg-surface-container-lowest border-t border-outline-variant">
+<div class="max-w-max-width mx-auto px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-gutter flex flex-col md:flex-row justify-between items-start gap-stack-lg">
+<div class="col-span-1 md:col-span-2">
+<div class="font-display-lg text-headline-xl text-primary mb-stack-sm">
+                    KaiketsuTech
+                </div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-sm">
+                    © 2024 KaiketsuTech. Precision Engineering for Digital Leaders.
+                </p>
+</div>
+<div class="col-span-1 md:col-span-2 flex justify-end gap-stack-lg font-body-md text-body-md text-on-surface">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Legal</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Terms</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Security</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Careers</a>
+</div>
+</div>
+</footer>
+</body></html>

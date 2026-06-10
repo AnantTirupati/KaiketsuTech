@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KaiketsuTech | Sign In</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Sora:wght@600&amp;family=Space+Grotesk:wght@600;700&amp;family=Geist+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS via CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration (Provided) -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface-variant": "#e0c0b1",
+                    "secondary-container": "#fd8b00",
+                    "on-error-container": "#ffdad6",
+                    "primary-fixed": "#ffdbca",
+                    "on-secondary-fixed-variant": "#6e3900",
+                    "on-tertiary-fixed-variant": "#004b74",
+                    "tertiary-container": "#00a2f4",
+                    "on-primary-container": "#582200",
+                    "on-primary": "#552100",
+                    "on-primary-fixed": "#341100",
+                    "primary": "#ffb690",
+                    "on-secondary": "#4d2600",
+                    "inverse-surface": "#f6ded3",
+                    "secondary-fixed": "#ffdcc3",
+                    "on-tertiary-fixed": "#001d32",
+                    "surface-container-low": "#251913",
+                    "tertiary": "#93ccff",
+                    "error": "#ffb4ab",
+                    "primary-fixed-dim": "#ffb690",
+                    "inverse-on-surface": "#3c2d26",
+                    "on-primary-fixed-variant": "#783200",
+                    "surface-container-high": "#352720",
+                    "on-error": "#690005",
+                    "tertiary-fixed-dim": "#93ccff",
+                    "on-tertiary-container": "#003554",
+                    "surface-bright": "#45362f",
+                    "on-tertiary": "#003351",
+                    "tertiary-fixed": "#cde5ff",
+                    "outline-variant": "#584237",
+                    "secondary-fixed-dim": "#ffb77d",
+                    "background": "#1c110b",
+                    "surface-container-lowest": "#160c06",
+                    "on-secondary-fixed": "#2f1500",
+                    "on-secondary-container": "#603100",
+                    "primary-container": "#f97316",
+                    "on-background": "#f6ded3",
+                    "surface-variant": "#40322a",
+                    "surface-dim": "#1c110b",
+                    "inverse-primary": "#9d4300",
+                    "on-surface": "#f6ded3",
+                    "surface": "#1c110b",
+                    "secondary": "#ffb77d",
+                    "outline": "#a78b7d",
+                    "surface-tint": "#ffb690",
+                    "surface-container-highest": "#40322a",
+                    "error-container": "#93000a",
+                    "surface-container": "#291d16"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-gap": "120px",
+                    "gutter": "24px",
+                    "stack-lg": "32px",
+                    "max-width": "1280px",
+                    "stack-md": "16px",
+                    "stack-sm": "8px",
+                    "margin-mobile": "20px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "section-label": [
+                            "Sora"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Space Grotesk"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Space Grotesk"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "headline-xl": [
+                            "Space Grotesk"
+                    ],
+                    "display-lg-mobile": [
+                            "Space Grotesk"
+                    ],
+                    "mono-sm": [
+                            "Geist Mono"
+                    ]
+            },
+            "fontSize": {
+                    "section-label": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.15em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg": [
+                            "72px",
+                            {
+                                    "lineHeight": "1.1",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "letterSpacing": "0em",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "letterSpacing": "0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "letterSpacing": "0.01em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-xl": [
+                            "48px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg-mobile": [
+                            "40px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "mono-sm": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "letterSpacing": "0em",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(37, 25, 19, 0.4); /* surface-container-low */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(88, 66, 55, 0.3); /* outline-variant */
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex antialiased overflow-hidden">
+<!-- Left Split: Visual Canvas (Hidden on Mobile) -->
+<div class="hidden lg:flex lg:w-[55%] relative flex-col justify-between p-margin-desktop bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida/AP1WRLs0sUX4jcXmpSLmps2wM5CbMtHu2dgj46-lLiMSC5DmNhFP2KfBN7Hvm52zAHmINzRne2NDCtW5cYkPBRZxb2t3iYqOw0I4Adk2xciajwi6LUFFzrqGyTz8PDSMesHirxCoXMOEpeRO7hWQziANX3uVfNs24WZLgoOLwx-1HDarnVvC_gZZTmuINawP4H5hHdAg9KvVIAMBYMW0PgnOpN0PxA2f-6qMLhtQPPsvOgeQvi7wg9FTPUUY4SI');">
+<!-- Tonal Layer Overlay for readability and depth -->
+<div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent"></div>
+<div class="absolute inset-0 bg-black/20"></div> <!-- Slight overall dimming -->
+<!-- Top Header Anchor -->
+<header class="relative z-10 flex items-center gap-3 cursor-default">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center text-[#ffffff]">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">hexagon</span>
+</div>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">KaiketsuTech</span>
+</header>
+<!-- Bottom Typography Anchor -->
+<div class="relative z-10 max-w-xl pb-12">
+<div class="font-section-label text-section-label text-primary mb-stack-md uppercase tracking-widest">Enterprise Access</div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-stack-md leading-tight">
+                Solve.<br/>
+                Design.<br/>
+<span class="text-primary-container">Elevate.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                Precision engineering for modern enterprises. Sign in to access your high-performance workspace and bespoke solutions.
+            </p>
+</div>
+</div>
+<!-- Right Split: Login Canvas -->
+<div class="w-full lg:w-[45%] h-full overflow-y-auto flex items-center justify-center p-margin-mobile md:p-margin-desktop bg-surface-container-lowest relative z-20">
+<!-- Mobile Header (Visible only on smaller screens) -->
+<div class="absolute top-margin-mobile left-margin-mobile flex lg:hidden items-center gap-3">
+<div class="w-6 h-6 rounded bg-primary-container flex items-center justify-center text-[#ffffff]">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">hexagon</span>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-on-surface tracking-tight text-[24px]">KaiketsuTech</span>
+</div>
+<!-- Login Container -->
+<div class="w-full max-w-[440px] glass-panel rounded-lg p-8 shadow-2xl relative">
+<div class="mb-stack-lg">
+<h2 class="font-headline-xl text-headline-xl text-on-surface mb-2">Sign In</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Enter your credentials to continue to the platform.</p>
+</div>
+<form action="#" class="space-y-6" method="POST">
+<!-- Email Field -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-2" for="email">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">mail</span>
+                        Work Email
+                    </label>
+<input class="w-full px-4 py-3 bg-surface-container border border-outline-variant rounded-lg text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all duration-300" id="email" name="email" placeholder="you@company.com" required="" type="email"/>
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md text-on-surface flex items-center gap-2" for="password">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">lock</span>
+                            Password
+                        </label>
+<a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors" href="#">Forgot Password?</a>
+</div>
+<input class="w-full px-4 py-3 bg-surface-container border border-outline-variant rounded-lg text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all duration-300" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+<!-- Primary Action -->
+<button class="w-full bg-primary-container hover:bg-[#d8600d] text-[#ffffff] font-label-md text-label-md py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-2 shadow-[0_4px_14px_0_rgba(249,115,22,0.39)]" type="submit">
+                    Sign In
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</form>
+<div class="mt-8 mb-6 flex items-center">
+<div class="flex-grow border-t border-outline-variant/50"></div>
+<span class="mx-4 font-mono-sm text-mono-sm text-on-surface-variant uppercase tracking-wider">Or</span>
+<div class="flex-grow border-t border-outline-variant/50"></div>
+</div>
+<!-- Secondary Action (Google) -->
+<button class="w-full bg-surface hover:bg-surface-container-high border border-outline-variant text-on-surface font-label-md text-label-md py-3 px-6 rounded-lg transition-colors duration-300 flex items-center justify-center gap-3" type="button">
+<svg class="w-5 h-5" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.26H17.92C17.66 15.63 16.88 16.81 15.72 17.58V20.34H19.28C21.36 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"></path>
+<path d="M12 23C14.97 23 17.46 22.02 19.28 20.34L15.72 17.58C14.74 18.24 13.48 18.66 12 18.66C9.14 18.66 6.71 16.73 5.84 14.14H2.17V16.99C3.99 20.59 7.69 23 12 23Z" fill="#34A853"></path>
+<path d="M5.84 14.14C5.62 13.48 5.49 12.76 5.49 12C5.49 11.24 5.62 10.52 5.84 9.86V7.01H2.17C1.42 8.5 1 10.2 1 12C1 13.8 1.42 15.5 2.17 16.99L5.84 14.14Z" fill="#FBBC05"></path>
+<path d="M12 5.34C13.62 5.34 15.07 5.9 16.21 6.99L19.36 3.84C17.46 2.06 14.97 1 12 1C7.69 1 3.99 3.41 2.17 7.01L5.84 9.86C6.71 7.27 9.14 5.34 12 5.34Z" fill="#EA4335"></path>
+</svg>
+                Continue with Google
+            </button>
+<!-- Bottom Link -->
+<p class="mt-8 text-center font-body-md text-body-md text-on-surface-variant">
+                Don't have an account? 
+                <a class="font-label-md text-label-md text-primary hover:text-primary-container transition-colors ml-1" href="#">Create Account</a>
+</p>
+</div>
+</div>
+</body></html>

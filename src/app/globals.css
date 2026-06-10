@@ -1,0 +1,181 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600&family=Geist+Mono:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+@import "tailwindcss";
+
+
+@theme {
+  --color-background: #1c110b;
+  --color-on-background: #f6ded3;
+  --color-surface: #1c110b;
+  --color-surface-dim: #1c110b;
+  --color-surface-bright: #45362f;
+  --color-surface-container-lowest: #160c06;
+  --color-surface-container-low: #251913;
+  --color-surface-container: #291d16;
+  --color-surface-container-high: #352720;
+  --color-surface-container-highest: #40322a;
+  --color-on-surface: #f6ded3;
+  --color-on-surface-variant: #e0c0b1;
+  --color-inverse-surface: #f6ded3;
+  --color-inverse-on-surface: #3c2d26;
+  --color-outline: #a78b7d;
+  --color-outline-variant: #584237;
+  --color-surface-tint: #ffb690;
+  --color-primary: #ffb690;
+  --color-on-primary: #552100;
+  --color-primary-container: #f97316;
+  --color-on-primary-container: #582200;
+  --color-inverse-primary: #9d4300;
+  --color-secondary: #ffb77d;
+  --color-on-secondary: #4d2600;
+  --color-secondary-container: #fd8b00;
+  --color-on-secondary-container: #603100;
+  --color-tertiary: #93ccff;
+  --color-on-tertiary: #003351;
+  --color-tertiary-container: #00a2f4;
+  --color-on-tertiary-container: #003554;
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  /* Font Families */
+  --font-display-lg: "Space Grotesk", sans-serif;
+  --font-headline-lg: "Space Grotesk", sans-serif;
+  --font-headline-xl: "Space Grotesk", sans-serif;
+  --font-display-lg-mobile: "Space Grotesk", sans-serif;
+  --font-body-lg: "Inter", sans-serif;
+  --font-body-md: "Inter", sans-serif;
+  --font-label-md: "Inter", sans-serif;
+  --font-section-label: "Sora", sans-serif;
+  --font-mono-sm: "Geist Mono", monospace;
+
+  /* Spacings */
+  --spacing-stack-sm: 8px;
+  --spacing-stack-md: 16px;
+  --spacing-stack-lg: 32px;
+  --spacing-gutter: 24px;
+  --spacing-margin-desktop: 64px;
+  --spacing-margin-mobile: 20px;
+  --spacing-section-gap: 120px;
+  --spacing-max-width: 1280px;
+
+  /* Border Radius */
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+/* Base resets & styles */
+html {
+  scroll-behavior: smooth;
+  background-color: #1c110b;
+  color: #f6ded3;
+}
+
+body {
+  background-color: #1c110b;
+  color: #f6ded3;
+  font-family: var(--font-body-md);
+  overflow-x: hidden;
+}
+
+/* Material symbols */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.material-symbols-outlined.fill-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Premium custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #160c06;
+}
+::-webkit-scrollbar-thumb {
+  background: #40322a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f97316;
+}
+
+/* Bento grid custom patterns */
+.bg-grid-pattern {
+  background-image: 
+      linear-gradient(to right, rgba(255, 182, 144, 0.02) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 182, 144, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Glassmorphism panel styling */
+.glass-panel {
+  background: rgba(28, 17, 11, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(88, 66, 55, 0.35);
+}
+
+.card-base {
+  background-color: #111111;
+  border: 1px solid #222222;
+}
+
+/* Stepper progress */
+.step-line {
+  background-color: #222222;
+}
+
+/* Form Styles */
+.form-input {
+  width: 100%;
+  background-color: #0B0B0B;
+  border: 1px solid #222222;
+  border-radius: var(--radius-DEFAULT);
+  padding: 0.75rem 1rem;
+  color: #f6ded3;
+  transition: all 0.3s ease-out;
+  outline: none;
+}
+.form-input:focus {
+  border-color: #f97316;
+  box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
+}
+
+/* Micro-animations */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* FAQ transitions */
+.faq-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out, margin 0.3s ease-out;
+}
+.faq-item.active .faq-content {
+  max-height: 500px;
+  opacity: 1;
+  margin-top: 16px;
+}
+.faq-icon {
+  transition: transform 0.3s ease;
+}
+.faq-item.active .faq-icon {
+  transform: rotate(180deg);
+}

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KaiketsuTech - Premium Software Agency</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500&amp;family=Sora:wght@600&amp;family=Geist+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#4d2600",
+                    "surface-dim": "#1c110b",
+                    "surface": "#1c110b",
+                    "tertiary-container": "#00a2f4",
+                    "secondary-fixed-dim": "#ffb77d",
+                    "secondary-fixed": "#ffdcc3",
+                    "outline-variant": "#584237",
+                    "surface-variant": "#40322a",
+                    "surface-tint": "#ffb690",
+                    "on-primary-fixed": "#341100",
+                    "inverse-surface": "#f6ded3",
+                    "primary-fixed-dim": "#ffb690",
+                    "tertiary": "#93ccff",
+                    "on-tertiary": "#003351",
+                    "primary-fixed": "#ffdbca",
+                    "secondary": "#ffb77d",
+                    "surface-container-high": "#352720",
+                    "surface-container-highest": "#40322a",
+                    "on-tertiary-fixed": "#001d32",
+                    "on-surface": "#f6ded3",
+                    "on-error-container": "#ffdad6",
+                    "surface-container-low": "#251913",
+                    "primary": "#ffb690",
+                    "inverse-on-surface": "#3c2d26",
+                    "outline": "#a78b7d",
+                    "error": "#ffb4ab",
+                    "on-secondary-fixed": "#2f1500",
+                    "on-secondary-fixed-variant": "#6e3900",
+                    "on-surface-variant": "#e0c0b1",
+                    "on-tertiary-container": "#003554",
+                    "on-primary-fixed-variant": "#783200",
+                    "on-secondary-container": "#603100",
+                    "on-tertiary-fixed-variant": "#004b74",
+                    "background": "#1c110b",
+                    "surface-container": "#291d16",
+                    "on-background": "#f6ded3",
+                    "inverse-primary": "#9d4300",
+                    "on-primary-container": "#582200",
+                    "surface-bright": "#45362f",
+                    "error-container": "#93000a",
+                    "tertiary-fixed-dim": "#93ccff",
+                    "on-primary": "#552100",
+                    "tertiary-fixed": "#cde5ff",
+                    "surface-container-lowest": "#160c06",
+                    "secondary-container": "#fd8b00",
+                    "on-error": "#690005",
+                    "primary-container": "#f97316"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-lg": "32px",
+                    "margin-desktop": "64px",
+                    "section-gap": "120px",
+                    "max-width": "1280px",
+                    "gutter": "24px",
+                    "margin-mobile": "20px",
+                    "stack-sm": "8px",
+                    "stack-md": "16px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Space Grotesk"],
+                    "body-md": ["Inter"],
+                    "display-lg-mobile": ["Space Grotesk"],
+                    "section-label": ["Sora"],
+                    "body-lg": ["Inter"],
+                    "headline-lg": ["Space Grotesk"],
+                    "label-md": ["Inter"],
+                    "mono-sm": ["Geist Mono"],
+                    "headline-xl": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "display-lg": ["72px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "body-md": ["16px", { "lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400" }],
+                    "display-lg-mobile": ["40px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                    "section-label": ["12px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "600" }],
+                    "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400" }],
+                    "headline-lg": ["32px", { "lineHeight": "1.3", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                    "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                    "mono-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }],
+                    "headline-xl": ["48px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Smooth scrolling */
+        html { scroll-behavior: smooth; }
+        
+        /* Premium custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #160c06; }
+        ::-webkit-scrollbar-thumb { background: #40322a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f97316; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased overflow-x-hidden selection:bg-primary-container selection:text-white">
+<!-- TopNavBar Shared Component -->
+<nav class="bg-background/80 backdrop-blur-md dark:bg-background/80 text-primary dark:text-primary font-body-md text-body-md fixed top-0 w-full z-50 border-b border-outline-variant/20 transition-all duration-300 ease-in-out">
+<div class="flex justify-between items-center max-w-max-width mx-auto px-margin-desktop h-20">
+<div class="font-headline-lg text-headline-lg font-bold text-on-surface dark:text-on-surface tracking-tight">
+                KaiketsuTech
+            </div>
+<ul class="hidden md:flex gap-8 items-center">
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#services">Services</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#portfolio">Portfolio</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#pricing">Pricing</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#about">About</a></li>
+<li><a class="text-on-surface-variant hover:text-primary transition-colors duration-200" href="#contact">Contact</a></li>
+</ul>
+<a class="hidden md:inline-flex items-center justify-center bg-primary-container text-white px-6 py-2.5 rounded-DEFAULT font-label-md text-label-md font-medium hover:bg-[#ff8a33] transition-colors shadow-[0_0_15px_rgba(249,115,22,0.2)]" href="#contact">
+                Start a Project
+            </a>
+<button class="md:hidden text-on-surface">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</nav>
+<!-- Hero Section -->
+<header class="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+<!-- Subtle background glow -->
+<div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary-container/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+<div class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop w-full grid grid-cols-1 lg:grid-cols-2 gap-stack-lg lg:gap-gutter items-center z-10">
+<div class="flex flex-col gap-stack-md max-w-2xl fade-in-up">
+<p class="font-section-label text-section-label text-primary uppercase tracking-widest flex items-center gap-2">
+<span class="w-8 h-px bg-primary"></span>
+                    Elevate Digital Experiences
+                </p>
+<h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface">
+                    Building Digital Experiences That Drive Business Growth
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">
+                    We engineer premium software solutions tailored for high-end enterprises. Precision, scalability, and relentless innovation are the core of our technical DNA.
+                </p>
+<div class="flex flex-wrap items-center gap-4 mt-4">
+<a class="inline-flex items-center justify-center bg-primary-container text-white px-8 py-4 rounded-DEFAULT font-label-md text-label-md font-semibold hover:bg-[#ff8a33] transition-all shadow-[0_4px_20px_rgba(249,115,22,0.2)] hover:shadow-[0_4px_30px_rgba(249,115,22,0.4)]" href="#contact">
+                        Start a Project
+                    </a>
+<a class="inline-flex items-center justify-center bg-transparent border border-outline-variant text-on-surface px-8 py-4 rounded-DEFAULT font-label-md text-label-md font-medium hover:border-primary hover:text-primary transition-all" href="#portfolio">
+                        View Portfolio
+                    </a>
+</div>
+</div>
+<div class="relative w-full aspect-square lg:aspect-auto lg:h-[600px] flex items-center justify-center fade-in-up" style="transition-delay: 0.2s;">
+<div class="absolute inset-0 bg-gradient-to-tr from-surface-container-lowest to-transparent rounded-xl z-10 pointer-events-none"></div>
+<img alt="Abstract 3D architectural visualization" class="w-full h-full object-cover rounded-xl border border-outline-variant shadow-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBve9OS3vV3s-qncDIiw3T94p-AQqqjMGga3bsi4MUnKKfGrSKcTU1yvtZC_IXCHRJ80rwSUFp2epsUwDFtG98OkulVxEhvCdziLsuYJE5by7J0_epk2oqXsLdo66pqpNm-dQcDkRRauQ2pVpF4KZl5M0qly8YVsTn2N7xBCKliSFOCz2m-eI0Juc6rID8YXbaLHbTxXwLiJxFnz5wiNw8fkHtmOVdgLgicmuoa5szTOMKMPzHgdupExA6tGzQyNgkN2adpheShyF4"/>
+</div>
+</div>
+</header>
+<!-- Services Section -->
+<section class="py-section-gap bg-surface-container-lowest relative" id="services">
+<div class="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
+<div class="text-center max-w-3xl mx-auto mb-16 fade-in-up">
+<h2 class="font-section-label text-section-label text-primary uppercase tracking-widest mb-4">Our Expertise</h2>
+<h3 class="font-headline-xl text-headline-xl text-on-surface">Precision Engineering for Modern Demands</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="group bg-surface p-8 rounded-lg border border-outline-variant hover:border-primary transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(249,115,22,0.1)] fade-in-up flex flex-col h-full">
+<div class="w-12 h-12 bg-surface-container-high rounded-DEFAULT flex items-center justify-center mb-6 group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-primary text-2xl">web</span>
+</div>
+<h4 class="font-headline-lg text-headline-lg text-on-surface mb-3 text-xl">Website Development</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex-grow">Immersive, high-performance web platforms built with cutting-edge frameworks ensuring seamless user experiences.</p>
+</div>
+<!-- Card 2 -->
+<div class="group bg-surface p-8 rounded-lg border border-outline-variant hover:border-primary transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(249,115,22,0.1)] fade-in-up flex flex-col h-full" style="transition-delay: 0.1s;">
+<div class="w-12 h-12 bg-surface-container-high rounded-DEFAULT flex items-center justify-center mb-6 group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-primary text-2xl">storefront</span>
+</div>
+<h4 class="font-headline-lg text-headline-lg text-on-surface mb-3 text-xl">E-Commerce</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex-grow">Scalable, secure, and conversion-optimized digital storefronts tailored for complex enterprise inventories.</p>
+</div>
+<!-- Card 3 -->
+<div class="group bg-surface p-8 rounded-lg border border-outline-variant hover:border-primary transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(249,115,22,0.1)] fade-in-up flex flex-col h-full" style="transition-delay: 0.2s;">
+<div class="w-12 h-12 bg-surface-container-high rounded-DEFAULT flex items-center justify-center mb-6 group-hover:bg-primary-container/20 transition-colors">
+<span class="material-symbols-outlined text-primary text-2xl">dashboard</span>
+</div>
+<h4 class="font-headline-lg text-headline-lg text-on-surface mb-3 text-xl">Business Platforms</h4>
+<p class="font-body-md text-body-md text-on-surface-variant flex-grow">Custom internal tools and dashboards designed to streamline operations and enhance data visibility.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer Shared Component -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest text-primary dark:text-primary font-body-md text-body-md w-full py-section-gap border-t border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-max-width mx-auto px-margin-desktop">
+<div class="col-span-1 md:col-span-2">
+<div class="font-headline-lg text-headline-lg font-bold text-on-surface dark:text-on-surface mb-4">
+                    KaiketsuTech
+                </div>
+<p class="text-on-surface-variant max-w-sm mb-6">Solve | Design | Elevate</p>
+<p class="text-on-surface-variant text-sm">© 2024 KaiketsuTech. Precision Engineering for Modern Enterprises.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-semibold text-on-surface mb-4 tracking-wider uppercase">Navigation</h4>
+<ul class="flex flex-col gap-3">
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#services">Services</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#portfolio">Portfolio</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#pricing">Pricing</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#about">About</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#contact">Contact</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md font-semibold text-on-surface mb-4 tracking-wider uppercase">Legal</h4>
+<ul class="flex flex-col gap-3">
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Privacy Policy</a></li>
+<li><a class="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100" href="#">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+</footer>
+<script>
+        // Simple Intersection Observer for fade-in animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px"
+            });
+
+            document.querySelectorAll('.fade-in-up').forEach((el) => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body></html>

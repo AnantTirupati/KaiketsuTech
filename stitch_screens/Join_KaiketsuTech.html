@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Register - KaiketsuTech</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Sora:wght@600&amp;family=Space+Grotesk:wght@600;700&amp;family=Geist+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#e0c0b1",
+                        "secondary-container": "#fd8b00",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed": "#ffdbca",
+                        "on-secondary-fixed-variant": "#6e3900",
+                        "on-tertiary-fixed-variant": "#004b74",
+                        "tertiary-container": "#00a2f4",
+                        "on-primary-container": "#582200",
+                        "on-primary": "#552100",
+                        "on-primary-fixed": "#341100",
+                        "primary": "#ffb690",
+                        "on-secondary": "#4d2600",
+                        "inverse-surface": "#f6ded3",
+                        "secondary-fixed": "#ffdcc3",
+                        "on-tertiary-fixed": "#001d32",
+                        "surface-container-low": "#251913",
+                        "tertiary": "#93ccff",
+                        "error": "#ffb4ab",
+                        "primary-fixed-dim": "#ffb690",
+                        "inverse-on-surface": "#3c2d26",
+                        "on-primary-fixed-variant": "#783200",
+                        "surface-container-high": "#352720",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#93ccff",
+                        "on-tertiary-container": "#003554",
+                        "surface-bright": "#45362f",
+                        "on-tertiary": "#003351",
+                        "tertiary-fixed": "#cde5ff",
+                        "outline-variant": "#584237",
+                        "secondary-fixed-dim": "#ffb77d",
+                        "background": "#1c110b",
+                        "surface-container-lowest": "#160c06",
+                        "on-secondary-fixed": "#2f1500",
+                        "on-secondary-container": "#603100",
+                        "primary-container": "#f97316",
+                        "on-background": "#f6ded3",
+                        "surface-variant": "#40322a",
+                        "surface-dim": "#1c110b",
+                        "inverse-primary": "#9d4300",
+                        "on-surface": "#f6ded3",
+                        "surface": "#1c110b",
+                        "secondary": "#ffb77d",
+                        "outline": "#a78b7d",
+                        "surface-tint": "#ffb690",
+                        "surface-container-highest": "#40322a",
+                        "error-container": "#93000a",
+                        "surface-container": "#291d16"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "section-gap": "120px",
+                        "gutter": "24px",
+                        "stack-lg": "32px",
+                        "max-width": "1280px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "margin-mobile": "20px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "section-label": ["Sora"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Space Grotesk"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Space Grotesk"],
+                        "label-md": ["Inter"],
+                        "headline-xl": ["Space Grotesk"],
+                        "display-lg-mobile": ["Space Grotesk"],
+                        "mono-sm": ["Geist Mono"]
+                    },
+                    "fontSize": {
+                        "section-label": ["12px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0em", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.3", "letterSpacing": "0.02em", "fontWeight": "600"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "headline-xl": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg-mobile": ["40px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "mono-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(17, 17, 17, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(34, 34, 34, 0.8);
+        }
+        .segmented-control input[type="radio"]:checked + label {
+            background-color: #222222;
+            color: #f6ded3;
+            border-color: #f97316;
+        }
+    </style>
+</head>
+<body class="bg-[#0B0B0B] text-on-surface antialiased min-h-screen flex items-center justify-center font-body-md relative overflow-hidden">
+<!-- Ambient Background Lighting -->
+<div class="absolute inset-0 z-0 pointer-events-none flex justify-center items-center">
+<div class="w-[800px] h-[800px] bg-primary-container/5 rounded-full blur-[120px] absolute opacity-50"></div>
+</div>
+<!-- Main Content Container -->
+<main class="w-full max-w-[480px] px-margin-mobile md:px-0 z-10 relative">
+<!-- Logo / Header -->
+<div class="text-center mb-stack-lg">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-stack-sm">KaiketsuTech</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Create an account to continue</p>
+</div>
+<!-- Registration Card -->
+<div class="glass-card rounded-lg p-stack-lg shadow-2xl">
+<form action="#" class="space-y-stack-md" method="POST">
+<!-- Role Selection (Segmented Control) -->
+<div class="flex gap-2 p-1 bg-[#0B0B0B] rounded-lg border border-[#222] segmented-control mb-stack-lg">
+<div class="relative flex-1">
+<input checked="" class="peer sr-only" id="role-client" name="role" type="radio" value="client"/>
+<label class="block w-full text-center py-2 px-4 rounded font-label-md text-label-md text-on-surface-variant cursor-pointer transition-all duration-200 border border-transparent hover:text-on-surface" for="role-client">
+                            Client
+                        </label>
+</div>
+<div class="relative flex-1">
+<input class="peer sr-only" id="role-intern" name="role" type="radio" value="intern"/>
+<label class="block w-full text-center py-2 px-4 rounded font-label-md text-label-md text-on-surface-variant cursor-pointer transition-all duration-200 border border-transparent hover:text-on-surface" for="role-intern">
+                            Intern
+                        </label>
+</div>
+</div>
+<!-- Full Name -->
+<div class="space-y-stack-sm">
+<label class="block font-label-md text-label-md text-on-surface" for="fullname">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px]" data-icon="person">person</span>
+<input class="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 pl-10 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none" id="fullname" name="fullname" placeholder="Jane Doe" required="" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-stack-sm">
+<label class="block font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px]" data-icon="mail">mail</span>
+<input class="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 pl-10 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none" id="email" name="email" placeholder="jane@example.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password -->
+<div class="space-y-stack-sm">
+<label class="block font-label-md text-label-md text-on-surface" for="password">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px]" data-icon="lock">lock</span>
+<input class="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 pl-10 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Confirm Password -->
+<div class="space-y-stack-sm">
+<label class="block font-label-md text-label-md text-on-surface" for="confirm_password">Confirm Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[20px]" data-icon="lock">lock</span>
+<input class="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 pl-10 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none" id="confirm_password" name="confirm_password" placeholder="••••••••" required="" type="password"/>
+</div>
+</div>
+<!-- Submit Button -->
+<button class="w-full bg-primary-container text-white font-label-md text-label-md py-3 rounded-lg hover:bg-primary-container/90 transition-colors duration-200 mt-stack-md flex justify-center items-center gap-2" type="submit">
+                    Create Account
+                    <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<!-- Divider -->
+<div class="relative flex items-center py-4">
+<div class="flex-grow border-t border-[#222]"></div>
+<span class="flex-shrink-0 mx-4 font-section-label text-section-label text-on-surface-variant/60">OR</span>
+<div class="flex-grow border-t border-[#222]"></div>
+</div>
+<!-- Google Auth Button -->
+<button class="w-full bg-[#111] border border-[#333] text-on-surface font-label-md text-label-md py-3 rounded-lg hover:bg-[#1A1A1A] transition-colors duration-200 flex justify-center items-center gap-3" type="button">
+<svg class="w-5 h-5" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+                    Continue with Google
+                </button>
+</form>
+</div>
+<!-- Login Link -->
+<p class="text-center mt-stack-md font-body-md text-body-md text-on-surface-variant">
+            Already have an account? 
+            <a class="text-primary-container hover:text-primary-container/80 transition-colors font-medium underline-offset-4 hover:underline" href="#">Log in</a>
+</p>
+</main>
+</body></html>
