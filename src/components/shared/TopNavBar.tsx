@@ -66,6 +66,11 @@ export default function TopNavBar() {
             </Link>
           </li>
           <li>
+            <Link href="/careers" className="text-on-surface-variant hover:text-primary transition-colors duration-200">
+              Careers
+            </Link>
+          </li>
+          <li>
             <Link href="/contact" className="text-on-surface-variant hover:text-primary transition-colors duration-200">
               Contact
             </Link>
@@ -86,15 +91,15 @@ export default function TopNavBar() {
               </button>
             </>
           ) : (
-            <Link href="/auth/signin" className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md">
+            <Link href="/login" className="text-on-surface-variant hover:text-primary transition-colors duration-200 font-label-md text-label-md">
               Sign In
             </Link>
           )}
           <Link 
-            href="/start-project" 
+            href="/request-project" 
             className="inline-flex items-center justify-center bg-primary-container text-white px-6 py-2.5 rounded font-label-md text-label-md font-medium hover:bg-opacity-90 transition-colors shadow-[0_0_15px_rgba(249,115,22,0.2)]"
           >
-            Start a Project
+            Request a Project
           </Link>
         </div>
 
@@ -148,6 +153,15 @@ export default function TopNavBar() {
             </li>
             <li>
               <Link 
+                href="/careers" 
+                onClick={() => setIsMenuOpen(false)} 
+                className="block text-on-surface-variant hover:text-primary py-2 border-b border-outline-variant/10"
+              >
+                Careers
+              </Link>
+            </li>
+            <li>
+              <Link 
                 href="/contact" 
                 onClick={() => setIsMenuOpen(false)} 
                 className="block text-on-surface-variant hover:text-primary py-2 border-b border-outline-variant/10"
@@ -175,7 +189,7 @@ export default function TopNavBar() {
               </>
             ) : (
               <Link 
-                href="/auth/signin" 
+                href="/login" 
                 onClick={() => setIsMenuOpen(false)} 
                 className="text-center text-on-surface-variant hover:text-primary py-2 font-medium"
               >
@@ -183,11 +197,11 @@ export default function TopNavBar() {
               </Link>
             )}
             <Link 
-              href="/start-project" 
+              href="/request-project" 
               onClick={() => setIsMenuOpen(false)} 
               className="block text-center bg-primary-container text-white py-3 rounded font-medium"
             >
-              Start a Project
+              Request a Project
             </Link>
           </div>
         </div>

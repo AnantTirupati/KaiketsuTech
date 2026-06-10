@@ -45,5 +45,5 @@ export async function GET(request: Request) {
   }
 
   // Fallback if auth fails
-  return NextResponse.redirect(`${origin}/auth/signin?error=Could not authenticate user`)
+  return NextResponse.redirect(`${origin}/login?error=Could not authenticate user`)
 }

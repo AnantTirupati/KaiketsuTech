@@ -53,6 +53,11 @@ export interface Database {
           timeline_weeks: number | null
           status: 'pending' | 'approved' | 'rejected'
           created_at: string | null
+          phone: string | null
+          project_title: string | null
+          business_goals: string | null
+          budget: number | null
+          priority: 'low' | 'medium' | 'high' | 'critical' | null
         }
         Insert: {
           id?: string
@@ -67,6 +72,11 @@ export interface Database {
           timeline_weeks?: number | null
           status?: 'pending' | 'approved' | 'rejected'
           created_at?: string | null
+          phone?: string | null
+          project_title?: string | null
+          business_goals?: string | null
+          budget?: number | null
+          priority?: 'low' | 'medium' | 'high' | 'critical' | null
         }
         Update: {
           id?: string
@@ -81,6 +91,11 @@ export interface Database {
           timeline_weeks?: number | null
           status?: 'pending' | 'approved' | 'rejected'
           created_at?: string | null
+          phone?: string | null
+          project_title?: string | null
+          business_goals?: string | null
+          budget?: number | null
+          priority?: 'low' | 'medium' | 'high' | 'critical' | null
         }
         Relationships: []
       }
@@ -201,6 +216,7 @@ export interface Database {
           file_url: string | null
           file_name: string | null
           created_at: string | null
+          conversation_id: string | null
         }
         Insert: {
           id?: string
@@ -210,6 +226,7 @@ export interface Database {
           file_url?: string | null
           file_name?: string | null
           created_at?: string | null
+          conversation_id?: string | null
         }
         Update: {
           id?: string
@@ -219,6 +236,7 @@ export interface Database {
           file_url?: string | null
           file_name?: string | null
           created_at?: string | null
+          conversation_id?: string | null
         }
         Relationships: []
       }
@@ -284,6 +302,72 @@ export interface Database {
           email?: string
           subject?: string | null
           message?: string
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      intern_applications: {
+        Row: {
+          id: string
+          full_name: string
+          email: string
+          phone: string | null
+          skills: string | null
+          technologies: string | null
+          experience: string | null
+          portfolio_url: string | null
+          github_url: string | null
+          linkedin_url: string | null
+          resume_url: string | null
+          status: 'pending' | 'approved' | 'rejected'
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          full_name: string
+          email: string
+          phone?: string | null
+          skills?: string | null
+          technologies?: string | null
+          experience?: string | null
+          portfolio_url?: string | null
+          github_url?: string | null
+          linkedin_url?: string | null
+          resume_url?: string | null
+          status?: 'pending' | 'approved' | 'rejected'
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          full_name?: string
+          email?: string
+          phone?: string | null
+          skills?: string | null
+          technologies?: string | null
+          experience?: string | null
+          portfolio_url?: string | null
+          github_url?: string | null
+          linkedin_url?: string | null
+          resume_url?: string | null
+          status?: 'pending' | 'approved' | 'rejected'
+          created_at?: string | null
+        }
+        Relationships: []
+      }
+      conversations: {
+        Row: {
+          id: string
+          project_id: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          project_id?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          project_id?: string | null
           created_at?: string | null
         }
         Relationships: []

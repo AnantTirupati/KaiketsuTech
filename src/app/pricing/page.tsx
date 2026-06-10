@@ -34,7 +34,7 @@ export default function Pricing() {
   const handleCheckout = async (packageName: string, amountUSD: number) => {
     if (!user) {
       toast('Please sign in or register to initiate a project checkout.', 'warning')
-      router.push('/auth/signin')
+      router.push('/login')
       return
     }
 

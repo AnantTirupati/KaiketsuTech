@@ -33,11 +33,10 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Protect dashboard routes role-based
   if (request.nextUrl.pathname.startsWith('/dashboard')) {
     if (!user) {
       const url = request.nextUrl.clone()
-      url.pathname = '/auth/signin'
+      url.pathname = '/login'
       return NextResponse.redirect(url)
     }
 

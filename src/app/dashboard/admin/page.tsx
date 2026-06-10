@@ -1,251 +1,805 @@
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
+import { useToast } from '@/components/ui/Toast'
 import TopAppBar from '@/components/shared/TopAppBar'
-import { DollarSign, Briefcase, Percent, TrendingUp, PlusCircle, Award, CheckCircle2, ArrowRight } from 'lucide-react'
+import { 
+  DollarSign, Briefcase, Percent, TrendingUp, PlusCircle, 
+  Award, CheckCircle2, ArrowRight, UserCheck, Trash2, 
+  UserMinus, Users, Check, X, ShieldAlert, Loader, Eye, Plus, Layers, LogOut
+} from 'lucide-react'
 import Link from 'next/link'
 
-export default async function AdminDashboard() {
-  const supabase = await createClient()
+export default function AdminDashboard() {
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'projects' | 'clients' | 'payments' | 'interns'>('overview')
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
 
-  // Fetch real count stats from Supabase
-  const { count: projectsCount } = await supabase
-    .from('projects')
-    .select('*', { count: 'exact', head: true })
+  // System Entities State
+  const [leads, setLeads] = useState<any[]>([])
+  const [projects, setProjects] = useState<any[]>([])
+  const [clients, setClients] = useState<any[]>([])
+  const [payments, setPayments] = useState<any[]>([])
+  const [interns, setInterns] = useState<any[]>([])
+  const [applications, setApplications] = useState<any[]>([])
 
-  const { data: completedPayments } = await supabase
-    .from('payments')
-    .select('amount')
-    .eq('status', 'completed')
+  // Project Creation State
+  const [newProject, setNewProject] = useState({
+    title: '',
+    description: '',
+    budget: 5000,
+    clientId: '',
+    status: 'planning' as 'planning' | 'in_progress' | 'review' | 'completed'
+  })
+  const [creatingProject, setCreatingProject] = useState(false)
 
-  const totalRevenue = completedPayments?.reduce((sum, payment) => sum + Number(payment.amount), 0) || 0
+  // Task Creation State (Assigning Interns)
+  const [newTask, setNewTask] = useState({
+    projectId: '',
+    internId: '',
+    title: '',
+    category: 'Frontend' as 'Frontend' | 'Backend' | 'Design Sys' | 'Other'
+  })
+  const [creatingTask, setCreatingTask] = useState(false)
 
-  // Fetch intern list
-  const { data: interns } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('role', 'intern')
-    .limit(3)
+  const supabase = createClient()
+  const router = useRouter()
+  const { toast } = useToast()
 
-  // Fetch project requests
-  const { data: projectRequests } = await supabase
-    .from('project_requests')
-    .select('*')
-    .limit(3)
+  useEffect(() => {
+    async function loadAdminData() {
+      // 1. Verify User Session & Admin Role
+      const { data: { user: currentUser } } = await supabase.auth.getUser()
+      if (!currentUser) {
+        router.push('/login')
+        return
+      }
+      
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (profile?.role !== 'admin') {
+        toast('Unauthorized. Admin access required.', 'error')
+        router.push(`/dashboard/${profile?.role || 'client'}`)
+        return
+      }
+
+      setUser(currentUser)
+
+      // 2. Fetch Dashboard Entities
+      const { data: leadData } = await supabase.from('project_requests').select('*').order('created_at', { ascending: false })
+      const { data: projData } = await supabase.from('projects').select('*, profiles(email, full_name)').order('created_at', { ascending: false })
+      const { data: clientData } = await supabase.from('profiles').select('*').eq('role', 'client')
+      const { data: payData } = await supabase.from('payments').select('*, profiles(email)').order('created_at', { ascending: false })
+      const { data: internData } = await supabase.from('profiles').select('*').eq('role', 'intern')
+      const { data: appData } = await supabase.from('intern_applications').select('*').order('created_at', { ascending: false })
+
+      setLeads(leadData || [])
+      setProjects(projData || [])
+      setClients(clientData || [])
+      setPayments(payData || [])
+      setInterns(internData || [])
+      setApplications(appData || [])
+
+      setLoading(false)
+    }
+
+    loadAdminData()
+  }, [supabase, router])
+
+  // Refresh helper
+  const reloadData = async () => {
+    const { data: leadData } = await supabase.from('project_requests').select('*').order('created_at', { ascending: false })
+    const { data: projData } = await supabase.from('projects').select('*, profiles(email, full_name)').order('created_at', { ascending: false })
+    const { data: payData } = await supabase.from('payments').select('*, profiles(email)').order('created_at', { ascending: false })
+    const { data: appData } = await supabase.from('intern_applications').select('*').order('created_at', { ascending: false })
+    const { data: internData } = await supabase.from('profiles').select('*').eq('role', 'intern')
+
+    setLeads(leadData || [])
+    setProjects(projData || [])
+    setPayments(payData || [])
+    setApplications(appData || [])
+    setInterns(internData || [])
+  }
+
+  // --- ACTIONS ---
+
+  // Lead Approval / Rejection
+  const handleLeadAction = async (leadId: string, status: 'approved' | 'rejected') => {
+    toast(`Processing lead status: ${status}`, 'info')
+    try {
+      const { data: lead } = await supabase
+        .from('project_requests')
+        .select('*')
+        .eq('id', leadId)
+        .single()
+
+      if (!lead) throw new Error('Lead not found')
+
+      // 1. Update project_request status
+      const { error: updateErr } = await supabase
+        .from('project_requests')
+        .update({ status })
+        .eq('id', leadId)
+
+      if (updateErr) throw updateErr
+
+      // 2. If approved, auto-provision a new project
+      if (status === 'approved') {
+        const { error: projErr } = await supabase.from('projects').insert({
+          client_id: lead.client_id,
+          title: lead.project_title || `${lead.company_name} Project`,
+          description: lead.project_description,
+          status: 'planning',
+          estimated_budget: lead.budget || 5000,
+          velocity: 0,
+          capacity_utilization: 10
+        })
+        if (projErr) throw projErr
+        toast('Lead approved. Project provisioned successfully.', 'success')
+      } else {
+        toast('Lead request rejected.', 'success')
+      }
+
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Action failed.', 'error')
+    }
+  }
+
+  // Project Creation
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newProject.title) return
+
+    setCreatingProject(true)
+    try {
+      const { error } = await supabase.from('projects').insert({
+        title: newProject.title,
+        description: newProject.description,
+        estimated_budget: newProject.budget,
+        client_id: newProject.clientId || null,
+        status: newProject.status,
+        velocity: 0,
+        capacity_utilization: 10
+      })
+
+      if (error) throw error
+      toast('New project created successfully.', 'success')
+      setNewProject({ title: '', description: '', budget: 5000, clientId: '', status: 'planning' })
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to create project.', 'error')
+    } finally {
+      setCreatingProject(false)
+    }
+  }
+
+  // Project Deletion
+  const handleDeleteProject = async (projId: string) => {
+    if (confirm('Are you sure you want to delete this project?')) {
+      try {
+        const { error } = await supabase.from('projects').delete().eq('id', projId)
+        if (error) throw error
+        toast('Project deleted.', 'success')
+        reloadData()
+      } catch (err: any) {
+        toast('Failed to delete project.', 'error')
+      }
+    }
+  }
+
+  // Project Status Update
+  const handleUpdateProjectStatus = async (projId: string, nextStatus: any) => {
+    try {
+      const { error } = await supabase
+        .from('projects')
+        .update({ status: nextStatus })
+        .eq('id', projId)
+
+      if (error) throw error
+      toast('Project status updated.', 'success')
+      reloadData()
+    } catch (err: any) {
+      toast('Failed to update status.', 'error')
+    }
+  }
+
+  // Task Creation (Assign Intern)
+  const handleCreateTask = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newTask.title || !newTask.projectId) {
+      toast('Please enter task title and select project.', 'warning')
+      return
+    }
+
+    setCreatingTask(true)
+    try {
+      const { error } = await supabase.from('tasks').insert({
+        project_id: newTask.projectId,
+        assigned_to: newTask.internId || null,
+        title: newTask.title,
+        status: 'todo',
+        category: newTask.category
+      })
+
+      if (error) throw error
+      toast('Task successfully assigned to intern.', 'success')
+      setNewTask(prev => ({ ...prev, title: '' }))
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to assign task.', 'error')
+    } finally {
+      setCreatingTask(false)
+    }
+  }
+
+  // Intern Application Approval / Rejection
+  const handleApplicationAction = async (appId: string, status: 'approved' | 'rejected') => {
+    toast(`Processing application: ${status}`, 'info')
+    try {
+      const { data: app } = await supabase
+        .from('intern_applications')
+        .select('*')
+        .eq('id', appId)
+        .single()
+
+      if (!app) throw new Error('Application not found')
+
+      // 1. Update application status
+      const { error: appErr } = await supabase
+        .from('intern_applications')
+        .update({ status })
+        .eq('id', appId)
+
+      if (appErr) throw appErr
+
+      // 2. If approved, look up existing user profile by email and upgrade role to 'intern'
+      if (status === 'approved') {
+        const { data: userProfile } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', app.email)
+          .maybeSingle()
+
+        if (userProfile) {
+          const { error: roleErr } = await supabase
+            .from('profiles')
+            .update({ role: 'intern' })
+            .eq('id', userProfile.id)
+
+          if (roleErr) throw roleErr
+          toast('Application approved. User promoted to Intern role.', 'success')
+        } else {
+          toast('Application approved. Role will assign upon candidate registration.', 'success')
+        }
+      } else {
+        toast('Application rejected.', 'success')
+      }
+
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Action failed.', 'error')
+    }
+  }
+
+  const handleDownloadResume = async (resumePath: string) => {
+    try {
+      const { data, error } = await supabase.storage.from('resumes').createSignedUrl(resumePath, 60)
+      if (error) throw error
+      if (data?.signedUrl) {
+        window.open(data.signedUrl, '_blank')
+      }
+    } catch (err: any) {
+      toast('Failed to download resume file.', 'error')
+    }
+  }
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
+  if (loading) {
+    return (
+      <div className="h-screen flex justify-center items-center bg-[#0B0B0B]">
+        <Loader className="animate-spin text-primary" size={36} />
+      </div>
+    )
+  }
+
+  // Analytics helper metrics
+  const totalRevenue = payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + Number(p.amount), 0)
+  const activeProjectsCount = projects.filter(p => p.status !== 'completed').length
 
   return (
-    <main className="flex-1 flex flex-col h-screen overflow-hidden bg-grid-pattern">
-      <TopAppBar title="Analytics" placeholder="Search metrics..." />
-
-      {/* Canvas Scrollable */}
-      <div className="flex-grow overflow-y-auto p-gutter pt-8 max-w-max-width w-full mx-auto flex flex-col gap-gutter">
-        
-        {/* Bento Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-          
-          {/* Revenue Card */}
-          <div className="bg-[#111111] border border-[#222222] rounded-lg p-6 flex flex-col relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-              <DollarSign className="text-primary" size={80} />
-            </div>
-            <p className="font-section-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-2 font-bold">Total Revenue (YTD)</p>
-            <div className="flex items-baseline gap-2 mt-auto">
-              <h3 className="font-display-lg text-4xl font-bold text-on-surface">
-                ${totalRevenue > 0 ? (totalRevenue / 1000).toFixed(1) + 'k' : '2.4M'}
-              </h3>
-              <span className="text-sm text-[#4ade80] flex items-center font-mono-sm">
-                <TrendingUp size={16} className="mr-1" />
-                +18.4%
-              </span>
-            </div>
+    <div className="bg-[#0B0B0B] text-on-surface antialiased min-h-screen flex font-body-md overflow-hidden">
+      {/* Sidebar Navigation */}
+      <aside className="bg-surface-container-low w-64 h-screen border-r border-[#222] flex flex-col justify-between hidden md:flex shrink-0">
+        <div>
+          <div className="p-6 border-b border-[#222]">
+            <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+            <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold font-black">Admin Console</p>
           </div>
-
-          {/* Active Projects */}
-          <div className="bg-[#111111] border border-[#222222] rounded-lg p-6 flex flex-col relative overflow-hidden">
-            <p className="font-section-label text-[10px] text-on-surface-variant uppercase tracking-widest mb-2 font-bold">Active Projects</p>
-            <div className="flex items-baseline gap-2 mt-auto">
-              <h3 className="font-display-lg text-4xl font-bold text-on-surface">
-                {projectsCount && projectsCount > 0 ? projectsCount : '42'}
-              </h3>
-              <span className="text-sm text-on-surface-variant font-mono-sm">active instances</span>
-            </div>
-            {/* Micro Progress Bar */}
-            <div className="w-full bg-surface-container-highest h-1 rounded-full mt-4 overflow-hidden">
-              <div className="bg-primary-container h-full rounded-full" style={{ width: '75%' }}></div>
-            </div>
-            <p className="text-[10px] text-on-surface-variant mt-2 font-mono-sm">75% Capacity Utilization</p>
-          </div>
-
-          {/* Success Rate */}
-          <div className="bg-[#111111] border border-[#222222] rounded-lg p-6 flex flex-col items-center justify-center relative">
-            <p className="font-section-label text-[10px] text-on-surface-variant uppercase tracking-widest absolute top-6 left-6 font-bold">Success Rate</p>
-            <div className="relative w-20 h-20 mt-4 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" fill="none" r="40" stroke="#222222" strokeWidth="8"></circle>
-                <circle cx="50" cy="50" fill="none" r="40" stroke="#f97316" strokeDasharray="251.2" strokeDashoffset="15.07" strokeWidth="8" className="transition-all duration-1000 ease-out"></circle>
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-headline-lg text-lg font-bold text-on-surface">94%</span>
-              </div>
-            </div>
-            <p className="text-[10px] text-on-surface-variant mt-2 font-mono-sm">On-time Delivery</p>
-          </div>
-        </div>
-
-        {/* Charts and Lists Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-          {/* Revenue growth mockup */}
-          <div className="lg:col-span-2 bg-[#111111] border border-[#222222] rounded-lg p-6 flex flex-col justify-between">
-            <div className="flex justify-between items-center mb-6">
-              <h4 className="font-body-md font-semibold text-on-surface text-sm">Revenue Growth & Projections</h4>
-              <div className="flex gap-2">
-                <span className="px-2 py-1 bg-surface-container-highest text-[10px] rounded text-on-surface-variant cursor-pointer hover:bg-primary/20 hover:text-primary transition-colors">Q1</span>
-                <span className="px-2 py-1 bg-surface-container-highest text-[10px] rounded text-on-surface-variant cursor-pointer hover:bg-primary/20 hover:text-primary transition-colors">Q2</span>
-                <span className="px-2 py-1 bg-primary/20 text-[10px] rounded text-primary border border-primary/30">Q3</span>
-              </div>
-            </div>
-            
-            {/* Visual graph simulation */}
-            <div className="h-48 flex items-end justify-between border-b border-l border-[#222222] px-4 pb-2 relative">
-              <div className="absolute left-1 top-2 text-[8px] text-on-surface-variant font-mono-sm">$1M</div>
-              <div className="absolute left-1 top-24 text-[8px] text-on-surface-variant font-mono-sm">$500k</div>
-              <div className="w-[10%] bg-surface-container-highest h-[30%] rounded-t-sm"></div>
-              <div className="w-[10%] bg-surface-container-highest h-[45%] rounded-t-sm"></div>
-              <div className="w-[10%] bg-surface-container-highest h-[40%] rounded-t-sm"></div>
-              <div className="w-[10%] bg-primary-container h-[60%] rounded-t-sm shadow-[0_0_15px_rgba(249,115,22,0.3)]"></div>
-              <div className="w-[10%] bg-surface-container-highest h-[75%] rounded-t-sm"></div>
-              <div className="w-[10%] bg-surface-container-highest h-[85%] rounded-t-sm"></div>
-            </div>
-          </div>
-
-          {/* Client acquisition mockup */}
-          <div className="bg-[#111111] border border-[#222222] rounded-lg p-6 flex flex-col justify-between">
-            <h4 className="font-body-md font-semibold text-on-surface text-sm mb-4">Client Acquisition</h4>
-            <div className="flex flex-col gap-4">
-              <div>
-                <div className="flex justify-between text-xs mb-1 font-mono-sm text-on-surface-variant">
-                  <span>Enterprise</span>
-                  <span>+12</span>
-                </div>
-                <div className="w-full bg-[#222222] h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-primary-container h-full rounded-full" style={{ width: '80%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs mb-1 font-mono-sm text-on-surface-variant">
-                  <span>Startups</span>
-                  <span>+8</span>
-                </div>
-                <div className="w-full bg-[#222222] h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-secondary h-full rounded-full" style={{ width: '55%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-xs mb-1 font-mono-sm text-on-surface-variant">
-                  <span>Gov/Public</span>
-                  <span>+3</span>
-                </div>
-                <div className="w-full bg-[#222222] h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-tertiary h-full rounded-full" style={{ width: '25%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Intern Cohort Performance Grid */}
-        <div className="bg-[#111111] border border-[#222222] rounded-lg p-6 mb-24">
-          <div className="flex justify-between items-center mb-6 border-b border-[#222222] pb-4">
-            <h4 className="font-body-md font-semibold text-on-surface text-sm">Intern Cohort Performance</h4>
-            <Link href="#" className="text-xs text-primary hover:text-primary-container transition-colors flex items-center gap-1 font-mono-sm">
-              View Full Roster <ArrowRight size={14} />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {interns && interns.map((intern, i) => (
-              <div key={intern.id} className="p-4 rounded border border-[#222222] bg-[#1a1a1a] hover:border-primary/50 transition-colors group cursor-pointer">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-bold font-mono-sm">
-                    {intern.full_name?.charAt(0) || 'I'}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">{intern.full_name || 'Intern Name'}</p>
-                    <p className="text-[9px] text-on-surface-variant uppercase tracking-wider font-mono-sm">Engineering</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-xs font-mono-sm text-on-surface-variant">
-                  <CheckCircle2 size={14} className="text-[#4ade80]" />
-                  90% Task Success
-                </div>
-                <div className="mt-3 w-full bg-[#222] h-1 rounded-full">
-                  <div className="bg-[#4ade80] h-full rounded-full" style={{ width: '90%' }}></div>
-                </div>
-              </div>
+          <nav className="px-4 py-6 space-y-1">
+            {[
+              { id: 'overview', label: 'Analytics Overview', icon: <TrendingUp size={18} /> },
+              { id: 'leads', label: 'Requested Leads', icon: <Briefcase size={18} /> },
+              { id: 'projects', label: 'Projects & Tasks', icon: <Layers size={18} /> },
+              { id: 'clients', label: 'Client Accounts', icon: <Users size={18} /> },
+              { id: 'payments', label: 'Payments Ledger', icon: <DollarSign size={18} /> },
+              { id: 'interns', label: 'Intern & Careers', icon: <Award size={18} /> }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
+                  activeTab === tab.id 
+                    ? 'bg-primary-container text-white' 
+                    : 'text-on-surface-variant hover:bg-[#1a1a1a] hover:text-on-surface'
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
             ))}
-
-            {/* Fallback mock interns if database is empty */}
-            {(!interns || interns.length === 0) && (
-              <>
-                <div className="p-4 rounded border border-[#222222] bg-[#1a1a1a] hover:border-primary/50 transition-colors group cursor-pointer">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary font-bold font-mono-sm">JS</div>
-                    <div>
-                      <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Jane Smith</p>
-                      <p className="text-[9px] text-on-surface-variant uppercase tracking-wider font-mono-sm">Frontend Eng.</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-mono-sm text-on-surface-variant">
-                    <CheckCircle2 size={14} className="text-[#4ade80]" />
-                    14 Tasks Completed
-                  </div>
-                  <div className="mt-3 w-full bg-[#222] h-1 rounded-full">
-                    <div className="bg-[#4ade80] h-full rounded-full" style={{ width: '90%' }}></div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded border border-[#222222] bg-[#1a1a1a] hover:border-primary/50 transition-colors group cursor-pointer">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-secondary font-bold font-mono-sm">DK</div>
-                    <div>
-                      <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">David Kim</p>
-                      <p className="text-[9px] text-on-surface-variant uppercase tracking-wider font-mono-sm">UX Design</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-mono-sm text-on-surface-variant">
-                    <Award size={14} className="text-primary" />
-                    3 Active Projects
-                  </div>
-                  <div className="mt-3 w-full bg-[#222] h-1 rounded-full">
-                    <div className="bg-primary h-full rounded-full" style={{ width: '65%' }}></div>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded border border-[#222222] bg-[#1a1a1a] hover:border-primary/50 transition-colors group cursor-pointer">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-tertiary font-bold font-mono-sm">AL</div>
-                    <div>
-                      <p className="text-sm font-semibold text-on-surface group-hover:text-primary transition-colors">Ana Lopez</p>
-                      <p className="text-[9px] text-on-surface-variant uppercase tracking-wider font-mono-sm">Data Science</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs font-mono-sm text-on-surface-variant">
-                    <CheckCircle2 size={14} className="text-[#4ade80]" />
-                    12 Tasks Completed
-                  </div>
-                  <div className="mt-3 w-full bg-[#222] h-1 rounded-full">
-                    <div className="bg-[#4ade80] h-full rounded-full" style={{ width: '85%' }}></div>
-                  </div>
-                </div>
-              </>
-            )}
-
-            {/* Assign new / Empty state */}
-            <div className="p-4 rounded border border-dashed border-[#333333] flex flex-col items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary/50 transition-colors cursor-pointer min-h-[120px]">
-              <PlusCircle size={24} className="mb-2" />
-              <span className="text-xs font-mono-sm">Assign New Intern</span>
+          </nav>
+        </div>
+        <div className="p-4 border-t border-[#222] flex flex-col gap-3">
+          <div className="flex items-center gap-3 px-2">
+            <div className="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-primary font-bold font-mono-sm text-xs">
+              A
+            </div>
+            <div className="flex flex-col truncate">
+              <span className="text-xs font-semibold text-on-surface truncate">{user?.email}</span>
+              <span className="text-[10px] text-on-surface-variant font-mono-sm">Administrator</span>
             </div>
           </div>
+          <button 
+            onClick={handleLogout}
+            className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+          >
+            <LogOut size={14} />
+            Sign Out
+          </button>
         </div>
+      </aside>
 
-      </div>
-    </main>
+      {/* Main content frame */}
+      <main className="flex-1 flex flex-col h-screen overflow-hidden">
+        <TopAppBar title={activeTab === 'overview' ? 'Analytics Overview' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} placeholder="Search admin console..." />
+
+        {/* Scrollable Canvas */}
+        <div className="flex-grow overflow-y-auto p-gutter pt-8 max-w-max-width w-full mx-auto space-y-6">
+
+          {/* OVERVIEW TAB */}
+          {activeTab === 'overview' && (
+            <div className="space-y-6">
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between">
+                  <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Total Revenue</p>
+                  <h3 className="text-3xl font-bold text-[#4ade80] mt-2">${totalRevenue.toLocaleString()}</h3>
+                </div>
+
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between">
+                  <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Active Projects</p>
+                  <h3 className="text-3xl font-bold text-on-surface mt-2">{activeProjectsCount}</h3>
+                </div>
+
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between">
+                  <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Registered Clients</p>
+                  <h3 className="text-3xl font-bold text-on-surface mt-2">{clients.length}</h3>
+                </div>
+
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between">
+                  <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Active Interns</p>
+                  <h3 className="text-3xl font-bold text-on-surface mt-2">{interns.length}</h3>
+                </div>
+              </div>
+
+              {/* Recent Orders / Quick lists */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Pending Requests (Leads)</h4>
+                  <div className="divide-y divide-[#222222]">
+                    {leads.filter(l => l.status === 'pending').slice(0, 5).map(lead => (
+                      <div key={lead.id} className="py-3 flex justify-between items-center text-xs">
+                        <div>
+                          <p className="font-semibold text-on-surface">{lead.project_title || 'Untitled Lead'}</p>
+                          <p className="text-on-surface-variant mt-0.5">{lead.company_name}</p>
+                        </div>
+                        <button 
+                          onClick={() => setActiveTab('leads')}
+                          className="text-primary hover:underline text-[10px] font-mono-sm uppercase"
+                        >
+                          Review
+                        </button>
+                      </div>
+                    ))}
+                    {leads.filter(l => l.status === 'pending').length === 0 && (
+                      <div className="py-4 text-center text-on-surface-variant text-xs font-mono-sm">No pending leads.</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Live Project Status</h4>
+                  <div className="divide-y divide-[#222222]">
+                    {projects.slice(0, 5).map(proj => (
+                      <div key={proj.id} className="py-3 flex justify-between items-center text-xs">
+                        <div>
+                          <p className="font-semibold text-on-surface">{proj.title}</p>
+                          <p className="text-on-surface-variant mt-0.5 font-mono-sm text-[10px]">Client: {proj.profiles?.email || 'N/A'}</p>
+                        </div>
+                        <span className="bg-primary-container/10 text-primary px-2 py-0.5 rounded text-[10px] font-mono-sm capitalize">
+                          {proj.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* LEADS TAB */}
+          {activeTab === 'leads' && (
+            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Requested Leads</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                  <thead>
+                    <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                      <th className="pb-3">Lead / Company</th>
+                      <th className="pb-3">Contact</th>
+                      <th className="pb-3">Budget</th>
+                      <th className="pb-3">Urgency</th>
+                      <th className="pb-3 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#222]">
+                    {leads.map(lead => (
+                      <tr key={lead.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                        <td className="py-4">
+                          <p className="font-semibold text-on-surface text-xs md:text-sm">{lead.project_title || 'Untitled Request'}</p>
+                          <p className="text-xs text-on-surface-variant mt-0.5">{lead.company_name}</p>
+                        </td>
+                        <td className="py-4 text-xs">
+                          <p className="text-on-surface">{lead.first_name} {lead.last_name}</p>
+                          <p className="text-on-surface-variant">{lead.work_email}</p>
+                        </td>
+                        <td className="py-4 font-mono-sm text-xs text-on-surface">${Number(lead.budget || 0).toLocaleString()}</td>
+                        <td className="py-4 font-mono-sm text-xs capitalize">
+                          <span className={`px-2 py-0.5 rounded text-[10px] ${
+                            lead.priority === 'critical' || lead.priority === 'high' ? 'bg-error-container/20 text-error' : 'bg-[#222] text-on-surface-variant'
+                          }`}>
+                            {lead.priority || 'medium'}
+                          </span>
+                        </td>
+                        <td className="py-4 text-right">
+                          {lead.status === 'pending' ? (
+                            <div className="flex gap-2 justify-end">
+                              <button 
+                                onClick={() => handleLeadAction(lead.id, 'approved')}
+                                className="p-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded cursor-pointer"
+                                title="Approve & Create Project"
+                              >
+                                <Check size={16} />
+                              </button>
+                              <button 
+                                onClick={() => handleLeadAction(lead.id, 'rejected')}
+                                className="p-1 bg-error-container/20 hover:bg-error-container/40 text-error rounded cursor-pointer"
+                                title="Reject Lead"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest">{lead.status}</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* PROJECTS TAB */}
+          {activeTab === 'projects' && (
+            <div className="space-y-6">
+              {/* Project Provision Form */}
+              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Provision New Project</h4>
+                <form onSubmit={handleCreateProject} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <input 
+                    type="text" 
+                    placeholder="Project Title"
+                    required
+                    value={newProject.title}
+                    onChange={e => setNewProject({ ...newProject, title: e.target.value })}
+                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface"
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Project Description"
+                    value={newProject.description}
+                    onChange={e => setNewProject({ ...newProject, description: e.target.value })}
+                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface"
+                  />
+                  <select 
+                    value={newProject.clientId}
+                    onChange={e => setNewProject({ ...newProject, clientId: e.target.value })}
+                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer"
+                  >
+                    <option value="">Select Client Account</option>
+                    {clients.map(cli => (
+                      <option key={cli.id} value={cli.id}>{cli.email}</option>
+                    ))}
+                  </select>
+                  <button 
+                    type="submit" 
+                    disabled={creatingProject}
+                    className="bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                  >
+                    {creatingProject ? <Loader className="animate-spin" size={14} /> : <Plus size={14} />}
+                    Create Project
+                  </button>
+                </form>
+              </div>
+
+              {/* Task Assigner Panel (Assign Interns) */}
+              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Assign Task to Intern</h4>
+                <form onSubmit={handleCreateTask} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <select 
+                    value={newTask.projectId}
+                    onChange={e => setNewTask({ ...newTask, projectId: e.target.value })}
+                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer"
+                  >
+                    <option value="">Select Project</option>
+                    {projects.map(p => (
+                      <option key={p.id} value={p.id}>{p.title}</option>
+                    ))}
+                  </select>
+                  <select 
+                    value={newTask.internId}
+                    onChange={e => setNewTask({ ...newTask, internId: e.target.value })}
+                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer"
+                  >
+                    <option value="">Select Intern</option>
+                    {interns.map(i => (
+                      <option key={i.id} value={i.id}>{i.full_name || i.email}</option>
+                    ))}
+                  </select>
+                  <input 
+                    type="text" 
+                    placeholder="Task Title (e.g. API Integration)"
+                    required
+                    value={newTask.title}
+                    onChange={e => setNewTask({ ...newTask, title: e.target.value })}
+                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface"
+                  />
+                  <button 
+                    type="submit" 
+                    disabled={creatingTask}
+                    className="bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                  >
+                    {creatingTask ? <Loader className="animate-spin" size={14} /> : <UserCheck size={14} />}
+                    Assign Task
+                  </button>
+                </form>
+              </div>
+
+              {/* Projects Table */}
+              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Managed Projects</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                    <thead>
+                      <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                        <th className="pb-3">Project</th>
+                        <th className="pb-3">Client Email</th>
+                        <th className="pb-3">Budget</th>
+                        <th className="pb-3">Status</th>
+                        <th className="pb-3 text-right">Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#222]">
+                      {projects.map(proj => (
+                        <tr key={proj.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                          <td className="py-4 font-semibold text-on-surface">{proj.title}</td>
+                          <td className="py-4 text-xs">{proj.profiles?.email || 'No client assigned'}</td>
+                          <td className="py-4 font-mono-sm text-xs">${Number(proj.estimated_budget || 0).toLocaleString()}</td>
+                          <td className="py-4">
+                            <select
+                              value={proj.status}
+                              onChange={e => handleUpdateProjectStatus(proj.id, e.target.value)}
+                              className="bg-[#0B0B0B] border border-[#222] text-on-surface font-mono-sm text-xs rounded p-1.5 focus:border-primary outline-none cursor-pointer capitalize"
+                            >
+                              <option value="planning">planning</option>
+                              <option value="in_progress">in progress</option>
+                              <option value="review">review</option>
+                              <option value="completed">completed</option>
+                            </select>
+                          </td>
+                          <td className="py-4 text-right">
+                            <button 
+                              onClick={() => handleDeleteProject(proj.id)}
+                              className="p-1 hover:text-error transition-colors cursor-pointer"
+                              title="Delete Project"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CLIENTS TAB */}
+          {activeTab === 'clients' && (
+            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Client Accounts</h3>
+              <div className="divide-y divide-[#222222]">
+                {clients.map(cli => (
+                  <div key={cli.id} className="py-4 flex justify-between items-center text-xs md:text-sm">
+                    <div>
+                      <p className="font-semibold text-on-surface">{cli.full_name || 'Client Partner'}</p>
+                      <p className="text-on-surface-variant font-mono-sm text-xs mt-0.5">{cli.email}</p>
+                    </div>
+                    <span className="font-mono-sm text-[10px] text-on-surface-variant bg-[#222] px-2 py-1 rounded">CLIENT</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* PAYMENTS TAB */}
+          {activeTab === 'payments' && (
+            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Razorpay Payments Ledger</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                  <thead>
+                    <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                      <th className="pb-3">Payment ID</th>
+                      <th className="pb-3">Client Email</th>
+                      <th className="pb-3">Amount</th>
+                      <th className="pb-3">Package Tier</th>
+                      <th className="pb-3">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#222]">
+                    {payments.map(pay => (
+                      <tr key={pay.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                        <td className="py-4 font-mono-sm text-xs truncate max-w-[120px]" title={pay.razorpay_payment_id || pay.id}>
+                          {pay.razorpay_payment_id || 'Pending Receipt'}
+                        </td>
+                        <td className="py-4 text-xs">{pay.profiles?.email || 'N/A'}</td>
+                        <td className="py-4 font-mono-sm text-xs text-on-surface">${Number(pay.amount).toLocaleString()}</td>
+                        <td className="py-4 font-semibold text-on-surface capitalize">{pay.package_type}</td>
+                        <td className="py-4">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-mono-sm uppercase ${
+                            pay.status === 'completed' ? 'bg-green-500/10 text-[#4ade80]' : 'bg-primary-container/10 text-primary'
+                          }`}>
+                            {pay.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* INTERNS TAB */}
+          {activeTab === 'interns' && (
+            <div className="space-y-6">
+              {/* Intern Applications */}
+              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Pending Career Applications</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                    <thead>
+                      <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                        <th className="pb-3">Applicant</th>
+                        <th className="pb-3">Details / Skills</th>
+                        <th className="pb-3">Resume</th>
+                        <th className="pb-3 text-right">Review</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#222]">
+                      {applications.map(app => (
+                        <tr key={app.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                          <td className="py-4 text-xs">
+                            <p className="font-semibold text-on-surface">{app.full_name}</p>
+                            <p className="text-on-surface-variant mt-0.5">{app.email}</p>
+                            <p className="text-on-surface-variant">{app.phone || 'No phone'}</p>
+                          </td>
+                          <td className="py-4 text-xs">
+                            <p className="text-on-surface"><span className="text-primary font-semibold">Skills:</span> {app.skills || 'None'}</p>
+                            <p className="text-on-surface-variant"><span className="text-on-surface">Techs:</span> {app.technologies || 'None'}</p>
+                          </td>
+                          <td className="py-4 text-xs">
+                            {app.resume_url ? (
+                              <button 
+                                onClick={() => handleDownloadResume(app.resume_url)}
+                                className="flex items-center gap-1.5 text-primary hover:underline cursor-pointer"
+                              >
+                                <Eye size={14} /> View Resume
+                              </button>
+                            ) : (
+                              <span>No File</span>
+                            )}
+                          </td>
+                          <td className="py-4 text-right">
+                            {app.status === 'pending' ? (
+                              <div className="flex gap-2 justify-end">
+                                <button 
+                                  onClick={() => handleApplicationAction(app.id, 'approved')}
+                                  className="p-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded cursor-pointer text-xs flex items-center gap-1"
+                                >
+                                  Approve
+                                </button>
+                                <button 
+                                  onClick={() => handleApplicationAction(app.id, 'rejected')}
+                                  className="p-1.5 bg-error-container/20 hover:bg-error-container/40 text-error rounded cursor-pointer text-xs flex items-center gap-1"
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest">{app.status}</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                      {applications.length === 0 && (
+                        <tr>
+                          <td colSpan={4} className="py-8 text-center text-on-surface-variant">No career applications found.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Roster of active interns */}
+              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Active Intern Cohort</h4>
+                <div className="divide-y divide-[#222222]">
+                  {interns.map(int => (
+                    <div key={int.id} className="py-4 flex justify-between items-center text-xs md:text-sm">
+                      <div>
+                        <p className="font-semibold text-on-surface">{int.full_name || 'Cohort Intern'}</p>
+                        <p className="text-on-surface-variant font-mono-sm text-xs mt-0.5">{int.email}</p>
+                      </div>
+                      <span className="font-mono-sm text-[10px] text-primary bg-[#2a1b12] px-2.5 py-1 rounded">ENGINEERING COHORT</span>
+                    </div>
+                  ))}
+                  {interns.length === 0 && (
+                    <div className="py-8 text-center text-on-surface-variant text-xs font-mono-sm">No interns currently in cohort. Approve an application to upgrade role.</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      </main>
+    </div>
   )
 }
