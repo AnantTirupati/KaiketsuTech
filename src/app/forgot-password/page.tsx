@@ -3,15 +3,8 @@ import Link from 'next/link'
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center text-on-surface p-margin-mobile md:p-margin-desktop font-body-md bg-[#0B0B0B]">
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center text-on-surface p-margin-mobile md:p-margin-desktop font-body-md bg-[#0B0B0B] pt-24 pb-16">
       <main className="w-full max-w-md relative z-10">
-        {/* Brand / Logo Area */}
-        <div className="text-center mb-10">
-          <Link href="/" className="hover:opacity-95 inline-block">
-            <img src="/weblogo.svg" alt="KaiketsuTech Logo" className="h-12 w-auto mx-auto" />
-          </Link>
-        </div>
-
         <ResetPasswordForm />
 
         <div className="mt-12 text-center flex items-center justify-center space-x-4 opacity-40">
