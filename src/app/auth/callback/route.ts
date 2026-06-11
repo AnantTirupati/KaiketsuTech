@@ -32,6 +32,11 @@ export async function GET(request: Request) {
     const { error, data } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error && data?.user) {
+      const next = searchParams.get('next')
+      if (next) {
+        return NextResponse.redirect(`${origin}${next}`)
+      }
+
       // Check user role in public.profiles
       const { data: profile } = await supabase
         .from('profiles')

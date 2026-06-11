@@ -40,6 +40,50 @@ export default function InternDashboard() {
   const router = useRouter()
   const { toast } = useToast()
 
+  // Search filter state
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Reset search query on tab change to prevent stale filters carryover
+  useEffect(() => {
+    setSearchQuery('')
+  }, [activeTab])
+
+  // Filtered lists based on search query
+  const filteredTasks = tasks.filter(t => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (t.title || '').toLowerCase().includes(term) ||
+      (t.category || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredProjects = projects.filter(proj => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (proj.title || '').toLowerCase().includes(term) ||
+      (proj.description || '').toLowerCase().includes(term) ||
+      (proj.status || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredDeliverables = deliverables.filter(file => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (file.name || '').toLowerCase().includes(term)
+  })
+
+  const filteredMessages = messages.filter(msg => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (msg.content || '').toLowerCase().includes(term) ||
+      (msg.profiles?.full_name || '').toLowerCase().includes(term) ||
+      (msg.profiles?.role || '').toLowerCase().includes(term)
+    )
+  })
+
   const defaultTasks: Task[] = [
     { id: '1', title: 'Refactor navigation component for mobile', status: 'todo', category: 'Frontend' },
     { id: '2', title: 'Update user auth endpoints', status: 'todo', category: 'Backend' },
@@ -261,6 +305,10 @@ export default function InternDashboard() {
   const tasksInProgress = tasks.filter(t => t.status === 'in_progress').length
   const tasksDone = tasks.filter(t => t.status === 'done').length
 
+  const filteredTasksTodo = filteredTasks.filter(t => t.status === 'todo').length
+  const filteredTasksInProgress = filteredTasks.filter(t => t.status === 'in_progress').length
+  const filteredTasksDone = filteredTasks.filter(t => t.status === 'done').length
+
   return (
     <div className="bg-[#0B0B0B] text-on-surface antialiased min-h-screen flex font-body-md overflow-hidden">
       {/* SideNavBar */}
@@ -315,7 +363,12 @@ export default function InternDashboard() {
 
       {/* Main Workspace Area */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopAppBar title={activeTab === 'overview' ? 'Kanban Sprint Board' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} placeholder="Search tasks..." />
+        <TopAppBar 
+          title={activeTab === 'overview' ? 'Kanban Sprint Board' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} 
+          placeholder="Search tasks..." 
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
         {/* Canvas */}
         <div className="flex-1 overflow-y-auto p-gutter pt-8 max-w-max-width w-full mx-auto space-y-6">
@@ -369,10 +422,10 @@ export default function InternDashboard() {
                 {/* To Do Column */}
                 <div className="bg-[#111111] border border-[#222222] rounded p-3">
                   <h5 className="font-mono-sm text-xs text-on-surface-variant uppercase tracking-wider mb-3 flex justify-between font-bold">
-                    To Do <span className="bg-[#222222] px-2 rounded">{tasksTodo}</span>
+                    To Do <span className="bg-[#222222] px-2 rounded">{filteredTasksTodo}</span>
                   </h5>
                   <div className="space-y-2">
-                    {tasks.filter(t => t.status === 'todo').map((task) => (
+                    {filteredTasks.filter(t => t.status === 'todo').map((task) => (
                       <div key={task.id} className="bg-[#1a1a1a] p-3 rounded border border-[#333333] hover:border-[#555] transition-colors">
                         <div className="flex justify-between items-start mb-2">
                           <span className="text-[9px] font-mono-sm px-2 py-0.5 rounded bg-[#2a1b12] text-primary">{task.category}</span>
@@ -393,10 +446,10 @@ export default function InternDashboard() {
                 <div className="bg-[#111111] border border-[#222222] rounded p-3 relative">
                   <div className="absolute top-0 left-0 w-full h-[2px] bg-primary-container"></div>
                   <h5 className="font-mono-sm text-xs text-on-surface-variant uppercase tracking-wider mb-3 flex justify-between font-bold">
-                    In Progress <span className="bg-[#222222] px-2 rounded text-primary">{tasksInProgress}</span>
+                    In Progress <span className="bg-[#222222] px-2 rounded text-primary">{filteredTasksInProgress}</span>
                   </h5>
                   <div className="space-y-2">
-                    {tasks.filter(t => t.status === 'in_progress').map((task) => (
+                    {filteredTasks.filter(t => t.status === 'in_progress').map((task) => (
                       <div key={task.id} className="bg-[#1a1a1a] p-3 rounded border border-primary-container/30 shadow-[0_0_15px_rgba(249,115,22,0.05)] hover:border-primary transition-colors">
                         <div className="flex justify-between items-start mb-2">
                           <span className="text-[9px] font-mono-sm px-2 py-0.5 rounded bg-[#2a1b12] text-primary">{task.category}</span>
@@ -416,10 +469,10 @@ export default function InternDashboard() {
                 {/* Done Column */}
                 <div className="bg-[#111111] border border-[#222222] rounded p-3 opacity-70">
                   <h5 className="font-mono-sm text-xs text-on-surface-variant uppercase tracking-wider mb-3 flex justify-between font-bold">
-                    Done <span className="bg-[#222222] px-2 rounded">{tasksDone}</span>
+                    Done <span className="bg-[#222222] px-2 rounded">{filteredTasksDone}</span>
                   </h5>
                   <div className="space-y-2">
-                    {tasks.filter(t => t.status === 'done').map((task) => (
+                    {filteredTasks.filter(t => t.status === 'done').map((task) => (
                       <div key={task.id} className="bg-[#1a1a1a] p-3 rounded border border-[#333333]">
                         <div className="flex justify-between items-start mb-2">
                           <span className="text-[9px] font-mono-sm px-2 py-0.5 rounded bg-[#222] text-on-surface-variant">{task.category}</span>
@@ -439,7 +492,7 @@ export default function InternDashboard() {
             <div className="bg-[#111] border border-[#222] rounded-lg p-6">
               <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Assigned Projects</h3>
               <div className="divide-y divide-[#222222]">
-                {projects.map(proj => (
+                {filteredProjects.map(proj => (
                   <div key={proj.id} className="py-4 hover:bg-[#1a1a1a]/20 px-2 rounded transition-colors flex items-center justify-between">
                     <div>
                       <h4 className="font-body-md font-semibold text-on-surface text-sm">{proj.title}</h4>
@@ -451,7 +504,7 @@ export default function InternDashboard() {
                     </div>
                   </div>
                 ))}
-                {projects.length === 0 && (
+                {filteredProjects.length === 0 && (
                   <div className="py-8 text-center text-on-surface-variant text-sm">No allocated projects found.</div>
                 )}
               </div>
@@ -488,7 +541,7 @@ export default function InternDashboard() {
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {deliverables.map((file, i) => (
+                {filteredDeliverables.map((file, i) => (
                   <div key={i} className="bg-[#1a1a1a] border border-[#222] p-4 rounded-lg flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 truncate">
                       <FileText className="text-primary shrink-0" size={24} />
@@ -515,7 +568,7 @@ export default function InternDashboard() {
                     </div>
                   </div>
                 ))}
-                {deliverables.length === 0 && (
+                {filteredDeliverables.length === 0 && (
                   <div className="col-span-2 py-8 text-center text-on-surface-variant text-sm border border-dashed border-[#222] rounded-lg">
                     No deliverables uploaded yet.
                   </div>
@@ -571,7 +624,7 @@ export default function InternDashboard() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0c0c0c]">
-                {messages.map((msg, i) => {
+                {filteredMessages.map((msg, i) => {
                   const isOwn = msg.sender_id === user?.id
                   return (
                     <div key={i} className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
@@ -588,7 +641,7 @@ export default function InternDashboard() {
                     </div>
                   )
                 })}
-                {messages.length === 0 && (
+                {filteredMessages.length === 0 && (
                   <div className="h-full flex items-center justify-center text-on-surface-variant text-xs font-mono-sm">
                     No messaging history. Send a text below to initiate contact.
                   </div>

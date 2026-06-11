@@ -31,6 +31,51 @@ export default function ClientDashboard() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const supabase = createClient()
+
+  // Search filter state
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Reset search query on tab change to prevent stale filters carryover
+  useEffect(() => {
+    setSearchQuery('')
+  }, [activeTab])
+
+  // Filtered lists based on search query
+  const filteredProjects = projects.filter(proj => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (proj.title || '').toLowerCase().includes(term) ||
+      (proj.description || '').toLowerCase().includes(term) ||
+      (proj.status || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredFiles = files.filter(file => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (file.name || '').toLowerCase().includes(term)
+  })
+
+  const filteredMessages = messages.filter(msg => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (msg.content || '').toLowerCase().includes(term) ||
+      (msg.profiles?.full_name || '').toLowerCase().includes(term) ||
+      (msg.profiles?.role || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredPayments = payments.filter(pay => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (pay.razorpay_payment_id || '').toLowerCase().includes(term) ||
+      (pay.package_type || '').toLowerCase().includes(term) ||
+      (pay.status || '').toLowerCase().includes(term)
+    )
+  })
   const router = useRouter()
   const { toast } = useToast()
 
@@ -286,7 +331,12 @@ export default function ClientDashboard() {
 
       {/* Main Workspace Frame */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopAppBar title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} placeholder="Search workspace..." />
+        <TopAppBar 
+          title={activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} 
+          placeholder="Search workspace..." 
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
         {/* Dashboard Canvas Scrollable */}
         <div className="flex-1 overflow-y-auto p-gutter pt-8 max-w-max-width w-full mx-auto space-y-6">
@@ -338,7 +388,7 @@ export default function ClientDashboard() {
               <div className="bg-[#111] border border-[#222] rounded-lg p-6">
                 <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Active Engagements</h4>
                 <div className="divide-y divide-[#222222]">
-                  {projects.map(proj => (
+                  {filteredProjects.map(proj => (
                     <div key={proj.id} className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
                         <h5 className="font-body-md font-semibold text-on-surface text-sm">{proj.title}</h5>
@@ -353,7 +403,7 @@ export default function ClientDashboard() {
                       </div>
                     </div>
                   ))}
-                  {projects.length === 0 && (
+                  {filteredProjects.length === 0 && (
                     <div className="py-8 text-center text-on-surface-variant text-sm">
                       No projects currently active. Initiate a project advance via the <Link href="/pricing" className="text-primary hover:underline">Pricing Page</Link> to get started.
                     </div>
@@ -379,7 +429,7 @@ export default function ClientDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#222]">
-                    {projects.map(proj => (
+                    {filteredProjects.map(proj => (
                       <tr key={proj.id} className="hover:bg-[#1a1a1a]/50 transition-colors">
                         <td className="py-4 font-semibold text-on-surface">{proj.title}</td>
                         <td className="py-4 capitalize">
@@ -394,7 +444,7 @@ export default function ClientDashboard() {
                         <td className="py-4 font-mono-sm">{proj.timeline_end || 'Pending'}</td>
                       </tr>
                     ))}
-                    {projects.length === 0 && (
+                    {filteredProjects.length === 0 && (
                       <tr>
                         <td colSpan={5} className="py-8 text-center text-on-surface-variant">No projects found.</td>
                       </tr>
@@ -435,7 +485,7 @@ export default function ClientDashboard() {
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {files.map((file, i) => (
+                {filteredFiles.map((file, i) => (
                   <div key={i} className="bg-[#1a1a1a] border border-[#222] p-4 rounded-lg flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3 truncate">
                       <FileText className="text-primary shrink-0" size={24} />
@@ -462,7 +512,7 @@ export default function ClientDashboard() {
                     </div>
                   </div>
                 ))}
-                {files.length === 0 && (
+                {filteredFiles.length === 0 && (
                   <div className="col-span-2 py-8 text-center text-on-surface-variant text-sm border border-dashed border-[#222] rounded-lg">
                     No files uploaded yet.
                   </div>
@@ -499,7 +549,7 @@ export default function ClientDashboard() {
 
               {/* Chat Message Stream */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0c0c0c]">
-                {messages.map((msg, i) => {
+                {filteredMessages.map((msg, i) => {
                   const isOwn = msg.sender_id === user?.id
                   return (
                     <div key={i} className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
@@ -516,7 +566,7 @@ export default function ClientDashboard() {
                     </div>
                   )
                 })}
-                {messages.length === 0 && (
+                {filteredMessages.length === 0 && (
                   <div className="h-full flex items-center justify-center text-on-surface-variant text-xs font-mono-sm">
                     No communications recorded yet. Type below to message administrators.
                   </div>
@@ -575,7 +625,7 @@ export default function ClientDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#222]">
-                      {payments.map(pay => (
+                      {filteredPayments.map(pay => (
                         <tr key={pay.id} className="hover:bg-[#1a1a1a]/50 transition-colors">
                           <td className="py-4 font-mono-sm text-xs truncate max-w-[120px]" title={pay.razorpay_payment_id || pay.id}>
                             {pay.razorpay_payment_id || 'Pending Receipt'}
@@ -598,7 +648,7 @@ export default function ClientDashboard() {
                           </td>
                         </tr>
                       ))}
-                      {payments.length === 0 && (
+                      {filteredPayments.length === 0 && (
                         <tr>
                           <td colSpan={5} className="py-8 text-center text-on-surface-variant">No transaction entries found.</td>
                         </tr>

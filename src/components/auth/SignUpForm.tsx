@@ -8,7 +8,7 @@ import { signUpWithEmail, signInWithGoogle } from '@/lib/auth'
 import { useToast } from '@/components/ui/Toast'
 
 export default function SignUpForm() {
-  const [role, setRole] = useState<'client' | 'intern'>('client')
+  const role = 'client'
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -65,31 +65,6 @@ export default function SignUpForm() {
   return (
     <div className="w-full max-w-[440px] glass-panel rounded-lg p-8 shadow-2xl relative">
       <form onSubmit={handleSignUp} className="space-y-4">
-        {/* Role Selection (Segmented Control) */}
-        <div className="flex gap-2 p-1 bg-[#0B0B0B] rounded-lg border border-[#222] mb-6">
-          <button
-            type="button"
-            onClick={() => setRole('client')}
-            className={`flex-1 py-2 text-center rounded font-label-md text-sm cursor-pointer transition-all duration-200 ${
-              role === 'client'
-                ? 'bg-[#222222] text-on-surface border-b-2 border-primary-container font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            Client
-          </button>
-          <button
-            type="button"
-            onClick={() => setRole('intern')}
-            className={`flex-1 py-2 text-center rounded font-label-md text-sm cursor-pointer transition-all duration-200 ${
-              role === 'intern'
-                ? 'bg-[#222222] text-on-surface border-b-2 border-primary-container font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
-            }`}
-          >
-            Intern
-          </button>
-        </div>
 
         {/* Full Name */}
         <div className="space-y-1">

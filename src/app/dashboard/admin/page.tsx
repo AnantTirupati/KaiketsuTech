@@ -25,6 +25,79 @@ export default function AdminDashboard() {
   const [interns, setInterns] = useState<any[]>([])
   const [applications, setApplications] = useState<any[]>([])
 
+  // Search filter state
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Reset search query on tab change to prevent stale filters carryover
+  useEffect(() => {
+    setSearchQuery('')
+  }, [activeTab])
+
+  // Filtered lists based on search query
+  const filteredLeads = leads.filter(lead => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (lead.project_title || '').toLowerCase().includes(term) ||
+      (lead.company_name || '').toLowerCase().includes(term) ||
+      (lead.first_name || '').toLowerCase().includes(term) ||
+      (lead.last_name || '').toLowerCase().includes(term) ||
+      (lead.work_email || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredProjects = projects.filter(proj => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (proj.title || '').toLowerCase().includes(term) ||
+      (proj.description || '').toLowerCase().includes(term) ||
+      (proj.profiles?.email || '').toLowerCase().includes(term) ||
+      (proj.profiles?.full_name || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredClients = clients.filter(cli => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (cli.full_name || '').toLowerCase().includes(term) ||
+      (cli.email || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredPayments = payments.filter(pay => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (pay.razorpay_payment_id || '').toLowerCase().includes(term) ||
+      (pay.profiles?.email || '').toLowerCase().includes(term) ||
+      (pay.package_type || '').toLowerCase().includes(term) ||
+      (pay.status || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredApplications = applications.filter(app => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (app.full_name || '').toLowerCase().includes(term) ||
+      (app.email || '').toLowerCase().includes(term) ||
+      (app.skills || '').toLowerCase().includes(term) ||
+      (app.technologies || '').toLowerCase().includes(term) ||
+      (app.phone || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredInterns = interns.filter(int => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (int.full_name || '').toLowerCase().includes(term) ||
+      (int.email || '').toLowerCase().includes(term)
+    )
+  })
+
   // Project Creation State
   const [newProject, setNewProject] = useState({
     title: '',
@@ -288,6 +361,35 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleInviteIntern = async (application: any) => {
+    toast(`Inviting ${application.full_name}...`, 'info')
+    try {
+      const response = await fetch('/api/invite-intern', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: application.email,
+          fullName: application.full_name,
+          applicationId: application.id
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Invitation failed')
+      }
+
+      toast(`Invitation email successfully sent to ${application.email}`, 'success')
+      reloadData()
+    } catch (err: any) {
+      console.error(err)
+      toast(err.message || 'Failed to send invitation. Please verify SUPABASE_SERVICE_ROLE_KEY configuration.', 'error')
+    }
+  }
+
   const handleDownloadResume = async (resumePath: string) => {
     try {
       const { data, error } = await supabase.storage.from('resumes').createSignedUrl(resumePath, 60)
@@ -372,7 +474,12 @@ export default function AdminDashboard() {
 
       {/* Main content frame */}
       <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopAppBar title={activeTab === 'overview' ? 'Analytics Overview' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} placeholder="Search admin console..." />
+        <TopAppBar 
+          title={activeTab === 'overview' ? 'Analytics Overview' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} 
+          placeholder="Search admin console..." 
+          searchValue={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
 
         {/* Scrollable Canvas */}
         <div className="flex-grow overflow-y-auto p-gutter pt-8 max-w-max-width w-full mx-auto space-y-6">
@@ -408,7 +515,7 @@ export default function AdminDashboard() {
                 <div className="bg-[#111] border border-[#222] rounded-lg p-6">
                   <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Pending Requests (Leads)</h4>
                   <div className="divide-y divide-[#222222]">
-                    {leads.filter(l => l.status === 'pending').slice(0, 5).map(lead => (
+                    {filteredLeads.filter(l => l.status === 'pending').slice(0, 5).map(lead => (
                       <div key={lead.id} className="py-3 flex justify-between items-center text-xs">
                         <div>
                           <p className="font-semibold text-on-surface">{lead.project_title || 'Untitled Lead'}</p>
@@ -422,7 +529,7 @@ export default function AdminDashboard() {
                         </button>
                       </div>
                     ))}
-                    {leads.filter(l => l.status === 'pending').length === 0 && (
+                    {filteredLeads.filter(l => l.status === 'pending').length === 0 && (
                       <div className="py-4 text-center text-on-surface-variant text-xs font-mono-sm">No pending leads.</div>
                     )}
                   </div>
@@ -431,7 +538,7 @@ export default function AdminDashboard() {
                 <div className="bg-[#111] border border-[#222] rounded-lg p-6">
                   <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Live Project Status</h4>
                   <div className="divide-y divide-[#222222]">
-                    {projects.slice(0, 5).map(proj => (
+                    {filteredProjects.slice(0, 5).map(proj => (
                       <div key={proj.id} className="py-3 flex justify-between items-center text-xs">
                         <div>
                           <p className="font-semibold text-on-surface">{proj.title}</p>
@@ -464,7 +571,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#222]">
-                    {leads.map(lead => (
+                    {filteredLeads.map(lead => (
                       <tr key={lead.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
                         <td className="py-4">
                           <p className="font-semibold text-on-surface text-xs md:text-sm">{lead.project_title || 'Untitled Request'}</p>
@@ -613,7 +720,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#222]">
-                      {projects.map(proj => (
+                      {filteredProjects.map(proj => (
                         <tr key={proj.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
                           <td className="py-4 font-semibold text-on-surface">{proj.title}</td>
                           <td className="py-4 text-xs">{proj.profiles?.email || 'No client assigned'}</td>
@@ -653,7 +760,7 @@ export default function AdminDashboard() {
             <div className="bg-[#111] border border-[#222] rounded-lg p-6">
               <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Client Accounts</h3>
               <div className="divide-y divide-[#222222]">
-                {clients.map(cli => (
+                {filteredClients.map(cli => (
                   <div key={cli.id} className="py-4 flex justify-between items-center text-xs md:text-sm">
                     <div>
                       <p className="font-semibold text-on-surface">{cli.full_name || 'Client Partner'}</p>
@@ -682,7 +789,7 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#222]">
-                    {payments.map(pay => (
+                    {filteredPayments.map(pay => (
                       <tr key={pay.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
                         <td className="py-4 font-mono-sm text-xs truncate max-w-[120px]" title={pay.razorpay_payment_id || pay.id}>
                           {pay.razorpay_payment_id || 'Pending Receipt'}
@@ -722,7 +829,7 @@ export default function AdminDashboard() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-[#222]">
-                      {applications.map(app => (
+                      {filteredApplications.map(app => (
                         <tr key={app.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
                           <td className="py-4 text-xs">
                             <p className="font-semibold text-on-surface">{app.full_name}</p>
@@ -761,13 +868,27 @@ export default function AdminDashboard() {
                                   Reject
                                 </button>
                               </div>
+                            ) : app.status === 'approved' ? (
+                              <div className="flex gap-2 justify-end items-center">
+                                {interns.some(i => i.email === app.email) ? (
+                                  <span className="font-mono-sm text-[10px] uppercase text-[#4ade80] tracking-widest bg-green-500/10 px-2 py-0.5 rounded">Registered</span>
+                                ) : (
+                                  <button
+                                    onClick={() => handleInviteIntern(app)}
+                                    className="p-1.5 bg-primary-container/20 hover:bg-primary-container/30 text-primary-container rounded cursor-pointer text-[10px] font-semibold flex items-center gap-1"
+                                    title="Send Supabase Invite Email"
+                                  >
+                                    Invite Intern
+                                  </button>
+                                )}
+                              </div>
                             ) : (
-                              <span className="font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest">{app.status}</span>
+                              <span className="font-mono-sm text-[10px] uppercase text-error tracking-widest bg-error-container/10 px-2 py-0.5 rounded">{app.status}</span>
                             )}
                           </td>
                         </tr>
                       ))}
-                      {applications.length === 0 && (
+                      {filteredApplications.length === 0 && (
                         <tr>
                           <td colSpan={4} className="py-8 text-center text-on-surface-variant">No career applications found.</td>
                         </tr>
@@ -781,7 +902,7 @@ export default function AdminDashboard() {
               <div className="bg-[#111] border border-[#222] rounded-lg p-6">
                 <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Active Intern Cohort</h4>
                 <div className="divide-y divide-[#222222]">
-                  {interns.map(int => (
+                  {filteredInterns.map(int => (
                     <div key={int.id} className="py-4 flex justify-between items-center text-xs md:text-sm">
                       <div>
                         <p className="font-semibold text-on-surface">{int.full_name || 'Cohort Intern'}</p>
@@ -790,7 +911,7 @@ export default function AdminDashboard() {
                       <span className="font-mono-sm text-[10px] text-primary bg-[#2a1b12] px-2.5 py-1 rounded">ENGINEERING COHORT</span>
                     </div>
                   ))}
-                  {interns.length === 0 && (
+                  {filteredInterns.length === 0 && (
                     <div className="py-8 text-center text-on-surface-variant text-xs font-mono-sm">No interns currently in cohort. Approve an application to upgrade role.</div>
                   )}
                 </div>
