@@ -63,9 +63,8 @@ export async function POST(request: Request) {
       serviceRoleKey
     )
 
-    // 4. Invite user via Supabase Auth Admin API
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-    const redirectTo = `${siteUrl}/auth/callback?next=/auth/update-password`
+    const { origin } = new URL(request.url)
+    const redirectTo = `${origin}/auth/callback?next=/auth/update-password`
     
     const { data, error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(
       email.trim(),
