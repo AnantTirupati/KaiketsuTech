@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/components/ui/Toast'
-import { ArrowLeft, ArrowRight, Upload, Briefcase, FileText, Loader } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Upload, FileText, Loader } from 'lucide-react'
 import TopNavBar from '@/components/shared/TopNavBar'
 import Footer from '@/components/shared/Footer'
 
@@ -31,6 +31,7 @@ function ApplyFormContent() {
   useEffect(() => {
     const roleParam = searchParams.get('role')
     if (roleParam) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setRoleTrack(roleParam)
     }
   }, [searchParams])
@@ -51,6 +52,12 @@ function ApplyFormContent() {
 
     if (!fullName || !email || !resumeFile) {
       toast('Please fill in Name, Email and upload a Resume.', 'warning')
+      return
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      toast('Please enter a valid email address.', 'error')
       return
     }
 
@@ -99,6 +106,7 @@ function ApplyFormContent() {
       setTimeout(() => {
         router.push('/careers')
       }, 2500)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err)
       toast(err.message || 'Failed to submit application. Please try again.', 'error')
