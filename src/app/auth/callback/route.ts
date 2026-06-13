@@ -32,11 +32,8 @@ export async function GET(request: Request) {
     const { error, data } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error && data?.user) {
-      const next = searchParams.get('next')
-      if (next) {
-        return NextResponse.redirect(`${origin}${next}`)
-      }
-
+      const queryRole = searchParams.get('role')
+      
       // Check user role in public.profiles
       const { data: profile } = await supabase
         .from('profiles')
@@ -44,7 +41,24 @@ export async function GET(request: Request) {
         .eq('id', data.user.id)
         .single()
       
-      const role = profile?.role || 'client'
+      let role = profile?.role || 'client'
+      
+      if (queryRole && (queryRole === 'client' || queryRole === 'intern') && role !== queryRole) {
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ role: queryRole })
+          .eq('id', data.user.id)
+        
+        if (!updateError) {
+          role = queryRole
+        }
+      }
+
+      const next = searchParams.get('next')
+      if (next) {
+        return NextResponse.redirect(`${origin}${next}`)
+      }
+
       return NextResponse.redirect(`${origin}/dashboard/${role}`)
     }
   }

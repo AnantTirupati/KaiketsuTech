@@ -32,14 +32,11 @@ export async function signUpWithEmail(
 }
 
 export async function signInWithGoogle(role: 'client' | 'intern' = 'client') {
-  const redirectTo = `${window.location.origin}/auth/callback`
+  const redirectTo = `${window.location.origin}/auth/callback?role=${role}`
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo,
-      queryParams: {
-        role,
-      },
     },
   })
   if (error) throw error

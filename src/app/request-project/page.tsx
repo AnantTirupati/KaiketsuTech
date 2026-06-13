@@ -47,9 +47,12 @@ export default function RequestProject() {
               contactPerson: p?.full_name || ''
             }))
           })
+      } else {
+        toast('Please register or sign in to submit a project request.', 'warning')
+        router.push('/login?redirect=/request-project')
       }
     })
-  }, [supabase])
+  }, [supabase, router, toast])
 
   const nextStep = () => {
     if (step === 1) {
