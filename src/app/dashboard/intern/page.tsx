@@ -16,11 +16,13 @@ interface Task {
   title: string
   status: 'todo' | 'in_progress' | 'done'
   category: 'Frontend' | 'Backend' | 'Design Sys' | 'Other'
+  due_date?: string
 }
 
 export default function InternDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'deliverables' | 'performance' | 'messages'>('overview')
   const [user, setUser] = useState<any>(null)
+  const [profile, setProfile] = useState<any>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [projects, setProjects] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -99,6 +101,14 @@ export default function InternDashboard() {
         return
       }
       setUser(currentUser)
+
+      // Fetch logged-in user profile
+      const { data: profData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single()
+      setProfile(profData || null)
 
       // Fetch allocated projects (simulated or joined via tasks/profiles)
       // Since interns don't own projects but work on them, we select all projects
@@ -304,6 +314,10 @@ export default function InternDashboard() {
   const tasksTodo = tasks.filter(t => t.status === 'todo').length
   const tasksInProgress = tasks.filter(t => t.status === 'in_progress').length
   const tasksDone = tasks.filter(t => t.status === 'done').length
+
+  const totalTasks = tasks.length
+  const overdueTasks = tasks.filter(t => t.due_date && new Date(t.due_date) < new Date() && t.status !== 'done').length
+  const deadlineRatio = totalTasks > 0 ? Math.round(((totalTasks - overdueTasks) / totalTasks) * 100) : 100
 
   const filteredTasksTodo = filteredTasks.filter(t => t.status === 'todo').length
   const filteredTasksInProgress = filteredTasks.filter(t => t.status === 'in_progress').length
@@ -588,12 +602,14 @@ export default function InternDashboard() {
               <div className="bg-[#111] border border-[#222] p-6 rounded-lg text-center">
                 <Calendar size={36} className="text-primary mx-auto mb-3" />
                 <h4 className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Deadline Met Ratio</h4>
-                <p className="text-3xl font-bold mt-2">100%</p>
+                <p className="text-3xl font-bold mt-2">{deadlineRatio}%</p>
               </div>
               <div className="bg-[#111] border border-[#222] p-6 rounded-lg text-center">
                 <Award size={36} className="text-primary mx-auto mb-3" />
                 <h4 className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Performance Rating</h4>
-                <p className="text-3xl font-bold mt-2">4.8 <span className="text-xs text-on-surface-variant">/ 5.0</span></p>
+                <p className="text-3xl font-bold mt-2">
+                  {(profile?.rating ? Number(profile.rating).toFixed(1) : '5.0')} <span className="text-xs text-on-surface-variant">/ 5.0</span>
+                </p>
               </div>
             </div>
           )}

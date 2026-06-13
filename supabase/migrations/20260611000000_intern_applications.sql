@@ -162,3 +162,7 @@ create policy "Allow everyone to read assets" on storage.objects
     for select using (
         bucket_id = 'assets'
     );
+
+-- Add rating column to profiles table
+alter table public.profiles 
+add column if not exists rating numeric default 5.0;

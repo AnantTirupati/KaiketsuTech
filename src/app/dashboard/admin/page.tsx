@@ -402,6 +402,21 @@ export default function AdminDashboard() {
     }
   }
 
+  const handleUpdateInternRating = async (internId: string, rating: number) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ rating })
+        .eq('id', internId)
+
+      if (error) throw error
+      toast('Intern rating updated.', 'success')
+      reloadData()
+    } catch (err: any) {
+      toast('Failed to update intern rating.', 'error')
+    }
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
@@ -908,7 +923,21 @@ export default function AdminDashboard() {
                         <p className="font-semibold text-on-surface">{int.full_name || 'Cohort Intern'}</p>
                         <p className="text-on-surface-variant font-mono-sm text-xs mt-0.5">{int.email}</p>
                       </div>
-                      <span className="font-mono-sm text-[10px] text-primary bg-[#2a1b12] px-2.5 py-1 rounded">ENGINEERING COHORT</span>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono-sm text-[10px] text-on-surface-variant/80 uppercase">Rating:</span>
+                          <select
+                            value={int.rating || 5.0}
+                            onChange={e => handleUpdateInternRating(int.id, parseFloat(e.target.value))}
+                            className="bg-[#0B0B0B] border border-[#222] text-on-surface font-mono-sm text-xs rounded p-1 focus:border-primary outline-none cursor-pointer"
+                          >
+                            {[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 4.8, 5.0].map(val => (
+                              <option key={val} value={val}>{val.toFixed(1)}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <span className="font-mono-sm text-[10px] text-primary bg-[#2a1b12] px-2.5 py-1 rounded">ENGINEERING COHORT</span>
+                      </div>
                     </div>
                   ))}
                   {filteredInterns.length === 0 && (
