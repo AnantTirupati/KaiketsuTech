@@ -8,8 +8,9 @@ import TopAppBar from '@/components/shared/TopAppBar'
 import { 
   CheckSquare, AlertTriangle, Play, CheckCircle2, 
   Award, Calendar, FolderOpen, Upload, Download, Trash, 
-  Send, Loader, MessageSquare, Layers, FileText, BarChart2, LogOut
+  Send, Loader, MessageSquare, Layers, FileText, BarChart2, LogOut, Home
 } from 'lucide-react'
+import Link from 'next/link'
 import { Database } from '@/types/database.types'
 import { User } from '@supabase/supabase-js'
 
@@ -360,7 +361,9 @@ export default function InternDashboard() {
       <aside className="bg-surface-container-low w-64 h-screen border-r border-[#222] flex flex-col justify-between hidden md:flex shrink-0">
         <div>
           <div className="p-6 border-b border-[#222]">
-            <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+            <Link href="/" className="block hover:opacity-85 transition-opacity">
+              <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+            </Link>
             <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold">Intern Workspace</p>
           </div>
           <nav className="px-4 py-6 space-y-1">
@@ -398,6 +401,13 @@ export default function InternDashboard() {
               <span className="text-[10px] text-on-surface-variant font-mono-sm">Technical Intern</span>
             </div>
           </div>
+          <Link 
+            href="/"
+            className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+          >
+            <Home size={14} />
+            Go to Home
+          </Link>
           <button 
             onClick={handleLogout}
             className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"

@@ -8,7 +8,7 @@ import TopAppBar from '@/components/shared/TopAppBar'
 import { 
   Rocket, Activity, CreditCard, Layers, Calendar, 
   MessageSquare, Terminal, Upload, Download, Trash, 
-  Send, Loader, FileText, Plus, LogOut, ChevronRight
+  Send, Loader, FileText, Plus, LogOut, ChevronRight, Home
 } from 'lucide-react'
 import Link from 'next/link'
 import { Database } from '@/types/database.types'
@@ -308,7 +308,9 @@ export default function ClientDashboard() {
       <aside className="bg-surface-container-low w-64 h-screen border-r border-[#222] flex flex-col justify-between hidden md:flex shrink-0">
         <div>
           <div className="p-6 border-b border-[#222]">
-            <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+            <Link href="/" className="block hover:opacity-85 transition-opacity">
+              <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+            </Link>
             <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold">Client Workspace</p>
           </div>
           <div className="p-4">
@@ -352,6 +354,13 @@ export default function ClientDashboard() {
               <span className="text-[10px] text-on-surface-variant font-mono-sm">Client Partner</span>
             </div>
           </div>
+          <Link 
+            href="/"
+            className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+          >
+            <Home size={14} />
+            Go to Home
+          </Link>
           <button 
             onClick={handleLogout}
             className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"

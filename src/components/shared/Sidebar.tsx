@@ -56,13 +56,13 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
   return (
     <aside className="bg-surface-container-low h-screen w-64 fixed left-0 top-0 border-r border-outline-variant shadow-md flex flex-col z-50">
       {/* Brand Header */}
-      <div className="p-stack-md flex items-center gap-stack-sm border-b border-outline-variant/30 pb-stack-lg mb-stack-md">
+      <Link href="/" className="p-stack-md flex items-center gap-stack-sm border-b border-outline-variant/30 pb-stack-lg mb-stack-md hover:opacity-85 transition-opacity">
         <span className="material-symbols-outlined text-primary text-3xl fill-icon">eco</span>
         <div>
           <h1 className="font-headline-lg text-primary text-xl leading-tight tracking-tight">Kaiketsu Portal</h1>
           <p className="font-mono-sm text-mono-sm text-on-surface-variant">Enterprise Console</p>
         </div>
-      </div>
+      </Link>
 
       {/* Navigation Links */}
       <nav className="flex-1 px-stack-sm flex flex-col gap-1 overflow-y-auto">
@@ -97,6 +97,10 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
           New Request
         </Link>
         <div className="flex flex-col gap-1">
+          <Link href="/" className="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors">
+            <span className="material-symbols-outlined text-[20px]">home</span>
+            Go to Home
+          </Link>
           <Link href="#" className="text-on-surface-variant hover:text-on-surface flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors">
             <span className="material-symbols-outlined text-[20px]">help</span>
             Help

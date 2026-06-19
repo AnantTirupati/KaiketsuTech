@@ -8,7 +8,7 @@ import TopAppBar from '@/components/shared/TopAppBar'
 import { 
   DollarSign, Briefcase, Percent, TrendingUp, PlusCircle, 
   Award, CheckCircle2, ArrowRight, UserCheck, Trash2, 
-  UserMinus, Users, Check, X, ShieldAlert, Loader, Eye, Plus, Layers, LogOut
+  UserMinus, Users, Check, X, ShieldAlert, Loader, Eye, Plus, Layers, LogOut, Home
 } from 'lucide-react'
 import Link from 'next/link'
 import { Database } from '@/types/database.types'
@@ -479,7 +479,9 @@ export default function AdminDashboard() {
       <aside className="bg-surface-container-low w-64 h-screen border-r border-[#222] flex flex-col justify-between hidden md:flex shrink-0">
         <div>
           <div className="p-6 border-b border-[#222]">
-            <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+            <Link href="/" className="block hover:opacity-85 transition-opacity">
+              <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+            </Link>
             <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold font-black">Admin Console</p>
           </div>
           <nav className="px-4 py-6 space-y-1">
@@ -518,6 +520,13 @@ export default function AdminDashboard() {
               <span className="text-[10px] text-on-surface-variant font-mono-sm">Administrator</span>
             </div>
           </div>
+          <Link 
+            href="/"
+            className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+          >
+            <Home size={14} />
+            Go to Home
+          </Link>
           <button 
             onClick={handleLogout}
             className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"

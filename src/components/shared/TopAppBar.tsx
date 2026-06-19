@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Bell, CheckCircle2, Info, AlertTriangle, Trash2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 
 interface TopAppBarProps {
   title: string
@@ -14,9 +15,23 @@ interface Notification {
   id: string
   title: string
   description: string
-  time: string
+  created_at: string
   type: 'success' | 'info' | 'warning'
   read: boolean
+}
+
+function formatRelativeTime(dateStr: string) {
+  const date = new Date(dateStr)
+  const now = new Date()
+  const diffMs = now.getTime() - date.getTime()
+  const diffMins = Math.floor(diffMs / 60000)
+  const diffHours = Math.floor(diffMins / 60)
+  const diffDays = Math.floor(diffHours / 24)
+
+  if (diffMins < 1) return 'Just now'
+  if (diffMins < 60) return `${diffMins}m ago`
+  if (diffHours < 24) return `${diffHours}h ago`
+  return `${diffDays}d ago`
 }
 
 export default function TopAppBar({ 
@@ -27,49 +42,101 @@ export default function TopAppBar({
 }: TopAppBarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
+  
+  const supabase = createClient()
 
   useEffect(() => {
-    let defaultNotifications: Notification[] = []
-    const isClient = typeof window !== 'undefined'
-    const path = isClient ? window.location.pathname : ''
-    
-    if (path.includes('/admin') || placeholder.toLowerCase().includes('admin')) {
-      defaultNotifications = [
-        { id: '1', title: 'New Career Application', description: 'Jane Doe submitted an application for Software Engineer Intern.', time: '45m ago', type: 'info', read: false },
-        { id: '2', title: 'New Project Request', description: 'Acme Corporation requested a proposal for "Custom CRM Dashboard".', time: '2h ago', type: 'success', read: false },
-        { id: '3', title: 'Payment Captured', description: 'Payment of $5,000 received from client@kaiketsu.online.', time: '5h ago', type: 'success', read: false },
-        { id: '4', title: 'Cohort Update', description: 'Alex Smith was promoted to Intern cohort.', time: '1d ago', type: 'info', read: true },
-      ]
-    } else if (path.includes('/intern') || placeholder.toLowerCase().includes('tasks')) {
-      defaultNotifications = [
-        { id: '1', title: 'New Task Assigned', description: 'Assigned: "Implement dashboard top navigation search bar".', time: '10m ago', type: 'info', read: false },
-        { id: '2', title: 'Review Approved', description: 'Sprint Code Review: "Supabase Authentication flow" has been approved.', time: '1h ago', type: 'success', read: false },
-        { id: '3', title: 'Message from Admin', description: 'System Administrator: "Please verify and fix RLS table policies".', time: '4h ago', type: 'warning', read: true },
-      ]
-    } else {
-      defaultNotifications = [
-        { id: '1', title: 'Milestone Completed', description: 'Milestone 1 (UI/UX Mockups) approved by Kaiketsu Tech Admin.', time: '3h ago', type: 'success', read: false },
-        { id: '2', title: 'Invoice Generated', description: 'Invoice of $1,500 for Milestone 2 is ready for payment.', time: '6h ago', type: 'info', read: false },
-        { id: '3', title: 'New Thread Message', description: 'Admin replied to your feedback about project delivery speed.', time: '1d ago', type: 'info', read: true },
-      ]
+    let active = true
+    let channel: any = null
+
+    async function setupNotifications() {
+      const { data: { session } } = await supabase.auth.getSession()
+      const user = session?.user
+      if (!user || !active) return
+
+      // Fetch existing notifications
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching notifications:', error)
+        return
+      }
+
+      if (active) {
+        setNotifications((data as unknown as Notification[]) || [])
+      }
+
+      // Subscribe to Realtime postgres_changes
+      channel = supabase
+        .channel(`user-notifications-${user.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'notifications',
+            filter: `user_id=eq.${user.id}`,
+          },
+          (payload) => {
+            if (!active) return
+            if (payload.eventType === 'INSERT') {
+              setNotifications(prev => [payload.new as Notification, ...prev])
+            } else if (payload.eventType === 'UPDATE') {
+              setNotifications(prev => prev.map(n => n.id === payload.new.id ? (payload.new as Notification) : n))
+            } else if (payload.eventType === 'DELETE') {
+              setNotifications(prev => prev.filter(n => n.id !== payload.old.id))
+            }
+          }
+        )
+        .subscribe()
     }
-    setNotifications(defaultNotifications)
-  }, [placeholder])
+
+    setupNotifications()
+
+    return () => {
+      active = false
+      if (channel) {
+        channel.unsubscribe()
+      }
+    }
+  }, [supabase])
 
   const hasUnread = notifications.some(n => !n.read)
 
-  const markAsRead = (id: string) => {
+  const markAsRead = async (id: string) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
+    const { error } = await supabase
+      .from('notifications')
+      .update({ read: true })
+      .eq('id', id)
+    if (error) console.error('Error marking notification as read:', error)
   }
 
-  const markAllAsRead = (e: React.MouseEvent) => {
+  const markAllAsRead = async (e: React.MouseEvent) => {
     e.stopPropagation()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
     setNotifications(prev => prev.map(n => ({ ...n, read: true })))
+    const { error } = await supabase
+      .from('notifications')
+      .update({ read: true })
+      .eq('user_id', user.id)
+    if (error) console.error('Error marking all notifications as read:', error)
   }
 
-  const deleteNotification = (id: string, e: React.MouseEvent) => {
+  const deleteNotification = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
     setNotifications(prev => prev.filter(n => n.id !== id))
+    const { error } = await supabase
+      .from('notifications')
+      .delete()
+      .eq('id', id)
+    if (error) console.error('Error deleting notification:', error)
   }
 
   return (
@@ -156,7 +223,7 @@ export default function TopAppBar({
                             <p className={`text-[11px] truncate leading-tight ${!n.read ? 'font-bold text-on-surface' : 'font-semibold text-on-surface-variant/80'}`}>
                               {n.title}
                             </p>
-                            <span className="text-[9px] text-on-surface-variant/50 font-mono-sm shrink-0">{n.time}</span>
+                            <span className="text-[9px] text-on-surface-variant/50 font-mono-sm shrink-0">{formatRelativeTime(n.created_at)}</span>
                           </div>
                           <p className="text-[10.5px] text-on-surface-variant/80 leading-relaxed mt-1 break-words">
                             {n.description}
