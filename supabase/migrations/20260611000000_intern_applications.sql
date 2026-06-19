@@ -166,3 +166,76 @@ create policy "Allow everyone to read assets" on storage.objects
 -- Add rating column to profiles table
 alter table public.profiles 
 add column if not exists rating numeric default 5.0;
+
+-- Secure Profiles table: Restrict public select access to authenticated users only
+drop policy if exists "Allow public read access to profiles" on public.profiles;
+create policy "Allow authenticated read access to profiles" on public.profiles
+    for select using (auth.role() = 'authenticated');
+
+-- Secure Messages select policy: Clients read only their own project messages, interns and admins read all
+drop policy if exists "Allow authenticated users to read project messages" on public.messages;
+create policy "Allow clients to read their own project messages" on public.messages
+    for select using (
+        exists (
+            select 1 from public.projects
+            where projects.id = messages.project_id
+            and projects.client_id = auth.uid()
+        )
+    );
+create policy "Allow interns and admins to read all messages" on public.messages
+    for select using (
+        exists (
+            select 1 from public.profiles
+            where id = auth.uid() and role in ('intern', 'admin')
+        )
+    );
+
+-- Secure Conversations select policy: Clients read only their own conversations
+drop policy if exists "Allow authenticated select conversations" on public.conversations;
+create policy "Allow clients select their own conversations" on public.conversations
+    for select using (
+        exists (
+            select 1 from public.projects
+            where projects.id = conversations.project_id
+            and projects.client_id = auth.uid()
+        )
+    );
+create policy "Allow interns and admins select all conversations" on public.conversations
+    for select using (
+        exists (
+            select 1 from public.profiles
+            where id = auth.uid() and role in ('intern', 'admin')
+        )
+    );
+
+-- Secure project-files storage select policy: Clients read only their own folder
+drop policy if exists "Allow clients, admins, and interns to read project files" on storage.objects;
+create policy "Allow clients to read their own project files" on storage.objects
+    for select using (
+        bucket_id = 'project-files' and (
+            (storage.foldername(name))[1] = auth.uid()::text
+        )
+    );
+create policy "Allow admins and interns to read all project files" on storage.objects
+    for select using (
+        bucket_id = 'project-files' and exists (
+            select 1 from public.profiles
+            where id = auth.uid() and role in ('admin', 'intern')
+        )
+    );
+
+-- Secure deliverables storage select policy: Only admins and uploader intern can read
+drop policy if exists "Allow authenticated users to read deliverables" on storage.objects;
+create policy "Allow admins to read all deliverables" on storage.objects
+    for select using (
+        bucket_id = 'deliverables' and exists (
+            select 1 from public.profiles
+            where id = auth.uid() and role = 'admin'
+        )
+    );
+create policy "Allow interns to read their own deliverables" on storage.objects
+    for select using (
+        bucket_id = 'deliverables' and (
+            (storage.foldername(name))[1] = auth.uid()::text
+        )
+    );

@@ -6,27 +6,27 @@ import { Briefcase, ArrowRight, ShieldCheck, Terminal, Cpu, LayoutTemplate } fro
 export default function CareersPage() {
   const openRoles = [
     {
-      id: 'software-engineer',
-      title: 'Software Engineer Intern',
-      track: 'Engineering',
+      id: 'full-stack-developer',
+      title: 'Full Stack Developer Intern',
+      track: 'Full Stack',
       description: 'Develop production-grade React components, API route handlers, and data sync workers in TypeScript and Next.js.',
-      requirements: ['TypeScript / React', 'Next.js App Router', 'REST & GraphQL APIs', 'Basic SQL / Postgres'],
+      requirements: ['TypeScript / React', 'Next.js App Router', 'Node.js / Express', 'PostgreSQL / Supabase'],
       icon: <Terminal className="text-primary" size={24} />
     },
     {
-      id: 'product-designer',
-      title: 'Product Design Intern',
-      track: 'Design Systems',
+      id: 'frontend-developer',
+      title: 'Frontend Developer Intern',
+      track: 'Frontend',
       description: 'Architect typography scales, color palettes, and glassmorphic dashboards. Wire up Framer Motion micro-animations.',
-      requirements: ['Figma / UI Design', 'CSS Grid & Flexbox', 'Tailwind CSS v4', 'Framer Motion'],
+      requirements: ['React / TypeScript', 'CSS Grid & Flexbox', 'Tailwind CSS v4', 'Framer Motion'],
       icon: <LayoutTemplate className="text-primary" size={24} />
     },
     {
-      id: 'solutions-architect',
-      title: 'Solutions Architect Intern',
-      track: 'Infrastructure',
+      id: 'backend-developer',
+      title: 'Backend Developer Intern',
+      track: 'Backend',
       description: 'Map database schemas, write system flow triggers, and configure Supabase RLS security policies.',
-      requirements: ['PostgreSQL / SQL', 'Database Migrations', 'RLS Security Rules', 'CI/CD & Docker'],
+      requirements: ['PostgreSQL / SQL', 'Database Migrations', 'Node.js / Express', 'API Architecture'],
       icon: <Cpu className="text-primary" size={24} />
     }
   ]

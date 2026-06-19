@@ -15,7 +15,7 @@ function ApplyFormContent() {
   const { toast } = useToast()
   const supabase = createClient()
 
-  const [roleTrack, setRoleTrack] = useState('software-engineer')
+  const [roleTrack, setRoleTrack] = useState('full-stack-developer')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -136,7 +136,7 @@ function ApplyFormContent() {
               type="text"
               required
               className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="Jane Doe"
+              placeholder="Your Name"
               value={fullName}
               onChange={e => setFullName(e.target.value)}
             />
@@ -148,7 +148,7 @@ function ApplyFormContent() {
               type="email"
               required
               className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="jane@example.com"
+              placeholder="example@gmail.com"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
@@ -162,7 +162,7 @@ function ApplyFormContent() {
               id="phone"
               type="tel"
               className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="+1 (555) 019-2834"
+              placeholder="+91 1234567890"
               value={phone}
               onChange={e => setPhone(e.target.value)}
             />
@@ -173,7 +173,7 @@ function ApplyFormContent() {
               id="experience"
               type="text"
               className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="e.g. 1 year academic, self-taught, etc."
+              placeholder="Self-taught, 2 years build/production experience"
               value={experience}
               onChange={e => setExperience(e.target.value)}
             />
@@ -187,7 +187,7 @@ function ApplyFormContent() {
             id="skills"
             type="text"
             className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-            placeholder="e.g. React, UI/UX, Git, SQL"
+            placeholder="React, Node.js, SQL, TypeScript, Git"
             value={skills}
             onChange={e => setSkills(e.target.value)}
           />
@@ -199,7 +199,7 @@ function ApplyFormContent() {
             id="technologies"
             type="text"
             className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-            placeholder="e.g. Next.js, Figma, Tailwind CSS, Supabase"
+            placeholder="Next.js, Tailwind CSS, PostgreSQL, Supabase"
             value={technologies}
             onChange={e => setTechnologies(e.target.value)}
           />

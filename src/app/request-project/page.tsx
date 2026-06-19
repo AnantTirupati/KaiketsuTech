@@ -213,7 +213,7 @@ export default function RequestProject() {
                       <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Company Name *</label>
                       <input 
                         className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                        placeholder="e.g. Acme Corp" 
+                        placeholder="Vanguard Solutions" 
                         required
                         type="text"
                         value={formData.companyName}
@@ -224,7 +224,7 @@ export default function RequestProject() {
                       <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Contact Person *</label>
                       <input 
                         className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                        placeholder="e.g. Jane Doe" 
+                        placeholder="Your Name" 
                         required
                         type="text"
                         value={formData.contactPerson}
@@ -237,7 +237,7 @@ export default function RequestProject() {
                       <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Work Email *</label>
                       <input 
                         className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                        placeholder="jane@company.com" 
+                        placeholder="example@gmail.com" 
                         required
                         type="email"
                         value={formData.email}
@@ -248,7 +248,7 @@ export default function RequestProject() {
                       <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Phone Number</label>
                       <input 
                         className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                        placeholder="+1 (555) 012-3456" 
+                        placeholder="+91 1234567890" 
                         type="tel"
                         value={formData.phone}
                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
@@ -269,7 +269,7 @@ export default function RequestProject() {
                     <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Project Title *</label>
                     <input 
                       className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                      placeholder="e.g. Next-Gen Mobile Core Architecture" 
+                      placeholder="E-commerce Application Modernization" 
                       required
                       type="text"
                       value={formData.projectTitle}
@@ -280,7 +280,7 @@ export default function RequestProject() {
                     <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Project Description *</label>
                     <textarea 
                       className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none resize-none" 
-                      placeholder="Describe the scope of work, features required, and core functionalities..." 
+                      placeholder="Migrate legacy stack to Next.js 16, integrate unified payments checkout, and optimize SQL querying..." 
                       rows={4}
                       required
                       value={formData.projectDescription}
@@ -291,7 +291,7 @@ export default function RequestProject() {
                     <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Business Goals</label>
                     <textarea 
                       className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none resize-none" 
-                      placeholder="What business objectives does this project aim to achieve?" 
+                      placeholder="Reduce server-side API response latency by 45% and scale system capacity for high concurrent traffic..." 
                       rows={3}
                       value={formData.businessGoals}
                       onChange={e => setFormData({ ...formData, businessGoals: e.target.value })}

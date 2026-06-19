@@ -10,6 +10,8 @@ import {
   Award, Calendar, FolderOpen, Upload, Download, Trash, 
   Send, Loader, MessageSquare, Layers, FileText, BarChart2, LogOut
 } from 'lucide-react'
+import { Database } from '@/types/database.types'
+import { User } from '@supabase/supabase-js'
 
 interface Task {
   id: string
@@ -19,21 +21,47 @@ interface Task {
   due_date?: string
 }
 
+interface DeliverableFile {
+  name: string
+  id: string | null
+  updated_at?: string | null
+  created_at?: string | null
+  last_accessed_at?: string | null
+  metadata?: {
+    size?: number
+    mimetype?: string
+    cacheControl?: string
+  } | null
+}
+
+interface MessageWithSender {
+  id: string
+  content: string
+  file_url: string | null
+  file_name: string | null
+  created_at: string | null
+  sender_id: string | null
+  profiles: {
+    full_name: string | null
+    role: string | null
+  } | null
+}
+
 export default function InternDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'deliverables' | 'performance' | 'messages'>('overview')
-  const [user, setUser] = useState<any>(null)
-  const [profile, setProfile] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [profile, setProfile] = useState<Database['public']['Tables']['profiles']['Row'] | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
-  const [projects, setProjects] = useState<any[]>([])
+  const [projects, setProjects] = useState<Database['public']['Tables']['projects']['Row'][]>([])
   const [loading, setLoading] = useState(true)
 
   // Deliverables file upload state
-  const [deliverables, setDeliverables] = useState<any[]>([])
+  const [deliverables, setDeliverables] = useState<DeliverableFile[]>([])
   const [uploading, setUploading] = useState(false)
 
   // Messaging State
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [messages, setMessages] = useState<any[]>([])
+  const [selectedProject, setSelectedProject] = useState<Database['public']['Tables']['projects']['Row'] | null>(null)
+  const [messages, setMessages] = useState<MessageWithSender[]>([])
   const [newMessage, setNewMessage] = useState('')
   const [sendingMessage, setSendingMessage] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -142,7 +170,8 @@ export default function InternDashboard() {
   useEffect(() => {
     if (!selectedProject) return
 
-    let intervalId: any
+    const projectId = selectedProject.id
+    let intervalId: ReturnType<typeof setInterval>
 
     async function fetchMessages() {
       const { data } = await supabase
@@ -159,10 +188,10 @@ export default function InternDashboard() {
             role
           )
         `)
-        .eq('project_id', selectedProject.id)
+        .eq('project_id', projectId)
         .order('created_at', { ascending: true })
 
-      setMessages(data || [])
+      setMessages((data as unknown as MessageWithSender[]) || [])
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
 
@@ -203,8 +232,9 @@ export default function InternDashboard() {
         if (error) throw error
         toast('Deliverable document uploaded successfully.', 'success')
         loadDeliverables()
-      } catch (err: any) {
-        toast(err.message || 'File upload failed.', 'error')
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'File upload failed.'
+        toast(message, 'error')
       } finally {
         setUploading(false)
       }
@@ -218,8 +248,9 @@ export default function InternDashboard() {
         if (error) throw error
         toast('Deliverable deleted successfully.', 'success')
         loadDeliverables()
-      } catch (err: any) {
-        toast(err.message || 'Failed to delete file.', 'error')
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to delete file.'
+        toast(message, 'error')
       }
     }
   }
@@ -232,7 +263,7 @@ export default function InternDashboard() {
         if (data?.signedUrl) {
           window.open(data.signedUrl, '_blank')
         }
-      } catch (err: any) {
+      } catch (err) {
         toast('Failed to download deliverable.', 'error')
       }
     }
@@ -291,7 +322,7 @@ export default function InternDashboard() {
 
       if (error) throw error
       setNewMessage('')
-    } catch (err: any) {
+    } catch (err) {
       toast('Failed to send message.', 'error')
     } finally {
       setSendingMessage(false)
@@ -333,16 +364,18 @@ export default function InternDashboard() {
             <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold">Intern Workspace</p>
           </div>
           <nav className="px-4 py-6 space-y-1">
-            {[
-              { id: 'overview', label: 'Kanban Sprint Board', icon: <CheckSquare size={18} /> },
-              { id: 'projects', label: 'Allocated Projects', icon: <Layers size={18} /> },
-              { id: 'deliverables', label: 'Upload Deliverables', icon: <Upload size={18} /> },
-              { id: 'performance', label: 'Metrics & Rating', icon: <BarChart2 size={18} /> },
-              { id: 'messages', label: 'Channel Comms', icon: <MessageSquare size={18} /> }
-            ].map(tab => (
+            {(
+              [
+                { id: 'overview', label: 'Kanban Sprint Board', icon: <CheckSquare size={18} /> },
+                { id: 'projects', label: 'Allocated Projects', icon: <Layers size={18} /> },
+                { id: 'deliverables', label: 'Upload Deliverables', icon: <Upload size={18} /> },
+                { id: 'performance', label: 'Metrics & Rating', icon: <BarChart2 size={18} /> },
+                { id: 'messages', label: 'Channel Comms', icon: <MessageSquare size={18} /> }
+              ] as const
+            ).map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
                   activeTab === tab.id 
                     ? 'bg-primary-container text-white' 
@@ -510,7 +543,7 @@ export default function InternDashboard() {
                   <div key={proj.id} className="py-4 hover:bg-[#1a1a1a]/20 px-2 rounded transition-colors flex items-center justify-between">
                     <div>
                       <h4 className="font-body-md font-semibold text-on-surface text-sm">{proj.title}</h4>
-                      <p className="font-mono-sm text-xs text-on-surface-variant mt-1 capitalize">Status: {proj.status.replace('_', ' ')}</p>
+                      <p className="font-mono-sm text-xs text-on-surface-variant mt-1 capitalize">Status: {(proj.status || '').replace('_', ' ')}</p>
                     </div>
                     <div className="text-right">
                       <span className="font-mono-sm text-[10px] text-on-surface-variant block uppercase">TIMELINE</span>
@@ -561,7 +594,7 @@ export default function InternDashboard() {
                       <FileText className="text-primary shrink-0" size={24} />
                       <div className="truncate">
                         <p className="text-sm font-semibold text-on-surface truncate">{file.name}</p>
-                        <p className="text-[10px] font-mono-sm text-on-surface-variant">{(file.metadata?.size / 1024).toFixed(1)} KB</p>
+                        <p className="text-[10px] font-mono-sm text-on-surface-variant">{((file.metadata?.size || 0) / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -629,7 +662,7 @@ export default function InternDashboard() {
                 {projects.length > 1 && (
                   <select 
                     value={selectedProject?.id || ''} 
-                    onChange={e => setSelectedProject(projects.find(p => p.id === e.target.value))}
+                    onChange={e => setSelectedProject(projects.find(p => p.id === e.target.value) || null)}
                     className="bg-[#0B0B0B] border border-[#333] text-on-surface font-mono-sm text-xs rounded p-2 focus:border-primary outline-none cursor-pointer"
                   >
                     {projects.map(p => (

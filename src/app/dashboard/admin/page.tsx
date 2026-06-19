@@ -11,19 +11,54 @@ import {
   UserMinus, Users, Check, X, ShieldAlert, Loader, Eye, Plus, Layers, LogOut
 } from 'lucide-react'
 import Link from 'next/link'
+import { Database } from '@/types/database.types'
+import { User } from '@supabase/supabase-js'
+
+interface ProjectWithClient {
+  capacity_utilization: number | null
+  client_id: string | null
+  created_at: string | null
+  description: string | null
+  estimated_budget: number | null
+  id: string
+  status: string | null
+  timeline_end: string | null
+  timeline_start: string | null
+  title: string
+  velocity: number | null
+  profiles: {
+    email: string
+    full_name: string | null
+  } | null
+}
+
+interface PaymentWithClient {
+  amount: number
+  client_id: string | null
+  created_at: string | null
+  currency: string | null
+  id: string
+  package_type: string | null
+  razorpay_order_id: string | null
+  razorpay_payment_id: string | null
+  status: string | null
+  profiles: {
+    email: string
+  } | null
+}
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'projects' | 'clients' | 'payments' | 'interns'>('overview')
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
   // System Entities State
-  const [leads, setLeads] = useState<any[]>([])
-  const [projects, setProjects] = useState<any[]>([])
-  const [clients, setClients] = useState<any[]>([])
-  const [payments, setPayments] = useState<any[]>([])
-  const [interns, setInterns] = useState<any[]>([])
-  const [applications, setApplications] = useState<any[]>([])
+  const [leads, setLeads] = useState<Database['public']['Tables']['project_requests']['Row'][]>([])
+  const [projects, setProjects] = useState<ProjectWithClient[]>([])
+  const [clients, setClients] = useState<Database['public']['Tables']['profiles']['Row'][]>([])
+  const [payments, setPayments] = useState<PaymentWithClient[]>([])
+  const [interns, setInterns] = useState<Database['public']['Tables']['profiles']['Row'][]>([])
+  const [applications, setApplications] = useState<Database['public']['Tables']['intern_applications']['Row'][]>([])
 
   // Search filter state
   const [searchQuery, setSearchQuery] = useState('')
@@ -153,9 +188,9 @@ export default function AdminDashboard() {
       const { data: appData } = await supabase.from('intern_applications').select('*').order('created_at', { ascending: false })
 
       setLeads(leadData || [])
-      setProjects(projData || [])
+      setProjects((projData as unknown as ProjectWithClient[]) || [])
       setClients(clientData || [])
-      setPayments(payData || [])
+      setPayments((payData as unknown as PaymentWithClient[]) || [])
       setInterns(internData || [])
       setApplications(appData || [])
 
@@ -174,8 +209,8 @@ export default function AdminDashboard() {
     const { data: internData } = await supabase.from('profiles').select('*').eq('role', 'intern')
 
     setLeads(leadData || [])
-    setProjects(projData || [])
-    setPayments(payData || [])
+    setProjects((projData as unknown as ProjectWithClient[]) || [])
+    setPayments((payData as unknown as PaymentWithClient[]) || [])
     setApplications(appData || [])
     setInterns(internData || [])
   }
@@ -220,8 +255,9 @@ export default function AdminDashboard() {
       }
 
       reloadData()
-    } catch (err: any) {
-      toast(err.message || 'Action failed.', 'error')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Action failed.'
+      toast(message, 'error')
     }
   }
 
@@ -246,8 +282,9 @@ export default function AdminDashboard() {
       toast('New project created successfully.', 'success')
       setNewProject({ title: '', description: '', budget: 5000, clientId: '', status: 'planning' })
       reloadData()
-    } catch (err: any) {
-      toast(err.message || 'Failed to create project.', 'error')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to create project.'
+      toast(message, 'error')
     } finally {
       setCreatingProject(false)
     }
@@ -261,14 +298,14 @@ export default function AdminDashboard() {
         if (error) throw error
         toast('Project deleted.', 'success')
         reloadData()
-      } catch (err: any) {
+      } catch (err) {
         toast('Failed to delete project.', 'error')
       }
     }
   }
 
   // Project Status Update
-  const handleUpdateProjectStatus = async (projId: string, nextStatus: any) => {
+  const handleUpdateProjectStatus = async (projId: string, nextStatus: string) => {
     try {
       const { error } = await supabase
         .from('projects')
@@ -278,7 +315,7 @@ export default function AdminDashboard() {
       if (error) throw error
       toast('Project status updated.', 'success')
       reloadData()
-    } catch (err: any) {
+    } catch (err) {
       toast('Failed to update status.', 'error')
     }
   }
@@ -305,8 +342,9 @@ export default function AdminDashboard() {
       toast('Task successfully assigned to intern.', 'success')
       setNewTask(prev => ({ ...prev, title: '' }))
       reloadData()
-    } catch (err: any) {
-      toast(err.message || 'Failed to assign task.', 'error')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to assign task.'
+      toast(message, 'error')
     } finally {
       setCreatingTask(false)
     }
@@ -356,12 +394,13 @@ export default function AdminDashboard() {
       }
 
       reloadData()
-    } catch (err: any) {
-      toast(err.message || 'Action failed.', 'error')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Action failed.'
+      toast(message, 'error')
     }
   }
 
-  const handleInviteIntern = async (application: any) => {
+  const handleInviteIntern = async (application: Database['public']['Tables']['intern_applications']['Row']) => {
     toast(`Inviting ${application.full_name}...`, 'info')
     try {
       const response = await fetch('/api/invite-intern', {
@@ -384,9 +423,9 @@ export default function AdminDashboard() {
 
       toast(`Invitation email successfully sent to ${application.email}`, 'success')
       reloadData()
-    } catch (err: any) {
-      console.error(err)
-      toast(err.message || 'Failed to send invitation. Please verify SUPABASE_SERVICE_ROLE_KEY configuration.', 'error')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Invitation failed'
+      toast(`${message}. Please verify SUPABASE_SERVICE_ROLE_KEY configuration.`, 'error')
     }
   }
 
@@ -397,7 +436,7 @@ export default function AdminDashboard() {
       if (data?.signedUrl) {
         window.open(data.signedUrl, '_blank')
       }
-    } catch (err: any) {
+    } catch (err) {
       toast('Failed to download resume file.', 'error')
     }
   }
@@ -412,7 +451,7 @@ export default function AdminDashboard() {
       if (error) throw error
       toast('Intern rating updated.', 'success')
       reloadData()
-    } catch (err: any) {
+    } catch (err) {
       toast('Failed to update intern rating.', 'error')
     }
   }
@@ -444,17 +483,19 @@ export default function AdminDashboard() {
             <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold font-black">Admin Console</p>
           </div>
           <nav className="px-4 py-6 space-y-1">
-            {[
-              { id: 'overview', label: 'Analytics Overview', icon: <TrendingUp size={18} /> },
-              { id: 'leads', label: 'Requested Leads', icon: <Briefcase size={18} /> },
-              { id: 'projects', label: 'Projects & Tasks', icon: <Layers size={18} /> },
-              { id: 'clients', label: 'Client Accounts', icon: <Users size={18} /> },
-              { id: 'payments', label: 'Payments Ledger', icon: <DollarSign size={18} /> },
-              { id: 'interns', label: 'Intern & Careers', icon: <Award size={18} /> }
-            ].map(tab => (
+            {(
+              [
+                { id: 'overview', label: 'Analytics Overview', icon: <TrendingUp size={18} /> },
+                { id: 'leads', label: 'Requested Leads', icon: <Briefcase size={18} /> },
+                { id: 'projects', label: 'Projects & Tasks', icon: <Layers size={18} /> },
+                { id: 'clients', label: 'Client Accounts', icon: <Users size={18} /> },
+                { id: 'payments', label: 'Payments Ledger', icon: <DollarSign size={18} /> },
+                { id: 'interns', label: 'Intern & Careers', icon: <Award size={18} /> }
+              ] as const
+            ).map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
                   activeTab === tab.id 
                     ? 'bg-primary-container text-white' 
@@ -560,7 +601,7 @@ export default function AdminDashboard() {
                           <p className="text-on-surface-variant mt-0.5 font-mono-sm text-[10px]">Client: {proj.profiles?.email || 'N/A'}</p>
                         </div>
                         <span className="bg-primary-container/10 text-primary px-2 py-0.5 rounded text-[10px] font-mono-sm capitalize">
-                          {proj.status.replace('_', ' ')}
+                          {(proj.status || '').replace('_', ' ')}
                         </span>
                       </div>
                     ))}
@@ -742,7 +783,7 @@ export default function AdminDashboard() {
                           <td className="py-4 font-mono-sm text-xs">${Number(proj.estimated_budget || 0).toLocaleString()}</td>
                           <td className="py-4">
                             <select
-                              value={proj.status}
+                              value={proj.status || ''}
                               onChange={e => handleUpdateProjectStatus(proj.id, e.target.value)}
                               className="bg-[#0B0B0B] border border-[#222] text-on-surface font-mono-sm text-xs rounded p-1.5 focus:border-primary outline-none cursor-pointer capitalize"
                             >
@@ -858,7 +899,7 @@ export default function AdminDashboard() {
                           <td className="py-4 text-xs">
                             {app.resume_url ? (
                               <button 
-                                onClick={() => handleDownloadResume(app.resume_url)}
+                                onClick={() => handleDownloadResume(app.resume_url!)}
                                 className="flex items-center gap-1.5 text-primary hover:underline cursor-pointer"
                               >
                                 <Eye size={14} /> View Resume

@@ -11,21 +11,49 @@ import {
   Send, Loader, FileText, Plus, LogOut, ChevronRight
 } from 'lucide-react'
 import Link from 'next/link'
+import { Database } from '@/types/database.types'
+import { User } from '@supabase/supabase-js'
+
+interface ClientFile {
+  name: string
+  id: string | null
+  updated_at?: string | null
+  created_at?: string | null
+  last_accessed_at?: string | null
+  metadata?: {
+    size?: number
+    mimetype?: string
+    cacheControl?: string
+  } | null
+}
+
+interface MessageWithSender {
+  id: string
+  content: string
+  file_url: string | null
+  file_name: string | null
+  created_at: string | null
+  sender_id: string | null
+  profiles: {
+    full_name: string | null
+    role: string | null
+  } | null
+}
 
 export default function ClientDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'files' | 'messages' | 'payments'>('overview')
-  const [user, setUser] = useState<any>(null)
-  const [projects, setProjects] = useState<any[]>([])
-  const [payments, setPayments] = useState<any[]>([])
+  const [user, setUser] = useState<User | null>(null)
+  const [projects, setProjects] = useState<Database['public']['Tables']['projects']['Row'][]>([])
+  const [payments, setPayments] = useState<Database['public']['Tables']['payments']['Row'][]>([])
   const [loading, setLoading] = useState(true)
 
   // File Management State
-  const [files, setFiles] = useState<any[]>([])
+  const [files, setFiles] = useState<ClientFile[]>([])
   const [uploadingFile, setUploadingFile] = useState(false)
 
   // Messaging State
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [messages, setMessages] = useState<any[]>([])
+  const [selectedProject, setSelectedProject] = useState<Database['public']['Tables']['projects']['Row'] | null>(null)
+  const [messages, setMessages] = useState<MessageWithSender[]>([])
   const [newMessage, setNewMessage] = useState('')
   const [sendingMessage, setSendingMessage] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -115,7 +143,8 @@ export default function ClientDashboard() {
   useEffect(() => {
     if (!selectedProject) return
 
-    let intervalId: any
+    const projectId = selectedProject.id
+    let intervalId: ReturnType<typeof setInterval>
 
     async function fetchMessages() {
       const { data } = await supabase
@@ -132,10 +161,10 @@ export default function ClientDashboard() {
             role
           )
         `)
-        .eq('project_id', selectedProject.id)
+        .eq('project_id', projectId)
         .order('created_at', { ascending: true })
 
-      setMessages(data || [])
+      setMessages((data as unknown as MessageWithSender[]) || [])
       // Scroll to bottom
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }
@@ -177,8 +206,9 @@ export default function ClientDashboard() {
         if (error) throw error
         toast('File uploaded successfully.', 'success')
         loadFiles()
-      } catch (err: any) {
-        toast(err.message || 'File upload failed.', 'error')
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'File upload failed.'
+        toast(message, 'error')
       } finally {
         setUploadingFile(false)
       }
@@ -192,8 +222,9 @@ export default function ClientDashboard() {
         if (error) throw error
         toast('File deleted successfully.', 'success')
         loadFiles()
-      } catch (err: any) {
-        toast(err.message || 'Failed to delete file.', 'error')
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to delete file.'
+        toast(message, 'error')
       }
     }
   }
@@ -206,7 +237,7 @@ export default function ClientDashboard() {
         if (data?.signedUrl) {
           window.open(data.signedUrl, '_blank')
         }
-      } catch (err: any) {
+      } catch (err) {
         toast('Failed to download file.', 'error')
       }
     }
@@ -248,7 +279,7 @@ export default function ClientDashboard() {
 
       if (error) throw error
       setNewMessage('')
-    } catch (err: any) {
+    } catch (err) {
       toast('Failed to send message.', 'error')
     } finally {
       setSendingMessage(false)
@@ -287,16 +318,18 @@ export default function ClientDashboard() {
             </Link>
           </div>
           <nav className="px-4 py-2 space-y-1">
-            {[
-              { id: 'overview', label: 'Overview', icon: <Activity size={18} /> },
-              { id: 'projects', label: 'Projects', icon: <Layers size={18} /> },
-              { id: 'files', label: 'Files Space', icon: <Upload size={18} /> },
-              { id: 'messages', label: 'Comms / Chat', icon: <MessageSquare size={18} /> },
-              { id: 'payments', label: 'Invoices & Ledger', icon: <CreditCard size={18} /> }
-            ].map(tab => (
+            {(
+              [
+                { id: 'overview', label: 'Overview', icon: <Activity size={18} /> },
+                { id: 'projects', label: 'Projects', icon: <Layers size={18} /> },
+                { id: 'files', label: 'Files Space', icon: <Upload size={18} /> },
+                { id: 'messages', label: 'Comms / Chat', icon: <MessageSquare size={18} /> },
+                { id: 'payments', label: 'Invoices & Ledger', icon: <CreditCard size={18} /> }
+              ] as const
+            ).map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={() => setActiveTab(tab.id)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
                   activeTab === tab.id 
                     ? 'bg-primary-container text-white' 
@@ -392,7 +425,7 @@ export default function ClientDashboard() {
                     <div key={proj.id} className="py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
                         <h5 className="font-body-md font-semibold text-on-surface text-sm">{proj.title}</h5>
-                        <p className="font-mono-sm text-xs text-on-surface-variant mt-1 capitalize">Status: {proj.status.replace('_', ' ')}</p>
+                        <p className="font-mono-sm text-xs text-on-surface-variant mt-1 capitalize">Status: {(proj.status || '').replace('_', ' ')}</p>
                       </div>
                       <div className="flex items-center gap-6">
                         <div className="text-right">
@@ -436,7 +469,7 @@ export default function ClientDashboard() {
                           <span className={`px-2 py-0.5 rounded text-[10px] font-mono-sm ${
                             proj.status === 'completed' ? 'bg-green-500/10 text-green-400' : 'bg-primary-container/10 text-primary'
                           }`}>
-                            {proj.status.replace('_', ' ')}
+                            {(proj.status || '').replace('_', ' ')}
                           </span>
                         </td>
                         <td className="py-4 font-mono-sm">${Number(proj.estimated_budget).toLocaleString()}</td>
@@ -491,7 +524,7 @@ export default function ClientDashboard() {
                       <FileText className="text-primary shrink-0" size={24} />
                       <div className="truncate">
                         <p className="text-sm font-semibold text-on-surface truncate">{file.name}</p>
-                        <p className="text-[10px] font-mono-sm text-on-surface-variant">{(file.metadata?.size / 1024).toFixed(1)} KB</p>
+                        <p className="text-[10px] font-mono-sm text-on-surface-variant">{((file.metadata?.size || 0) / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -537,7 +570,7 @@ export default function ClientDashboard() {
                 {projects.length > 1 && (
                   <select 
                     value={selectedProject?.id || ''} 
-                    onChange={e => setSelectedProject(projects.find(p => p.id === e.target.value))}
+                    onChange={e => setSelectedProject(projects.find(p => p.id === e.target.value) || null)}
                     className="bg-[#0B0B0B] border border-[#333] text-on-surface font-mono-sm text-xs rounded p-2 focus:border-primary outline-none cursor-pointer"
                   >
                     {projects.map(p => (
@@ -644,7 +677,7 @@ export default function ClientDashboard() {
                             </span>
                           </td>
                           <td className="py-4 font-mono-sm text-xs">
-                            {new Date(pay.created_at).toLocaleDateString()}
+                            {pay.created_at ? new Date(pay.created_at).toLocaleDateString() : 'Pending'}
                           </td>
                         </tr>
                       ))}

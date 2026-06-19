@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/components/ui/Toast'
-import { Phone, Mail, MapPin, Clock, ChevronDown, Compass } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, ChevronDown, Compass, ArrowRight } from 'lucide-react'
 
 function ContactContent() {
   const searchParams = useSearchParams()
@@ -105,7 +105,7 @@ function ContactContent() {
               </div>
               <div>
                 <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Direct Line</h3>
-                <p className="font-headline-lg text-xl md:text-2xl text-on-surface mb-1 font-semibold">+1 (800) 555-0199</p>
+                <p className="font-headline-lg text-xl md:text-2xl text-on-surface mb-1 font-semibold">+91 7467831005</p>
                 <p className="font-mono-sm text-xs text-on-surface-variant/70">Priority routing for existing clients</p>
               </div>
             </div>
@@ -117,7 +117,7 @@ function ContactContent() {
               </div>
               <div>
                 <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Electronic Mail</h3>
-                <p className="font-body-lg text-base md:text-lg text-on-surface mb-1 font-semibold">engineering@kaiketsutech.com</p>
+                <p className="font-body-lg text-base md:text-lg text-on-surface mb-1 font-semibold">ananttirupati@gmail.com</p>
                 <p className="font-mono-sm text-xs text-on-surface-variant/70">GPG Key available upon request</p>
               </div>
             </div>
@@ -128,14 +128,14 @@ function ContactContent() {
                 <MapPin size={24} className="text-on-surface-variant mb-4" />
                 <div>
                   <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Headquarters</h3>
-                  <p className="font-body-md text-sm text-on-surface">100 Innovation Drive<br/>Suite 400<br/>San Francisco, CA 94105</p>
+                  <p className="font-body-md text-sm text-on-surface">Kanpur, Uttar Pradesh, India</p>
                 </div>
               </div>
               <div className="bg-surface-container-low border border-outline-variant p-6 rounded-lg flex flex-col justify-between hover:border-primary-container transition-colors duration-300">
                 <Clock size={24} className="text-on-surface-variant mb-4" />
                 <div>
                   <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Operations</h3>
-                  <p className="font-body-md text-sm text-on-surface">Mon - Fri<br/>09:00 - 18:00 PST</p>
+                  <p className="font-body-md text-sm text-on-surface">Mon - Fri<br/>09:00 - 18:00 IST</p>
                   <p className="font-mono-sm text-xs text-on-surface-variant/70 mt-2">24/7 SLA Available</p>
                 </div>
               </div>
@@ -190,7 +190,7 @@ function ContactContent() {
                   <input 
                     className="form-input" 
                     id="name" 
-                    placeholder="Jane Doe" 
+                    placeholder="Your Name" 
                     type="text"
                     required
                     value={formData.name}
@@ -202,7 +202,7 @@ function ContactContent() {
                   <input 
                     className="form-input" 
                     id="company" 
-                    placeholder="Acme Corp" 
+                    placeholder="Vanguard Solutions" 
                     type="text"
                     value={formData.company}
                     onChange={e => setFormData({ ...formData, company: e.target.value })}
@@ -215,7 +215,7 @@ function ContactContent() {
                 <input 
                   className="form-input" 
                   id="email" 
-                  placeholder="jane@acmecorp.com" 
+                  placeholder="example@gmail.com" 
                   type="email"
                   required
                   value={formData.email}
@@ -245,7 +245,7 @@ function ContactContent() {
                 <textarea 
                   className="form-input resize-none" 
                   id="message" 
-                  placeholder="Provide a brief overview of your technical requirements..." 
+                  placeholder="Provide details about your project scope, timeline expectations, and core tech stacks..." 
                   rows={5}
                   required
                   value={formData.message}
@@ -260,7 +260,7 @@ function ContactContent() {
                   disabled={submitting}
                 >
                   {submitting ? 'Sending...' : 'Send Message'}
-                  <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>
             </form>
@@ -274,8 +274,8 @@ function ContactContent() {
             <div className="relative z-10 bg-surface-container-highest/80 backdrop-blur-md px-6 py-4 rounded-lg border border-outline-variant shadow-2xl flex items-center gap-4">
               <Compass className="text-primary animate-spin" style={{ animationDuration: '6s' }} />
               <div>
-                <p className="font-label-md text-sm text-on-surface font-bold">San Francisco HQ</p>
-                <p className="font-mono-sm text-xs text-on-surface-variant">Coordinates: 37.7749° N, 122.4194° W</p>
+                <p className="font-label-md text-sm text-on-surface font-bold">Kanpur HQ</p>
+                <p className="font-mono-sm text-xs text-on-surface-variant">Coordinates: 26.4499° N, 80.3319° E</p>
               </div>
             </div>
           </div>

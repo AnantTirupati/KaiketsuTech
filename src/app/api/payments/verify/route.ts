@@ -13,6 +13,21 @@ export async function POST(req: Request) {
       )
     }
 
+    // Input Validation
+    if (
+      typeof razorpay_order_id !== 'string' ||
+      (!razorpay_order_id.startsWith('order_') && !razorpay_order_id.startsWith('mock_order_')) ||
+      typeof razorpay_payment_id !== 'string' ||
+      (!razorpay_payment_id.startsWith('pay_') && !razorpay_payment_id.startsWith('mock_pay_')) ||
+      typeof razorpay_signature !== 'string' ||
+      razorpay_signature.trim().length === 0
+    ) {
+      return NextResponse.json(
+        { message: 'Invalid payment parameters format' },
+        { status: 400 }
+      )
+    }
+
     // Verify payment using PaymentService abstraction
     const isVerified = await paymentService.verifyPayment({
       orderId: razorpay_order_id,
@@ -74,7 +89,7 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error('Verification endpoint error:', err)
     return NextResponse.json(
-      { message: err.message || 'Internal Server Error' },
+      { message: 'Internal Server Error' },
       { status: 500 }
     )
   }

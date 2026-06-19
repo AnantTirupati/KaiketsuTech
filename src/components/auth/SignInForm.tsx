@@ -78,7 +78,7 @@ export default function SignInForm() {
             className="w-full px-4 py-3 bg-surface-container border border-outline-variant rounded-lg text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all"
             id="email" 
             type="email" 
-            placeholder="you@company.com" 
+            placeholder="example@gmail.com" 
             required
             value={email}
             onChange={e => setEmail(e.target.value)}

@@ -13,6 +13,29 @@ export async function POST(req: Request) {
       )
     }
 
+    // Input Validation
+    if (typeof amount !== 'number' || amount <= 0 || !Number.isInteger(amount)) {
+      return NextResponse.json(
+        { message: 'Amount must be a positive integer in minor units (cents/paise)' },
+        { status: 400 }
+      )
+    }
+
+    if (typeof currency !== 'string' || currency.trim().length !== 3) {
+      return NextResponse.json(
+        { message: 'Currency must be a valid 3-letter ISO code' },
+        { status: 400 }
+      )
+    }
+
+    const allowedPackages = ['starter', 'business', 'enterprise']
+    if (typeof packageName !== 'string' || !allowedPackages.includes(packageName.toLowerCase())) {
+      return NextResponse.json(
+        { message: 'Invalid package type' },
+        { status: 400 }
+      )
+    }
+
     const supabase = await createClient()
 
     // Retrieve current user
@@ -56,7 +79,7 @@ export async function POST(req: Request) {
   } catch (err: any) {
     console.error('Order creation endpoint error:', err)
     return NextResponse.json(
-      { message: err.message || 'Internal Server Error' },
+      { message: 'Internal Server Error' },
       { status: 500 }
     )
   }

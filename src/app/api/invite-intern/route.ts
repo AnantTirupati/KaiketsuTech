@@ -11,7 +11,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing parameters' }, { status: 400 })
     }
 
-    // 1. Authenticate calling user using cookies context
+    // 1. Input Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return NextResponse.json({ error: 'Invalid email address format' }, { status: 400 })
+    }
+
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+    if (!uuidRegex.test(applicationId)) {
+      return NextResponse.json({ error: 'Invalid applicationId format' }, { status: 400 })
+    }
+
+    if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.trim().length > 100) {
+      return NextResponse.json({ error: 'Invalid full name' }, { status: 400 })
+    }
+
+    // 2. Authenticate calling user using cookies context
     const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -39,7 +54,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // 2. Verify admin role
+    // 3. Verify admin role
     const { data: profile } = await supabase
       .from('profiles')
       .select('role')
@@ -50,12 +65,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    // 3. Initialize Admin Supabase Client using Service Role Key
+    // 4. Initialize Admin Supabase Client using Service Role Key
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     if (!serviceRoleKey || serviceRoleKey === 'placeholder-service-role-key') {
-      return NextResponse.json({ 
-        error: 'SUPABASE_SERVICE_ROLE_KEY is not configured or is a placeholder in .env.local. Please set the real secret key.' 
-      }, { status: 500 })
+      console.error('Critical Error: SUPABASE_SERVICE_ROLE_KEY is not configured or is a placeholder in .env.local.')
+      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 
     const supabaseAdmin = createClient(
@@ -79,7 +93,7 @@ export async function POST(request: Request) {
 
     if (inviteErr) {
       console.error('Invite error:', inviteErr)
-      return NextResponse.json({ error: `Invite failed: ${inviteErr.message}` }, { status: 500 })
+      return NextResponse.json({ error: 'User invitation failed' }, { status: 500 })
     }
 
     // 5. Update intern application status to 'approved' in the database
@@ -95,6 +109,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, user: data.user })
   } catch (err: any) {
     console.error('Invite API catch error:', err)
-    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

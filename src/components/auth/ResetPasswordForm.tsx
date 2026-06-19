@@ -53,7 +53,7 @@ export default function ResetPasswordForm() {
             <input 
               className="block w-full pl-10 pr-3 py-3 bg-[#0B0B0B] border border-[#222222] rounded text-on-surface font-body-md text-sm focus:ring-2 focus:ring-primary-container focus:border-primary-container transition-all duration-200 outline-none placeholder-on-surface-variant/50"
               id="email" 
-              placeholder="admin@kaiketsutech.com" 
+              placeholder="ananttirupati@gmail.com" 
               required 
               type="email"
               value={email}

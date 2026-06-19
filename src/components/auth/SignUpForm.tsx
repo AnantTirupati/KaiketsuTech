@@ -74,7 +74,7 @@ export default function SignUpForm() {
             <input 
               className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 pl-10 pr-4 font-body-md text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none"
               id="fullname" 
-              placeholder="Jane Doe" 
+              placeholder="Your Name" 
               required 
               type="text"
               value={fullName}
@@ -91,7 +91,7 @@ export default function SignUpForm() {
             <input 
               className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 pl-10 pr-4 font-body-md text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none"
               id="email" 
-              placeholder="jane@example.com" 
+              placeholder="example@gmail.com" 
               required 
               type="email"
               value={email}
