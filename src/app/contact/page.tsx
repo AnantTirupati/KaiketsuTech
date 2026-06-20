@@ -117,7 +117,12 @@ function ContactContent() {
               </div>
               <div>
                 <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Electronic Mail</h3>
-                <p className="font-body-lg text-base md:text-lg text-on-surface mb-1 font-semibold">ananttirupati@gmail.com</p>
+                <p className="font-body-lg text-base md:text-lg text-on-surface mb-1 font-semibold">
+                  <a href="mailto:hello@kaiketsutech.online" className="hover:text-primary transition-colors">hello@kaiketsutech.online</a>
+                </p>
+                <p className="font-body-lg text-base md:text-lg text-on-surface mb-1 font-semibold">
+                  <a href="mailto:support@kaiketsutech.online" className="hover:text-primary transition-colors">support@kaiketsutech.online</a>
+                </p>
                 <p className="font-mono-sm text-xs text-on-surface-variant/70">GPG Key available upon request</p>
               </div>
             </div>

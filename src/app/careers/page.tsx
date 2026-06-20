@@ -96,22 +96,46 @@ export default function CareersPage() {
           </div>
         </section>
 
-        {/* Benefits Panel */}
-        <section className="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop mt-16 text-center">
-          <div className="bg-surface-container-low border border-outline-variant p-10 rounded-lg relative overflow-hidden">
-            <h3 className="font-headline-xl text-xl md:text-2xl font-bold mb-2">Our Engineering Philosophy</h3>
-            <p className="font-body-md text-xs text-on-surface-variant max-w-lg mx-auto mb-6">
-              We do not write boilerplate code. Every squad member exercises extreme architectural ownership, deploying modular code and automated tests daily.
-            </p>
-            <div className="flex justify-center items-center gap-2 text-on-surface-variant/70">
-              <ShieldCheck size={16} />
-              <span className="font-mono-sm text-xs">Accelerated mentorship model</span>
+        {/* Benefits & Contact Panels */}
+        <section className="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop mt-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter text-left">
+            {/* Philosophy Card */}
+            <div className="bg-surface-container-low border border-outline-variant p-8 rounded-lg relative overflow-hidden flex flex-col justify-between hover:border-primary-container transition-colors duration-300">
+              <div>
+                <h3 className="font-headline-xl text-xl font-bold mb-3 text-on-surface">Our Engineering Philosophy</h3>
+                <p className="font-body-md text-xs text-on-surface-variant leading-relaxed mb-6">
+                  We do not write boilerplate code. Every squad member exercises extreme architectural ownership, deploying modular code and automated tests daily.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 text-on-surface-variant/70 mt-auto">
+                <ShieldCheck size={16} className="text-primary" />
+                <span className="font-mono-sm text-xs">Accelerated mentorship model</span>
+              </div>
+            </div>
+
+            {/* General Applications / Careers Email Card */}
+            <div className="bg-surface-container-low border border-outline-variant p-8 rounded-lg relative overflow-hidden flex flex-col justify-between hover:border-primary-container transition-colors duration-300">
+              <div>
+                <h3 className="font-headline-xl text-xl font-bold mb-3 text-on-surface">General Applications</h3>
+                <p className="font-body-md text-xs text-on-surface-variant leading-relaxed mb-6">
+                  Don't see a role that fits your track but want to build with us? Send your resume and portfolio directly to our recruiting squad.
+                </p>
+              </div>
+              <div className="mt-auto">
+                <a 
+                  href="mailto:careers@kaiketsutech.online" 
+                  className="inline-flex items-center gap-2 text-primary hover:text-white font-mono-sm text-sm font-semibold transition-colors duration-300 group/link"
+                >
+                  careers@kaiketsutech.online
+                  <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
+                </a>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
-      
+      <Footer />
     </div>
   )
 }
