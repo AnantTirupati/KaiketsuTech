@@ -5,11 +5,36 @@ import Footer from '@/components/shared/Footer'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'KaiketsuTech - Premium Software Agency',
+  title: {
+    default: 'KaiketsuTech - Premium Software Agency',
+    template: '%s | KaiketsuTech',
+  },
   description: 'We engineer premium software solutions tailored for high-end enterprises. Precision, scalability, and relentless innovation are the core of our technical DNA.',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.kaiketsutech.online'),
   icons: {
     icon: '/logo.jpeg',
+  },
+  openGraph: {
+    title: 'KaiketsuTech - Premium Software Agency',
+    description: 'We engineer premium software solutions tailored for high-end enterprises. Precision, scalability, and relentless innovation are the core of our technical DNA.',
+    url: 'https://www.kaiketsutech.online',
+    siteName: 'KaiketsuTech',
+    images: [
+      {
+        url: '/logo.jpeg',
+        width: 800,
+        height: 600,
+        alt: 'KaiketsuTech Logo',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'KaiketsuTech - Premium Software Agency',
+    description: 'We engineer premium software solutions tailored for high-end enterprises. Precision, scalability, and relentless innovation are the core of our technical DNA.',
+    images: ['/logo.jpeg'],
   },
 }
 

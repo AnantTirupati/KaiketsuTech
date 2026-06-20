@@ -2,6 +2,12 @@ import Link from 'next/link'
 import TopNavBar from '@/components/shared/TopNavBar'
 import Footer from '@/components/shared/Footer'
 import { Briefcase, ArrowRight, ShieldCheck, Terminal, Cpu, LayoutTemplate } from 'lucide-react'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Careers & Internship Openings | KaiketsuTech',
+  description: 'Join KaiketsuTech and build production-grade enterprise software. Apply for frontend, backend, or full-stack developer intern roles.',
+}
 
 export default function CareersPage() {
   const openRoles = [
