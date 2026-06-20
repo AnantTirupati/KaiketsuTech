@@ -43,7 +43,7 @@ export async function signInWithGoogle(role: 'client' | 'intern' = 'client') {
 }
 
 export async function resetPasswordForEmail(email: string) {
-  const redirectTo = `${window.location.origin}/auth/update-password`
+  const redirectTo = `${window.location.origin}/auth/callback?next=/auth/update-password`
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo,
   })
