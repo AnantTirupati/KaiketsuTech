@@ -95,10 +95,10 @@ export default function Pricing() {
   }
 
   return (
-    <div className="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container">
+    <div className="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container overflow-x-hidden">
       <main className="flex-grow pt-[100px]">
         {/* Pricing Hero */}
-        <section className="relative pt-24 pb-8 flex flex-col items-center justify-center text-center px-margin-mobile md:px-margin-desktop">
+        <section className="relative pt-24 pb-8 flex flex-col items-center justify-center text-center px-margin-mobile md:px-margin-desktop overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary-container/10 rounded-full blur-[100px] pointer-events-none"></div>
           <h1 className="font-display-lg text-5xl md:text-7xl lg:text-7xl font-bold text-on-surface mb-stack-md relative z-10">
             Precision Scalability.

@@ -36,10 +36,10 @@ export default function CareersPage() {
   ]
 
   return (
-    <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased">
+    <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased overflow-x-hidden">
       <main className="flex-grow pt-32 pb-24">
         {/* Careers Hero */}
-        <section className="relative py-20 flex flex-col items-center justify-center text-center px-margin-mobile md:px-margin-desktop">
+        <section className="relative py-20 flex flex-col items-center justify-center text-center px-margin-mobile md:px-margin-desktop overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary-container/10 rounded-full blur-[100px] pointer-events-none"></div>
           <div className="font-section-label text-section-label text-primary mb-stack-md uppercase tracking-widest font-bold">Join the Squad</div>
           <h1 className="font-display-lg text-4xl md:text-6xl lg:text-7xl font-bold text-on-surface mb-stack-md tracking-tight">
