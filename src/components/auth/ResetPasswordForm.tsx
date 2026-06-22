@@ -21,12 +21,32 @@ export default function ResetPasswordForm() {
     setLoading(true)
 
     try {
+      // Check if email exists in our records first
+      const checkRes = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim() }),
+      })
+
+      if (!checkRes.ok) {
+        throw new Error('Failed to verify account. Please try again.')
+      }
+
+      const { exists } = await checkRes.json()
+
+      if (!exists) {
+        toast('No account with this email exists. Please sign up first.', 'error')
+        setLoading(false)
+        return
+      }
+
       await resetPasswordForEmail(email)
       toast('Password reset link sent! Please check your email inbox.', 'success')
       setEmail('')
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      toast(err.message || 'Failed to send reset link.', 'error')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send reset link.'
+      toast(errorMessage, 'error')
     } finally {
       setLoading(false)
     }

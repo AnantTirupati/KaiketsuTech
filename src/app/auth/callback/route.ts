@@ -8,6 +8,8 @@ export async function GET(request: Request) {
 
   if (code) {
     const cookieStore = await cookies()
+    const cookiesToSetLater: Array<{ name: string; value: string; options: any }> = []
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -18,9 +20,12 @@ export async function GET(request: Request) {
           },
           setAll(cookiesToSet) {
             try {
-              cookiesToSet.forEach(({ name, value, options }) =>
+              cookiesToSet.forEach(({ name, value, options }) => {
+                // Set cookies for current request's server operations
                 cookieStore.set(name, value, options)
-              )
+                // Accumulate to write into the final redirect Response
+                cookiesToSetLater.push({ name, value, options })
+              })
             } catch {
               // Ignore cookie setting errors inside server handlers
             }
@@ -55,11 +60,17 @@ export async function GET(request: Request) {
       }
 
       const next = searchParams.get('next')
-      if (next) {
-        return NextResponse.redirect(`${origin}${next}`)
-      }
+      const redirectUrl = next ? `${origin}${next}` : `${origin}/dashboard/${role}`
 
-      return NextResponse.redirect(`${origin}/dashboard/${role}`)
+      // Create the redirect response object
+      const redirectResponse = NextResponse.redirect(redirectUrl)
+
+      // Attach the accumulated session cookies to the redirect response headers
+      cookiesToSetLater.forEach(({ name, value, options }) => {
+        redirectResponse.cookies.set(name, value, options)
+      })
+
+      return redirectResponse
     }
   }
 

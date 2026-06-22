@@ -17,17 +17,40 @@ export default function UpdatePasswordPage() {
   const { toast } = useToast()
 
   useEffect(() => {
+    let active = true
     async function checkSession() {
       // Check if user is authenticated (session established by clicking invite or reset link)
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
+      // We retry up to 3 times with 500ms intervals to handle occasional session hydration lag
+      const maxRetries = 3
+      const retryDelay = 500
+
+      for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        if (!active) return
+
+        const { data: { session } } = await supabase.auth.getSession()
+
+        if (session) {
+          if (active) {
+            setCheckingSession(false)
+          }
+          return
+        }
+
+        if (attempt < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, retryDelay))
+        }
+      }
+
+      if (active) {
         toast('No active session found. Please request a new invite or password reset.', 'error')
         router.push('/login')
-        return
       }
-      setCheckingSession(false)
     }
     checkSession()
+
+    return () => {
+      active = false
+    }
   }, [supabase, router, toast])
 
   const handleUpdate = async (e: React.FormEvent) => {
