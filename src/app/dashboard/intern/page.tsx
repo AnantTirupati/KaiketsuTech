@@ -54,6 +54,7 @@ export default function InternDashboard() {
   const [profile, setProfile] = useState<Database['public']['Tables']['profiles']['Row'] | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [projects, setProjects] = useState<Database['public']['Tables']['projects']['Row'][]>([])
+  const [upcomingMilestones, setUpcomingMilestones] = useState<Database['public']['Tables']['milestones']['Row'][]>([])
   const [loading, setLoading] = useState(true)
 
   // Deliverables file upload state
@@ -115,13 +116,6 @@ export default function InternDashboard() {
     )
   })
 
-  const defaultTasks: Task[] = [
-    { id: '1', title: 'Refactor navigation component for mobile', status: 'todo', category: 'Frontend' },
-    { id: '2', title: 'Update user auth endpoints', status: 'todo', category: 'Backend' },
-    { id: '3', title: 'Implement dark mode tokens in Tailwind config', status: 'in_progress', category: 'Design Sys' },
-    { id: '4', title: 'Setup local development environment', status: 'done', category: 'Other' },
-  ]
-
   useEffect(() => {
     async function loadData() {
       const { data: { user: currentUser } } = await supabase.auth.getUser()
@@ -155,10 +149,19 @@ export default function InternDashboard() {
         .select('*')
         .eq('assigned_to', currentUser.id)
       
-      if (tData && tData.length > 0) {
-        setTasks(tData as Task[])
-      } else {
-        setTasks(defaultTasks)
+      setTasks((tData as Task[]) || [])
+
+      // Fetch pending milestones for allocated projects
+      if (pData && pData.length > 0) {
+        const projectIds = pData.map(p => p.id)
+        const { data: mData } = await supabase
+          .from('milestones')
+          .select('*')
+          .in('project_id', projectIds)
+          .eq('status', 'pending')
+          .order('due_date', { ascending: true })
+          .limit(3)
+        setUpcomingMilestones(mData || [])
       }
 
       setLoading(false)
@@ -442,8 +445,10 @@ export default function InternDashboard() {
                   <div>
                     <h4 className="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Sprint Performance</h4>
                     <div className="mt-4 flex items-baseline gap-2">
-                      <span className="text-4xl font-bold text-on-surface">94</span>
-                      <span className="font-mono-sm text-xs text-primary">+2.4%</span>
+                      <span className="text-4xl font-bold text-on-surface">
+                        {totalTasks > 0 ? Math.round((tasksDone / totalTasks) * 100) : 0}%
+                      </span>
+                      <span className="font-mono-sm text-xs text-primary">{tasksDone}/{totalTasks} Tasks</span>
                     </div>
                   </div>
                 </div>
@@ -454,10 +459,20 @@ export default function InternDashboard() {
                   </div>
                   <div>
                     <h4 className="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Upcoming Milestones</h4>
-                    <div className="mt-4 flex items-center gap-2 text-xs">
-                      <span className="font-semibold text-on-surface">Security Audit Sign-off</span>
-                      <span className="text-primary font-mono-sm">• Oct 24</span>
-                    </div>
+                    {upcomingMilestones.length > 0 ? (
+                      <div className="mt-4 flex items-center gap-2 text-xs truncate">
+                        <span className="font-semibold text-on-surface truncate" title={upcomingMilestones[0].title || ''}>
+                          {upcomingMilestones[0].title}
+                        </span>
+                        <span className="text-primary font-mono-sm shrink-0">
+                          • {upcomingMilestones[0].due_date ? new Date(upcomingMilestones[0].due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date'}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="mt-4 text-xs text-on-surface-variant font-mono-sm">
+                        No pending milestones
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -496,6 +511,11 @@ export default function InternDashboard() {
                         <p className="font-body-md text-sm text-on-surface">{task.title}</p>
                       </div>
                     ))}
+                    {filteredTasksTodo === 0 && (
+                      <div className="py-8 text-center text-on-surface-variant/40 text-xs font-mono-sm border border-dashed border-[#222] rounded">
+                        No tasks in queue
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -520,6 +540,11 @@ export default function InternDashboard() {
                         <p className="font-body-md text-sm text-on-surface">{task.title}</p>
                       </div>
                     ))}
+                    {filteredTasksInProgress === 0 && (
+                      <div className="py-8 text-center text-on-surface-variant/40 text-xs font-mono-sm border border-dashed border-[#222] rounded">
+                        No tasks active
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -538,6 +563,11 @@ export default function InternDashboard() {
                         <p className="font-body-md text-sm text-on-surface-variant line-through">{task.title}</p>
                       </div>
                     ))}
+                    {filteredTasksDone === 0 && (
+                      <div className="py-8 text-center text-on-surface-variant/40 text-xs font-mono-sm border border-dashed border-[#222] rounded">
+                        No completed tasks
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
