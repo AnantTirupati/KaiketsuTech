@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
+import { Menu, X } from 'lucide-react'
 
 export default function TopNavBar() {
   const [user, setUser] = useState<User | null>(null)
@@ -82,9 +83,9 @@ export default function TopNavBar() {
 
   return (
     <nav className="bg-background/80 backdrop-blur-md text-primary font-body-md text-body-md fixed top-0 w-full z-50 border-b border-outline-variant/20 transition-all duration-300 ease-in-out">
-      <div className="flex justify-between items-center gap-4 max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop h-20">
-        <Link href="/" className="hover:opacity-90 transition-opacity shrink-0">
-          <img src="/weblogo.svg" alt="KaiketsuTech Logo" className="h-12 w-auto" />
+      <div className="flex justify-between items-center gap-2 w-full max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop h-20">
+        <Link href="/" className="hover:opacity-90 transition-opacity shrink min-w-0">
+          <img src="/weblogo.svg" alt="KaiketsuTech Logo" className="h-7 sm:h-8 md:h-12 w-auto max-w-[160px] sm:max-w-[200px] md:max-w-none transition-all" />
         </Link>
         
         <ul className="hidden lg:flex gap-4 xl:gap-8 items-center shrink-0">
@@ -150,9 +151,10 @@ export default function TopNavBar() {
 
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)} 
-          className="lg:hidden text-on-surface p-2 focus:outline-none"
+          className="block lg:hidden text-on-surface p-2 shrink-0 min-w-[40px] min-h-[40px] flex items-center justify-center focus:outline-none"
+          aria-label="Toggle navigation menu"
         >
-          <span className="material-symbols-outlined">{isMenuOpen ? 'close' : 'menu'}</span>
+          {isMenuOpen ? <X size={24} className="text-on-surface" /> : <Menu size={24} className="text-on-surface" />}
         </button>
       </div>
 

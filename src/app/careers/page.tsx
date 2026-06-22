@@ -1,6 +1,4 @@
 import Link from 'next/link'
-import TopNavBar from '@/components/shared/TopNavBar'
-import Footer from '@/components/shared/Footer'
 import { Briefcase, ArrowRight, ShieldCheck, Terminal, Cpu, LayoutTemplate } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -39,8 +37,6 @@ export default function CareersPage() {
 
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased">
-      <TopNavBar />
-
       <main className="flex-grow pt-32 pb-24">
         {/* Careers Hero */}
         <section className="relative py-20 flex flex-col items-center justify-center text-center px-margin-mobile md:px-margin-desktop">
@@ -140,8 +136,6 @@ export default function CareersPage() {
           </div>
         </section>
       </main>
-
-      <Footer />
     </div>
   )
 }

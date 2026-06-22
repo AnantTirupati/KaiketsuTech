@@ -6,8 +6,6 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/components/ui/Toast'
 import { ArrowLeft, ArrowRight, Upload, FileText, Loader } from 'lucide-react'
-import TopNavBar from '@/components/shared/TopNavBar'
-import Footer from '@/components/shared/Footer'
 
 function ApplyFormContent() {
   const searchParams = useSearchParams()
@@ -285,8 +283,6 @@ function ApplyFormContent() {
 export default function ApplyPage() {
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased">
-      <TopNavBar />
-
       <main className="flex-grow pt-32 pb-24 px-margin-mobile md:px-margin-desktop">
         <div className="max-w-2xl mx-auto mb-8">
           <Link href="/careers" className="font-body-md font-semibold text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
@@ -303,8 +299,6 @@ export default function ApplyPage() {
           <ApplyFormContent />
         </Suspense>
       </main>
-
-      <Footer />
     </div>
   )
 }
