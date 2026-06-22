@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Search, Bell, CheckCircle2, Info, AlertTriangle, Trash2 } from 'lucide-react'
+import { Search, Bell, CheckCircle2, Info, AlertTriangle, Trash2, Menu } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 interface TopAppBarProps {
@@ -9,6 +9,7 @@ interface TopAppBarProps {
   placeholder?: string
   searchValue?: string
   onSearchChange?: (val: string) => void
+  onMenuClick?: () => void
 }
 
 interface Notification {
@@ -38,7 +39,8 @@ export default function TopAppBar({
   title, 
   placeholder = 'Search...', 
   searchValue = '', 
-  onSearchChange 
+  onSearchChange,
+  onMenuClick
 }: TopAppBarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -142,6 +144,15 @@ export default function TopAppBar({
   return (
     <header className="w-full sticky top-0 z-40 bg-surface/85 backdrop-blur-md border-b border-outline-variant/35 flex justify-between items-center px-gutter py-4">
       <div className="flex items-center gap-4">
+        {onMenuClick && (
+          <button 
+            onClick={onMenuClick}
+            className="md:hidden text-on-surface-variant hover:text-primary transition-all p-2 rounded-full cursor-pointer flex items-center justify-center"
+            aria-label="Open sidebar"
+          >
+            <Menu size={20} />
+          </button>
+        )}
         <h2 className="font-headline-lg text-xl md:text-2xl text-on-surface font-bold tracking-tight">{title}</h2>
       </div>
       <div className="flex items-center gap-4">

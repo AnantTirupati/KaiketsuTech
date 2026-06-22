@@ -49,6 +49,7 @@ interface PaymentWithClient {
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'projects' | 'clients' | 'payments' | 'interns'>('overview')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -474,14 +475,34 @@ export default function AdminDashboard() {
   const activeProjectsCount = projects.filter(p => p.status !== 'completed').length
 
   return (
-    <div className="bg-[#0B0B0B] text-on-surface antialiased min-h-screen flex font-body-md overflow-hidden">
+    <div className="bg-[#0B0B0B] text-on-surface antialiased min-h-screen flex font-body-md overflow-hidden relative">
+      {/* Mobile Sidebar Overlay Backdrop */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar Navigation */}
-      <aside className="bg-surface-container-low w-64 h-screen border-r border-[#222] flex flex-col justify-between hidden md:flex shrink-0">
+      <aside className={`bg-surface-container-low w-64 h-screen border-r border-[#222] flex flex-col justify-between shrink-0 transition-transform duration-300 z-50
+        fixed inset-y-0 left-0 md:static md:translate-x-0
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+      `}>
         <div>
           <div className="p-6 border-b border-[#222]">
-            <Link href="/" className="block hover:opacity-85 transition-opacity">
-              <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
-            </Link>
+            <div className="flex items-center justify-between">
+              <Link href="/" className="block hover:opacity-85 transition-opacity">
+                <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+              </Link>
+              <button 
+                onClick={() => setSidebarOpen(false)}
+                className="md:hidden text-on-surface-variant hover:text-primary transition-all p-2 rounded-full cursor-pointer flex items-center justify-center"
+                aria-label="Close Sidebar"
+              >
+                <X size={18} />
+              </button>
+            </div>
             <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold font-black">Admin Console</p>
           </div>
           <nav className="px-4 py-6 space-y-1">
@@ -497,7 +518,10 @@ export default function AdminDashboard() {
             ).map(tab => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id)
+                  setSidebarOpen(false)
+                }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
                   activeTab === tab.id 
                     ? 'bg-primary-container text-white' 
@@ -544,6 +568,7 @@ export default function AdminDashboard() {
           placeholder="Search admin console..." 
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
+          onMenuClick={() => setSidebarOpen(true)}
         />
 
         {/* Scrollable Canvas */}
