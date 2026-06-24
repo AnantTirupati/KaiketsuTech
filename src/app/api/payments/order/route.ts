@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       )
     }
 
-    const allowedPackages = ['starter', 'business', 'enterprise']
+    const allowedPackages = ['starter', 'business', 'enterprise', 'launch', 'growth', 'business_pro', 'care_plan']
     if (typeof packageName !== 'string' || !allowedPackages.includes(packageName.toLowerCase())) {
       return NextResponse.json(
         { message: 'Invalid package type' },
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       currency: currency,
       status: 'pending',
       razorpay_order_id: order.id,
-      package_type: packageName.toLowerCase() as 'starter' | 'business' | 'enterprise',
+      package_type: packageName.toLowerCase() as 'starter' | 'business' | 'enterprise' | 'launch' | 'growth' | 'business_pro' | 'care_plan',
     })
 
     if (error) {

@@ -31,7 +31,7 @@ export default function Pricing() {
     })
   }, [supabase])
 
-  const handleCheckout = async (packageName: string, amountUSD: number) => {
+  const handleCheckout = async (packageName: string, amountINR: number) => {
     if (!user) {
       toast('Please sign in or register to initiate a project checkout.', 'warning')
       router.push('/login')
@@ -41,14 +41,13 @@ export default function Pricing() {
     setLoadingCheckout(packageName)
     toast(`Initiating secure checkout for ${packageName}...`, 'info')
 
-    // Amount in cents / paise. Let's convert USD to paise (1 USD = 80 INR or just treat USD in cents)
-    // Razorpay supports USD. Amount is in cents.
-    const amountCents = amountUSD * 100
+    // Amount in paise (minor units for INR)
+    const amountPaise = amountINR * 100
 
     try {
       await initiateCheckout({
-        amount: amountCents,
-        currency: 'USD',
+        amount: amountPaise,
+        currency: 'INR',
         packageName,
         clientName: profile?.full_name || user.email || 'Client',
         clientEmail: user.email || '',
@@ -110,101 +109,134 @@ export default function Pricing() {
 
         {/* Pricing Packages Grid */}
         <section className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg mb-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter items-stretch">
-            {/* Starter Package */}
-            <div className="bg-surface-container-lowest border border-outline-variant p-stack-lg flex flex-col transition-all duration-300 hover:border-outline">
-              <h3 className="font-headline-lg text-headline-lg text-on-surface mb-stack-sm text-2xl font-bold">Starter</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter items-stretch">
+            {/* Launch Package */}
+            <div className="bg-surface-container-lowest border border-outline-variant p-stack-lg flex flex-col transition-all duration-300 hover:border-outline rounded-lg">
+              <h3 className="font-headline-lg text-headline-lg text-on-surface mb-stack-sm text-2xl font-bold">Launch</h3>
               <p className="font-body-md text-body-md text-on-surface-variant mb-stack-lg flex-grow">
-                Essential digital infrastructure for focused operational upgrades.
+                Essential digital web presence engineered for speed and responsiveness.
               </p>
               <div className="mb-stack-lg">
-                <span className="font-display-lg-mobile md:font-headline-xl text-3xl md:text-4xl font-bold text-on-surface">$4,000</span>
-                <span className="font-body-md text-body-md text-on-surface-variant">/mo</span>
+                <span className="font-display-lg-mobile md:font-headline-xl text-3xl font-bold text-on-surface">₹9,999</span>
+                <span className="font-body-md text-body-md text-on-surface-variant">/fixed</span>
               </div>
-              <ul className="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface-variant">
+              <ul className="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface-variant flex-grow">
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary mt-0.5" /> 5-page website
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary mt-0.5" /> Mobile responsive
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary mt-0.5" /> Contact form
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary mt-0.5" /> Basic SEO setup
+                </li>
+              </ul>
+              <button
+                onClick={() => handleCheckout('Launch', 9999)}
+                disabled={loadingCheckout !== null}
+                className="w-full py-3 bg-surface-container-low border border-outline-variant text-on-surface font-label-md text-label-md rounded hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container disabled:opacity-50 cursor-pointer font-bold mt-auto"
+              >
+                {loadingCheckout === 'Launch' ? 'Processing...' : 'Select Launch'}
+              </button>
+            </div>
+
+            {/* Growth Package (Highlighted) */}
+            <div className="bg-surface-container border border-primary-container p-stack-lg flex flex-col relative transform lg:-translate-y-4 shadow-2xl shadow-primary-container/10 rounded-lg">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container font-section-label text-section-label px-4 py-1 uppercase tracking-widest text-[10px] font-bold rounded-full">
+                Most Popular
+              </div>
+              <h3 className="font-headline-lg text-headline-lg text-primary mb-stack-sm text-2xl font-bold mt-2">Growth</h3>
+              <p className="font-body-md text-body-md text-on-surface-variant mb-stack-lg flex-grow">
+                Complete platform with automated blog content and advanced analytics.
+              </p>
+              <div className="mb-stack-lg">
+                <span className="font-display-lg-mobile md:font-headline-xl text-3xl font-bold text-on-surface">₹19,999</span>
+                <span className="font-body-md text-body-md text-on-surface-variant">/fixed</span>
+              </div>
+              <ul className="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface flex-grow">
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary-container mt-0.5" /> Up to 15 pages
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary-container mt-0.5" /> Complete Blog setup
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary-container mt-0.5" /> Analytics integration
+                </li>
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary-container mt-0.5" /> Speed optimization
+                </li>
+              </ul>
+              <button
+                onClick={() => handleCheckout('Growth', 19999)}
+                disabled={loadingCheckout !== null}
+                className="w-full py-3 bg-primary-container text-on-primary-container font-label-md text-label-md rounded hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-primary-container cursor-pointer font-bold mt-auto"
+              >
+                {loadingCheckout === 'Growth' ? 'Processing...' : 'Select Growth'}
+              </button>
+            </div>
+
+            {/* Business Pro */}
+            <div className="bg-surface-container-lowest border border-outline-variant p-stack-lg flex flex-col transition-all duration-300 hover:border-outline rounded-lg">
+              <h3 className="font-headline-lg text-headline-lg text-on-surface mb-stack-sm text-2xl font-bold">Business Pro</h3>
+              <p className="font-body-md text-body-md text-on-surface-variant mb-stack-lg flex-grow">
+                Custom functionality, API integrations, and advanced database architectures.
+              </p>
+              <div className="mb-stack-lg">
+                <span className="font-display-lg-mobile md:font-headline-xl text-3xl font-bold text-on-surface">₹49,999+</span>
+              </div>
+              <ul className="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface-variant flex-grow">
+                <li className="flex items-start gap-3">
+                  <Check size={18} className="text-primary mt-0.5" /> Custom functionality
+                </li>
                 <li className="flex items-start gap-3">
                   <Check size={18} className="text-primary mt-0.5" /> Core API Integrations
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary mt-0.5" /> Standard SLA (48hr)
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary mt-0.5" /> 2 Analytics Dashboards
-                </li>
-              </ul>
-              <button
-                onClick={() => handleCheckout('Starter', 4000)}
-                disabled={loadingCheckout !== null}
-                className="w-full py-3 bg-surface-container-low border border-outline-variant text-on-surface font-label-md text-label-md rounded hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container disabled:opacity-50 cursor-pointer"
-              >
-                {loadingCheckout === 'Starter' ? 'Processing...' : 'Select Starter'}
-              </button>
-            </div>
-
-            {/* Enterprise Package (Highlighted) */}
-            <div className="bg-surface-container border border-primary-container p-stack-lg flex flex-col relative transform md:-translate-y-4 shadow-2xl shadow-primary-container/10">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary-container text-on-primary-container font-section-label text-section-label px-4 py-1 uppercase tracking-widest text-[10px] font-bold">
-                Recommended
-              </div>
-              <h3 className="font-headline-lg text-headline-lg text-primary mb-stack-sm text-2xl font-bold mt-2">Enterprise</h3>
-              <p className="font-body-md text-body-md text-on-surface-variant mb-stack-lg flex-grow">
-                Bespoke architecture, dedicated engineering squads, and limitless scale.
-              </p>
-              <div className="mb-stack-lg">
-                <span className="font-display-lg-mobile md:font-headline-xl text-3xl md:text-4xl font-bold text-on-surface">Custom</span>
-              </div>
-              <ul className="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface">
-                <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary-container mt-0.5" /> Dedicated Engineering Squad
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary-container mt-0.5" /> Custom Architecture Design
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary-container mt-0.5" /> 24/7 Priority SLA (1hr)
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary-container mt-0.5" /> Unlimited Data Pipelines
+                  <Check size={18} className="text-primary mt-0.5" /> Advanced SEO optimization
                 </li>
               </ul>
               <button
                 onClick={() => router.push('/contact?subject=consulting')}
-                className="w-full py-3 bg-primary-container text-on-primary-container font-label-md text-label-md rounded hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background focus:ring-primary-container cursor-pointer"
+                className="w-full py-3 bg-surface-container-low border border-outline-variant text-on-surface font-label-md text-label-md rounded hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container cursor-pointer font-bold mt-auto"
               >
                 Contact Sales
               </button>
             </div>
 
-            {/* Business Package */}
-            <div className="bg-surface-container-lowest border border-outline-variant p-stack-lg flex flex-col transition-all duration-300 hover:border-outline">
-              <h3 className="font-headline-lg text-headline-lg text-on-surface mb-stack-sm text-2xl font-bold">Business</h3>
+            {/* Care Plan */}
+            <div className="bg-surface-container-lowest border border-outline-variant p-stack-lg flex flex-col transition-all duration-300 hover:border-outline rounded-lg">
+              <h3 className="font-headline-lg text-headline-lg text-on-surface mb-stack-sm text-2xl font-bold">Care Plan</h3>
               <p className="font-body-md text-body-md text-on-surface-variant mb-stack-lg flex-grow">
-                Advanced workflows and multi-system orchestration for growing teams.
+                Continuous maintenance, priority server support, backups, and security audits.
               </p>
               <div className="mb-stack-lg">
-                <span className="font-display-lg-mobile md:font-headline-xl text-3xl md:text-4xl font-bold text-on-surface">$12,000</span>
+                <span className="font-display-lg-mobile md:font-headline-xl text-3xl font-bold text-on-surface">₹2,999</span>
                 <span className="font-body-md text-body-md text-on-surface-variant">/mo</span>
               </div>
-              <ul className="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface-variant">
+              <ul className="flex flex-col gap-stack-md mb-stack-lg font-body-md text-body-md text-on-surface-variant flex-grow">
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary mt-0.5" /> Multi-system Orchestration
+                  <Check size={18} className="text-primary mt-0.5" /> Hosting management
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary mt-0.5" /> Priority SLA (12hr)
+                  <Check size={18} className="text-primary mt-0.5" /> Regular core updates
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary mt-0.5" /> Custom ETL Pipelines
+                  <Check size={18} className="text-primary mt-0.5" /> Daily cloud backups
                 </li>
                 <li className="flex items-start gap-3">
-                  <Check size={18} className="text-primary mt-0.5" /> SSO & Advanced Security
+                  <Check size={18} className="text-primary mt-0.5" /> Priority technical support
                 </li>
               </ul>
               <button
-                onClick={() => handleCheckout('Business', 12000)}
+                onClick={() => handleCheckout('Care_Plan', 2999)}
                 disabled={loadingCheckout !== null}
-                className="w-full py-3 bg-surface-container-low border border-outline-variant text-on-surface font-label-md text-label-md rounded hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container disabled:opacity-50 cursor-pointer"
+                className="w-full py-3 bg-surface-container-low border border-outline-variant text-on-surface font-label-md text-label-md rounded hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary-container disabled:opacity-50 cursor-pointer font-bold mt-auto"
               >
-                {loadingCheckout === 'Business' ? 'Processing...' : 'Select Business'}
+                {loadingCheckout === 'Care_Plan' ? 'Processing...' : 'Select Care Plan'}
               </button>
             </div>
           </div>
@@ -216,33 +248,39 @@ export default function Pricing() {
           <div className="min-w-[800px] border border-outline-variant/20 rounded-lg p-6 bg-surface-container-lowest">
             <div className="grid grid-cols-4 border-b border-outline-variant pb-stack-sm mb-stack-sm font-section-label text-[11px] text-on-surface-variant uppercase tracking-widest font-bold">
               <div className="col-span-1">Features</div>
-              <div className="col-span-1 text-center">Starter</div>
-              <div className="col-span-1 text-center">Business</div>
-              <div className="col-span-1 text-center text-primary">Enterprise</div>
+              <div className="col-span-1 text-center">Launch</div>
+              <div className="col-span-1 text-center">Growth</div>
+              <div className="col-span-1 text-center text-primary">Business Pro</div>
             </div>
             <div className="grid grid-cols-4 border-b border-surface-container-highest py-3 items-center font-body-md text-sm text-on-surface hover:bg-surface-container-low/50 transition-colors">
-              <div className="col-span-1 text-on-surface-variant">API Requests/mo</div>
-              <div className="col-span-1 text-center">1 Million</div>
-              <div className="col-span-1 text-center">10 Million</div>
-              <div className="col-span-1 text-center font-semibold text-primary">Unlimited</div>
+              <div className="col-span-1 text-on-surface-variant">Page Count</div>
+              <div className="col-span-1 text-center">5 Pages</div>
+              <div className="col-span-1 text-center">Up to 15 Pages</div>
+              <div className="col-span-1 text-center font-semibold text-primary">Custom / Unlimited</div>
             </div>
             <div className="grid grid-cols-4 border-b border-surface-container-highest py-3 items-center font-body-md text-sm text-on-surface hover:bg-surface-container-low/50 transition-colors">
-              <div className="col-span-1 text-on-surface-variant">Data Retention</div>
-              <div className="col-span-1 text-center">30 Days</div>
-              <div className="col-span-1 text-center">1 Year</div>
-              <div className="col-span-1 text-center font-semibold text-primary">Indefinite</div>
-            </div>
-            <div className="grid grid-cols-4 border-b border-surface-container-highest py-3 items-center font-body-md text-sm text-on-surface hover:bg-surface-container-low/50 transition-colors">
-              <div className="col-span-1 text-on-surface-variant">Custom Webhooks</div>
+              <div className="col-span-1 text-on-surface-variant">Blog / CMS Integration</div>
               <div className="col-span-1 text-center text-outline-variant">—</div>
-              <div className="col-span-1 text-center text-on-surface">✓</div>
-              <div className="col-span-1 text-center text-primary font-semibold">✓</div>
+              <div className="col-span-1 text-center">Standard Blog</div>
+              <div className="col-span-1 text-center font-semibold text-primary">Custom CMS Setup</div>
+            </div>
+            <div className="grid grid-cols-4 border-b border-surface-container-highest py-3 items-center font-body-md text-sm text-on-surface hover:bg-surface-container-low/50 transition-colors">
+              <div className="col-span-1 text-on-surface-variant">SEO Optimization</div>
+              <div className="col-span-1 text-center">Basic</div>
+              <div className="col-span-1 text-center">Standard</div>
+              <div className="col-span-1 text-center font-semibold text-primary">Advanced Audited</div>
+            </div>
+            <div className="grid grid-cols-4 border-b border-surface-container-highest py-3 items-center font-body-md text-sm text-on-surface hover:bg-surface-container-low/50 transition-colors">
+              <div className="col-span-1 text-on-surface-variant">Speed & Performance</div>
+              <div className="col-span-1 text-center">Standard</div>
+              <div className="col-span-1 text-center">Optimized</div>
+              <div className="col-span-1 text-center font-semibold text-primary">Deep Acceleration</div>
             </div>
             <div className="grid grid-cols-4 py-3 items-center font-body-md text-sm text-on-surface hover:bg-surface-container-low/50 transition-colors">
-              <div className="col-span-1 text-on-surface-variant">Dedicated Account Manager</div>
+              <div className="col-span-1 text-on-surface-variant">Custom API Integrations</div>
               <div className="col-span-1 text-center text-outline-variant">—</div>
               <div className="col-span-1 text-center text-outline-variant">—</div>
-              <div className="col-span-1 text-center text-primary font-semibold">✓</div>
+              <div className="col-span-1 text-center text-primary font-semibold">✓ Included</div>
             </div>
           </div>
         </section>
@@ -251,15 +289,15 @@ export default function Pricing() {
         <section className="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop mb-24 text-center">
           <div className="bg-surface-container-low border border-outline-variant p-12 rounded-lg relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent pointer-events-none"></div>
-            <h2 className="font-headline-xl text-headline-xl text-on-surface mb-stack-md text-xl md:text-5xl font-bold relative z-10">Unsure of your architectural needs?</h2>
+            <h2 className="font-headline-xl text-headline-xl text-on-surface mb-stack-md text-xl md:text-5xl font-bold relative z-10">Unsure of your specific needs?</h2>
             <p className="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-xl mx-auto relative z-10">
-              Speak directly with a Principal Engineer to map out a deployment strategy that fits your precise requirements.
+              Speak directly with our technical squad leads to map out a bespoke strategy that fits your exact parameters.
             </p>
             <button
               onClick={() => router.push('/contact?subject=consulting')}
               className="relative z-10 px-8 py-4 bg-primary-container text-on-primary-container font-label-md text-label-md font-bold tracking-wider hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-surface-container-low focus:ring-primary-container cursor-pointer"
             >
-              Schedule Technical Consultation
+              Schedule Consultation
             </button>
           </div>
         </section>

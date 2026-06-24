@@ -51,7 +51,7 @@ export async function POST(req: Request) {
       const notes = paymentEntity.notes || {}
       
       const clientId = notes.client_id
-      const packageName = notes.package_name || 'starter'
+      const packageName = notes.package_name || 'launch'
 
       if (orderId) {
         // Find existing pending payment
@@ -106,7 +106,7 @@ export async function POST(req: Request) {
               status: 'completed',
               razorpay_order_id: orderId,
               razorpay_payment_id: paymentId,
-              package_type: packageName.toLowerCase() as 'starter' | 'business' | 'enterprise',
+              package_type: packageName.toLowerCase() as 'starter' | 'business' | 'enterprise' | 'launch' | 'growth' | 'business_pro' | 'care_plan',
             })
             .select()
             .single()
