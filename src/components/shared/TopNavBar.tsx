@@ -115,6 +115,11 @@ export default function TopNavBar() {
             </Link>
           </li>
           <li>
+            <Link href="/verify" className="text-on-surface-variant hover:text-primary transition-colors duration-200">
+              Verify
+            </Link>
+          </li>
+          <li>
             <Link href="/contact" className="text-on-surface-variant hover:text-primary transition-colors duration-200">
               Contact
             </Link>
@@ -205,6 +210,15 @@ export default function TopNavBar() {
                 className="block text-on-surface-variant hover:text-primary py-2 border-b border-outline-variant/10"
               >
                 Careers
+              </Link>
+            </li>
+            <li>
+              <Link 
+                href="/verify" 
+                onClick={() => setIsMenuOpen(false)} 
+                className="block text-on-surface-variant hover:text-primary py-2 border-b border-outline-variant/10"
+              >
+                Verify
               </Link>
             </li>
             <li>

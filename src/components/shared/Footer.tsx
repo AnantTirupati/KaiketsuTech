@@ -69,8 +69,18 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/showcase" className="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100">
+                Showcase
+              </Link>
+            </li>
+            <li>
               <Link href="/pricing" className="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100">
                 Pricing
+              </Link>
+            </li>
+            <li>
+              <Link href="/verify" className="text-on-surface-variant hover:text-secondary transition-colors opacity-80 hover:opacity-100">
+                Verify Certificate
               </Link>
             </li>
             <li>

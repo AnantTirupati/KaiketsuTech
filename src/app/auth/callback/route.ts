@@ -48,14 +48,15 @@ export async function GET(request: Request) {
       
       let role = profile?.role || 'client'
       
-      if (queryRole && (queryRole === 'client' || queryRole === 'intern') && role !== queryRole) {
+      // Only allow upgrading client -> intern during registration, never demote admin or intern
+      if (role === 'client' && queryRole === 'intern') {
         const { error: updateError } = await supabase
           .from('profiles')
-          .update({ role: queryRole })
+          .update({ role: 'intern' })
           .eq('id', data.user.id)
         
         if (!updateError) {
-          role = queryRole
+          role = 'intern'
         }
       }
 

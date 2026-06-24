@@ -8,11 +8,18 @@ import TopAppBar from '@/components/shared/TopAppBar'
 import { 
   DollarSign, Briefcase, Percent, TrendingUp, PlusCircle, 
   Award, CheckCircle2, ArrowRight, UserCheck, Trash2, 
-  UserMinus, Users, Check, X, ShieldAlert, Loader, Eye, Plus, Layers, LogOut, Home
+  UserMinus, Users, Check, X, ShieldAlert, Loader, Eye, Plus, Layers, LogOut, Home,
+  Calendar, FileText, Shield, ExternalLink, UserPlus, ClipboardList, Settings, Star
 } from 'lucide-react'
 import Link from 'next/link'
 import { Database } from '@/types/database.types'
 import { User } from '@supabase/supabase-js'
+import type { 
+  InternWithProfile, 
+  CertificateWithIntern, 
+  AuditLogWithActor, 
+  ProjectContributorWithDetails 
+} from '@/types/intern.types'
 
 interface ProjectWithClient {
   capacity_utilization: number | null
@@ -26,6 +33,9 @@ interface ProjectWithClient {
   timeline_start: string | null
   title: string
   velocity: number | null
+  is_showcase: boolean | null
+  showcase_image_url: string | null
+  showcase_tags: string[] | null
   profiles: {
     email: string
     full_name: string | null
@@ -48,7 +58,7 @@ interface PaymentWithClient {
 }
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'projects' | 'clients' | 'payments' | 'interns'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'projects' | 'clients' | 'payments' | 'interns' | 'certificates'>('overview')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -60,6 +70,64 @@ export default function AdminDashboard() {
   const [payments, setPayments] = useState<PaymentWithClient[]>([])
   const [interns, setInterns] = useState<Database['public']['Tables']['profiles']['Row'][]>([])
   const [applications, setApplications] = useState<Database['public']['Tables']['intern_applications']['Row'][]>([])
+
+  // New State for Intern Verification & Certificate System
+  const [internsList, setInternsList] = useState<InternWithProfile[]>([])
+  const [certificatesList, setCertificatesList] = useState<CertificateWithIntern[]>([])
+  const [auditLogsList, setAuditLogsList] = useState<AuditLogWithActor[]>([])
+  const [contributorsList, setContributorsList] = useState<ProjectContributorWithDetails[]>([])
+
+  // Onboarding Form Modal State
+  const [onboardOpen, setOnboardOpen] = useState(false)
+  const [onboardingProfile, setOnboardingProfile] = useState<{ id: string; name: string; email: string } | null>(null)
+  const [onboardingForm, setOnboardingForm] = useState({
+    department: 'engineering',
+    startDate: new Date().toISOString().split('T')[0],
+    bio: '',
+    skills: '',
+    githubUrl: '',
+    linkedinUrl: '',
+    portfolioUrl: ''
+  })
+  const [submittingOnboard, setSubmittingOnboard] = useState(false)
+
+  // Certificate Issuance Modal State
+  const [issueOpen, setIssueOpen] = useState(false)
+  const [selectedIntern, setSelectedIntern] = useState<InternWithProfile | null>(null)
+  const [issuanceForm, setIssuanceForm] = useState({
+    title: 'Certificate of Internship Completion',
+    description: 'For successfully completing their internship as a Software Engineering Intern.',
+    validUntil: ''
+  })
+  const [submittingIssue, setSubmittingIssue] = useState(false)
+
+  // Revocation Modal State
+  const [revokeOpen, setRevokeOpen] = useState(false)
+  const [selectedCert, setSelectedCert] = useState<CertificateWithIntern | null>(null)
+  const [revocationReason, setRevocationReason] = useState('')
+  const [submittingRevoke, setSubmittingRevoke] = useState(false)
+
+  // Project Contributor Modal State
+  const [contributorOpen, setContributorOpen] = useState(false)
+  const [contributorForm, setContributorForm] = useState({
+    projectId: '',
+    internId: '', // PK UUID of intern
+    role: 'developer' as 'developer' | 'designer' | 'lead' | 'reviewer',
+    contributionSummary: '',
+    startDate: new Date().toISOString().split('T')[0],
+    endDate: ''
+  })
+  const [submittingContributor, setSubmittingContributor] = useState(false)
+
+  // Showcase Edit Modal State
+  const [showcaseOpen, setShowcaseOpen] = useState(false)
+  const [showcaseProject, setShowcaseProject] = useState<ProjectWithClient | null>(null)
+  const [showcaseForm, setShowcaseForm] = useState({
+    isShowcase: false,
+    showcaseImageUrl: '',
+    showcaseTags: ''
+  })
+  const [submittingShowcase, setSubmittingShowcase] = useState(false)
 
   // Search filter state
   const [searchQuery, setSearchQuery] = useState('')
@@ -134,6 +202,29 @@ export default function AdminDashboard() {
     )
   })
 
+  const filteredCohortInterns = internsList.filter(int => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (int.intern_id || '').toLowerCase().includes(term) ||
+      (int.profiles?.full_name || '').toLowerCase().includes(term) ||
+      (int.profiles?.email || '').toLowerCase().includes(term) ||
+      (int.department || '').toLowerCase().includes(term) ||
+      (int.status || '').toLowerCase().includes(term)
+    )
+  })
+
+  const filteredCertificates = certificatesList.filter(cert => {
+    const term = searchQuery.toLowerCase().trim()
+    if (!term) return true
+    return (
+      (cert.certificate_id || '').toLowerCase().includes(term) ||
+      (cert.title || '').toLowerCase().includes(term) ||
+      (cert.interns?.profiles?.full_name || '').toLowerCase().includes(term) ||
+      (cert.status || '').toLowerCase().includes(term)
+    )
+  })
+
   // Project Creation State
   const [newProject, setNewProject] = useState({
     title: '',
@@ -188,12 +279,47 @@ export default function AdminDashboard() {
       const { data: internData } = await supabase.from('profiles').select('*').eq('role', 'intern')
       const { data: appData } = await supabase.from('intern_applications').select('*').order('created_at', { ascending: false })
 
+      // Fetch joined intern records
+      const { data: internsData } = await supabase
+        .from('interns')
+        .select('*, profiles(email, full_name, avatar_url, rating)')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+
+      // Fetch certificates
+      const { data: certsData } = await supabase
+        .from('certificates')
+        .select('*, interns(*, profiles(email, full_name))')
+        .order('created_at', { ascending: false })
+
+      // Fetch audit logs
+      const { data: auditData } = await supabase
+        .from('audit_logs')
+        .select('*, profiles(email, full_name)')
+        .order('created_at', { ascending: false })
+        .limit(100)
+
+      // Fetch contributors
+      const { data: contribData } = await supabase
+        .from('project_contributors')
+        .select(`
+          *,
+          projects(id, title, description, status, showcase_image_url, showcase_tags),
+          interns(intern_id, department, profiles(full_name, avatar_url))
+        `)
+        .order('created_at', { ascending: false })
+
       setLeads(leadData || [])
       setProjects((projData as unknown as ProjectWithClient[]) || [])
       setClients(clientData || [])
       setPayments((payData as unknown as PaymentWithClient[]) || [])
       setInterns(internData || [])
       setApplications(appData || [])
+
+      setInternsList((internsData as unknown as InternWithProfile[]) || [])
+      setCertificatesList((certsData as unknown as CertificateWithIntern[]) || [])
+      setAuditLogsList((auditData as unknown as AuditLogWithActor[]) || [])
+      setContributorsList((contribData as unknown as ProjectContributorWithDetails[]) || [])
 
       setLoading(false)
     }
@@ -209,11 +335,43 @@ export default function AdminDashboard() {
     const { data: appData } = await supabase.from('intern_applications').select('*').order('created_at', { ascending: false })
     const { data: internData } = await supabase.from('profiles').select('*').eq('role', 'intern')
 
+    // Fetch new tables
+    const { data: internsData } = await supabase
+      .from('interns')
+      .select('*, profiles(email, full_name, avatar_url, rating)')
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+
+    const { data: certsData } = await supabase
+      .from('certificates')
+      .select('*, interns(*, profiles(email, full_name))')
+      .order('created_at', { ascending: false })
+
+    const { data: auditData } = await supabase
+      .from('audit_logs')
+      .select('*, profiles(email, full_name)')
+      .order('created_at', { ascending: false })
+      .limit(100)
+
+    const { data: contribData } = await supabase
+      .from('project_contributors')
+      .select(`
+        *,
+        projects(id, title, description, status, showcase_image_url, showcase_tags),
+        interns(intern_id, department, profiles(full_name, avatar_url))
+      `)
+      .order('created_at', { ascending: false })
+
     setLeads(leadData || [])
     setProjects((projData as unknown as ProjectWithClient[]) || [])
     setPayments((payData as unknown as PaymentWithClient[]) || [])
     setApplications(appData || [])
     setInterns(internData || [])
+
+    setInternsList((internsData as unknown as InternWithProfile[]) || [])
+    setCertificatesList((certsData as unknown as CertificateWithIntern[]) || [])
+    setAuditLogsList((auditData as unknown as AuditLogWithActor[]) || [])
+    setContributorsList((contribData as unknown as ProjectContributorWithDetails[]) || [])
   }
 
   // --- ACTIONS ---
@@ -457,6 +615,216 @@ export default function AdminDashboard() {
     }
   }
 
+  // --- NEW INTERN SYSTEM ACTIONS ---
+
+  const handleOnboardIntern = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!onboardingProfile) return
+    setSubmittingOnboard(true)
+    try {
+      const skillsArray = onboardingForm.skills
+        ? onboardingForm.skills.split(',').map(s => s.trim()).filter(Boolean)
+        : []
+
+      const res = await fetch('/api/interns/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          profileId: onboardingProfile.id,
+          department: onboardingForm.department,
+          startDate: onboardingForm.startDate,
+          bio: onboardingForm.bio || null,
+          skills: skillsArray,
+          github_url: onboardingForm.githubUrl || null,
+          linkedin_url: onboardingForm.linkedinUrl || null,
+          portfolio_url: onboardingForm.portfolioUrl || null
+        })
+      })
+
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Onboarding failed')
+
+      toast('Intern onboarded successfully!', 'success')
+      setOnboardOpen(false)
+      setOnboardingProfile(null)
+      setOnboardingForm({
+        department: 'engineering',
+        startDate: new Date().toISOString().split('T')[0],
+        bio: '',
+        skills: '',
+        githubUrl: '',
+        linkedinUrl: '',
+        portfolioUrl: ''
+      })
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to onboard intern', 'error')
+    } finally {
+      setSubmittingOnboard(false)
+    }
+  }
+
+  const handleUpdateInternStatus = async (internId: string, status: 'active' | 'completed' | 'revoked' | 'archived') => {
+    if (status === 'archived' && !confirm('Are you sure you want to archive this intern? (Soft delete)')) return
+    try {
+      const res = await fetch(`/api/interns/${internId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      })
+
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Status update failed')
+
+      toast(`Intern status updated to ${status}.`, 'success')
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to update status', 'error')
+    }
+  }
+
+  const handleIssueCertificate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedIntern) return
+    setSubmittingIssue(true)
+    try {
+      const res = await fetch('/api/certificates/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          internId: selectedIntern.id,
+          title: issuanceForm.title,
+          description: issuanceForm.description,
+          validUntil: issuanceForm.validUntil || null
+        })
+      })
+
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Issuance failed')
+
+      toast('Certificate issued successfully!', 'success')
+      setIssueOpen(false)
+      setSelectedIntern(null)
+      setIssuanceForm({
+        title: 'Certificate of Internship Completion',
+        description: 'For successfully completing their internship as a Software Engineering Intern.',
+        validUntil: ''
+      })
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to issue certificate', 'error')
+    } finally {
+      setSubmittingIssue(false)
+    }
+  }
+
+  const handleRevokeCertificate = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedCert || !revocationReason) return
+    setSubmittingRevoke(true)
+    try {
+      const res = await fetch('/api/certificates/revoke', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          certificateId: selectedCert.certificate_id,
+          reason: revocationReason
+        })
+      })
+
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Revocation failed')
+
+      toast('Certificate revoked successfully.', 'success')
+      setRevokeOpen(false)
+      setSelectedCert(null)
+      setRevocationReason('')
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to revoke certificate', 'error')
+    } finally {
+      setSubmittingRevoke(false)
+    }
+  }
+
+  const handleAssignContributor = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!contributorForm.projectId || !contributorForm.internId) {
+      toast('Please select a project and an intern.', 'warning')
+      return
+    }
+    setSubmittingContributor(true)
+    try {
+      const { error } = await supabase.from('project_contributors').insert({
+        project_id: contributorForm.projectId,
+        intern_id: contributorForm.internId,
+        role: contributorForm.role,
+        contribution_summary: contributorForm.contributionSummary || null,
+        start_date: contributorForm.startDate || null,
+        end_date: contributorForm.endDate || null
+      })
+
+      if (error) throw error
+      toast('Contributor assigned successfully!', 'success')
+      setContributorOpen(false)
+      setContributorForm({
+        projectId: '',
+        internId: '',
+        role: 'developer',
+        contributionSummary: '',
+        startDate: new Date().toISOString().split('T')[0],
+        endDate: ''
+      })
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to assign contributor', 'error')
+    } finally {
+      setSubmittingContributor(false)
+    }
+  }
+
+  const handleRemoveContributor = async (id: string) => {
+    if (!confirm('Are you sure you want to remove this contributor assignment?')) return
+    try {
+      const { error } = await supabase.from('project_contributors').delete().eq('id', id)
+      if (error) throw error
+      toast('Contributor assignment removed.', 'success')
+      reloadData()
+    } catch (err: any) {
+      toast('Failed to remove contributor.', 'error')
+    }
+  }
+
+  const handleSaveShowcase = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!showcaseProject) return
+    setSubmittingShowcase(true)
+    try {
+      const tagsArray = showcaseForm.showcaseTags
+        ? showcaseForm.showcaseTags.split(',').map(t => t.trim()).filter(Boolean)
+        : []
+
+      const { error } = await supabase
+        .from('projects')
+        .update({
+          is_showcase: showcaseForm.isShowcase,
+          showcase_image_url: showcaseForm.showcaseImageUrl || null,
+          showcase_tags: tagsArray
+        })
+        .eq('id', showcaseProject.id)
+
+      if (error) throw error
+      toast('Showcase settings saved.', 'success')
+      setShowcaseOpen(false)
+      setShowcaseProject(null)
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to update showcase settings', 'error')
+    } finally {
+      setSubmittingShowcase(false)
+    }
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
@@ -513,7 +881,8 @@ export default function AdminDashboard() {
                 { id: 'projects', label: 'Projects & Tasks', icon: <Layers size={18} /> },
                 { id: 'clients', label: 'Client Accounts', icon: <Users size={18} /> },
                 { id: 'payments', label: 'Payments Ledger', icon: <DollarSign size={18} /> },
-                { id: 'interns', label: 'Intern & Careers', icon: <Award size={18} /> }
+                { id: 'interns', label: 'Intern Cohort', icon: <Users size={18} /> },
+                { id: 'certificates', label: 'Certificates', icon: <Award size={18} /> }
               ] as const
             ).map(tab => (
               <button
@@ -812,7 +1181,14 @@ export default function AdminDashboard() {
                     <tbody className="divide-y divide-[#222]">
                       {filteredProjects.map(proj => (
                         <tr key={proj.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
-                          <td className="py-4 font-semibold text-on-surface">{proj.title}</td>
+                          <td className="py-4 font-semibold text-on-surface">
+                            {proj.title}
+                            {proj.is_showcase && (
+                              <span className="ml-2 bg-primary-container/20 text-primary text-[10px] font-mono px-1.5 py-0.5 rounded">
+                                Showcase
+                              </span>
+                            )}
+                          </td>
                           <td className="py-4 text-xs">{proj.profiles?.email || 'No client assigned'}</td>
                           <td className="py-4 font-mono-sm text-xs">${Number(proj.estimated_budget || 0).toLocaleString()}</td>
                           <td className="py-4">
@@ -828,13 +1204,30 @@ export default function AdminDashboard() {
                             </select>
                           </td>
                           <td className="py-4 text-right">
-                            <button 
-                              onClick={() => handleDeleteProject(proj.id)}
-                              className="p-1 hover:text-error transition-colors cursor-pointer"
-                              title="Delete Project"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                            <div className="flex justify-end gap-2">
+                              <button 
+                                onClick={() => {
+                                  setShowcaseProject(proj)
+                                  setShowcaseForm({
+                                    isShowcase: proj.is_showcase || false,
+                                    showcaseImageUrl: proj.showcase_image_url || '',
+                                    showcaseTags: (proj.showcase_tags || []).join(', ')
+                                  })
+                                  setShowcaseOpen(true)
+                                }}
+                                className="p-1 hover:text-primary transition-colors cursor-pointer"
+                                title="Showcase Settings"
+                              >
+                                <Settings size={16} />
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteProject(proj.id)}
+                                className="p-1 hover:text-error transition-colors cursor-pointer"
+                                title="Delete Project"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
@@ -988,43 +1381,700 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Roster of active interns */}
+              {/* Profiles Pending Onboarding */}
+              {interns.filter(profile => !internsList.some(int => int.profile_id === profile.id)).length > 0 && (
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <UserPlus size={16} className="text-primary" /> Registered Interns Pending Onboarding
+                  </h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                      <thead>
+                        <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                          <th className="pb-3">Name</th>
+                          <th className="pb-3">Email</th>
+                          <th className="pb-3 text-right">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#222]">
+                        {interns.filter(profile => !internsList.some(int => int.profile_id === profile.id)).map(profile => (
+                          <tr key={profile.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                            <td className="py-3 text-xs font-semibold text-on-surface">{profile.full_name || 'Anonymous Intern'}</td>
+                            <td className="py-3 text-xs font-mono-sm">{profile.email}</td>
+                            <td className="py-3 text-right">
+                              <button
+                                onClick={() => {
+                                  setOnboardingProfile({ id: profile.id, name: profile.full_name || '', email: profile.email })
+                                  setOnboardOpen(true)
+                                }}
+                                className="px-3 py-1 bg-primary-container text-white rounded text-xs hover:bg-[#d8600d] transition-colors cursor-pointer"
+                              >
+                                Onboard Intern
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Active Intern Cohort Roster */}
               <div className="bg-[#111] border border-[#222] rounded-lg p-6">
                 <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Active Intern Cohort</h4>
-                <div className="divide-y divide-[#222222]">
-                  {filteredInterns.map(int => (
-                    <div key={int.id} className="py-4 flex justify-between items-center text-xs md:text-sm">
-                      <div>
-                        <p className="font-semibold text-on-surface">{int.full_name || 'Cohort Intern'}</p>
-                        <p className="text-on-surface-variant font-mono-sm text-xs mt-0.5">{int.email}</p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                    <thead>
+                      <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                        <th className="pb-3">Intern ID</th>
+                        <th className="pb-3">Name & Email</th>
+                        <th className="pb-3">Department</th>
+                        <th className="pb-3">Status</th>
+                        <th className="pb-3">Dates (Start - End)</th>
+                        <th className="pb-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#222]">
+                      {filteredCohortInterns.map(int => (
+                        <tr key={int.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                          <td className="py-4 font-mono-sm text-xs text-on-surface font-semibold">{int.intern_id}</td>
+                          <td className="py-4 text-xs">
+                            <p className="font-semibold text-on-surface">{int.profiles?.full_name}</p>
+                            <p className="text-on-surface-variant font-mono-sm mt-0.5">{int.profiles?.email}</p>
+                          </td>
+                          <td className="py-4 text-xs capitalize font-semibold text-on-surface">{int.department}</td>
+                          <td className="py-4 text-xs">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-mono-sm uppercase font-semibold ${
+                              int.status === 'active' ? 'bg-[#2a1b12] text-primary' :
+                              int.status === 'completed' ? 'bg-green-500/10 text-green-400' :
+                              'bg-error-container/10 text-error'
+                            }`}>
+                              {int.status}
+                            </span>
+                          </td>
+                          <td className="py-4 font-mono-sm text-xs text-on-surface">
+                            {int.start_date} {int.end_date ? `to ${int.end_date}` : '(Ongoing)'}
+                          </td>
+                          <td className="py-4 text-right">
+                            <div className="flex gap-2 justify-end">
+                              <button
+                                onClick={() => {
+                                  setSelectedIntern(int)
+                                  setIssueOpen(true)
+                                }}
+                                className="px-2 py-1 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-on-surface rounded text-[10px] font-semibold cursor-pointer"
+                                title="Issue Certificate"
+                              >
+                                Issue Cert
+                              </button>
+                              {int.status === 'active' && (
+                                <>
+                                  <button
+                                    onClick={() => handleUpdateInternStatus(int.id, 'completed')}
+                                    className="p-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded cursor-pointer"
+                                    title="Complete Internship"
+                                  >
+                                    <CheckCircle2 size={14} />
+                                  </button>
+                                  <button
+                                    onClick={() => handleUpdateInternStatus(int.id, 'revoked')}
+                                    className="p-1 bg-error-container/20 hover:bg-error-container/45 text-error rounded cursor-pointer"
+                                    title="Revoke Internship"
+                                  >
+                                    <UserMinus size={14} />
+                                  </button>
+                                </>
+                              )}
+                              <button
+                                onClick={() => handleUpdateInternStatus(int.id, 'archived')}
+                                className="p-1 hover:text-error transition-colors cursor-pointer"
+                                title="Archive (Soft Delete)"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                              <Link
+                                href={`/intern/${int.intern_id}`}
+                                target="_blank"
+                                className="p-1 hover:text-primary transition-colors flex items-center justify-center text-on-surface-variant"
+                                title="View Public Profile"
+                              >
+                                <ExternalLink size={14} />
+                              </Link>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {filteredCohortInterns.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="py-8 text-center text-on-surface-variant">No interns in the cohort match the query.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Project Contributor Assignments Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+                {/* Contributor Assignment Form */}
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6 lg:col-span-1">
+                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <ClipboardList size={16} className="text-primary" /> Assign Project Contributor
+                  </h4>
+                  <form onSubmit={handleAssignContributor} className="space-y-4">
+                    <div className="flex flex-col gap-1">
+                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Select Project</label>
+                      <select
+                        required
+                        value={contributorForm.projectId}
+                        onChange={e => setContributorForm({ ...contributorForm, projectId: e.target.value })}
+                        className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary cursor-pointer w-full"
+                      >
+                        <option value="">Select Project</option>
+                        {projects.map(p => (
+                          <option key={p.id} value={p.id}>{p.title}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Select Intern</label>
+                      <select
+                        required
+                        value={contributorForm.internId}
+                        onChange={e => setContributorForm({ ...contributorForm, internId: e.target.value })}
+                        className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary cursor-pointer w-full"
+                      >
+                        <option value="">Select Onboarded Intern</option>
+                        {internsList.map(i => (
+                          <option key={i.id} value={i.id}>{i.profiles?.full_name} ({i.intern_id})</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Attribution Role</label>
+                      <select
+                        value={contributorForm.role}
+                        onChange={e => setContributorForm({ ...contributorForm, role: e.target.value as any })}
+                        className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary cursor-pointer w-full"
+                      >
+                        <option value="developer">Developer</option>
+                        <option value="designer">Designer</option>
+                        <option value="lead">Lead</option>
+                        <option value="reviewer">Reviewer</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Contribution Summary</label>
+                      <textarea
+                        placeholder="Brief summary of their contributions (e.g. Developed the entire auth backend...)"
+                        value={contributorForm.contributionSummary}
+                        onChange={e => setContributorForm({ ...contributorForm, contributionSummary: e.target.value })}
+                        className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary w-full h-20 resize-none"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="flex flex-col gap-1">
+                        <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Start Date</label>
+                        <input
+                          type="date"
+                          value={contributorForm.startDate}
+                          onChange={e => setContributorForm({ ...contributorForm, startDate: e.target.value })}
+                          className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2 focus:border-primary outline-none w-full"
+                        />
                       </div>
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono-sm text-[10px] text-on-surface-variant/80 uppercase">Rating:</span>
-                          <select
-                            value={int.rating || 5.0}
-                            onChange={e => handleUpdateInternRating(int.id, parseFloat(e.target.value))}
-                            className="bg-[#0B0B0B] border border-[#222] text-on-surface font-mono-sm text-xs rounded p-1 focus:border-primary outline-none cursor-pointer"
-                          >
-                            {[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 4.8, 5.0].map(val => (
-                              <option key={val} value={val}>{val.toFixed(1)}</option>
-                            ))}
-                          </select>
-                        </div>
-                        <span className="font-mono-sm text-[10px] text-primary bg-[#2a1b12] px-2.5 py-1 rounded">ENGINEERING COHORT</span>
+                      <div className="flex flex-col gap-1">
+                        <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">End Date</label>
+                        <input
+                          type="date"
+                          value={contributorForm.endDate}
+                          onChange={e => setContributorForm({ ...contributorForm, endDate: e.target.value })}
+                          className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2 focus:border-primary outline-none w-full"
+                        />
                       </div>
                     </div>
+
+                    <button
+                      type="submit"
+                      disabled={submittingContributor}
+                      className="w-full bg-primary-container text-white py-2.5 rounded hover:bg-[#d8600d] transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
+                    >
+                      {submittingContributor ? <Loader className="animate-spin" size={14} /> : <Plus size={14} />}
+                      Assign Contributor
+                    </button>
+                  </form>
+                </div>
+
+                {/* Assignment List */}
+                <div className="bg-[#111] border border-[#222] rounded-lg p-6 lg:col-span-2">
+                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Active Project Attributions</h4>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                      <thead>
+                        <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                          <th className="pb-3">Project</th>
+                          <th className="pb-3">Contributor</th>
+                          <th className="pb-3">Role</th>
+                          <th className="pb-3">Dates</th>
+                          <th className="pb-3 text-right">Delete</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#222]">
+                        {contributorsList.map(c => (
+                          <tr key={c.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                            <td className="py-3 text-xs font-semibold text-on-surface">{c.projects?.title}</td>
+                            <td className="py-3 text-xs">
+                              <p className="font-semibold text-on-surface">{c.interns?.profiles?.full_name}</p>
+                              <p className="text-[10px] text-on-surface-variant font-mono-sm">{c.interns?.intern_id}</p>
+                            </td>
+                            <td className="py-3 text-xs">
+                              <span className="bg-[#222] px-2 py-0.5 rounded text-[10px] font-mono-sm capitalize text-on-surface">{c.role}</span>
+                            </td>
+                            <td className="py-3 text-xs font-mono-sm">{c.start_date || 'N/A'} {c.end_date ? `to ${c.end_date}` : ''}</td>
+                            <td className="py-3 text-right">
+                              <button
+                                onClick={() => handleRemoveContributor(c.id)}
+                                className="p-1 hover:text-error transition-colors cursor-pointer"
+                                title="Remove Contributor"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                        {contributorsList.length === 0 && (
+                          <tr>
+                            <td colSpan={5} className="py-8 text-center text-on-surface-variant">No contributor attributions assigned yet.</td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Audit Log Panel */}
+              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Shield size={16} className="text-primary" /> Admin Security Audit Trail
+                </h4>
+                <div className="overflow-y-auto max-h-72 divide-y divide-[#222222]">
+                  {auditLogsList.map(log => (
+                    <div key={log.id} className="py-3 flex flex-col md:flex-row md:justify-between md:items-center text-xs gap-1 md:gap-4 hover:bg-[#1a1a1a]/30 px-2 transition-colors">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono-sm text-[10px] font-semibold text-primary uppercase bg-primary-container/10 px-1.5 py-0.5 rounded">
+                            {log.action}
+                          </span>
+                          <span className="text-[10px] text-on-surface-variant font-mono-sm">
+                            Target: {log.target_type} ({log.target_id?.slice(0, 8)})
+                          </span>
+                        </div>
+                        <p className="text-on-surface-variant text-[11px]">
+                          Actor: <span className="text-on-surface font-semibold">{log.profiles?.full_name || log.profiles?.email || 'System'}</span>
+                        </p>
+                        {log.details && Object.keys(log.details).length > 0 && (
+                          <pre className="text-[10px] text-on-surface-variant font-mono-sm bg-black/40 p-1.5 rounded border border-[#222] max-w-xl overflow-x-auto mt-1">
+                            {JSON.stringify(log.details)}
+                          </pre>
+                        )}
+                      </div>
+                      <span className="text-[10px] text-on-surface-variant/70 font-mono-sm shrink-0">
+                        {log.created_at ? new Date(log.created_at).toLocaleString() : 'N/A'}
+                      </span>
+                    </div>
                   ))}
-                  {filteredInterns.length === 0 && (
-                    <div className="py-8 text-center text-on-surface-variant text-xs font-mono-sm">No interns currently in cohort. Approve an application to upgrade role.</div>
+                  {auditLogsList.length === 0 && (
+                    <div className="py-8 text-center text-on-surface-variant text-xs font-mono-sm">No audit logs found.</div>
                   )}
                 </div>
               </div>
             </div>
           )}
 
+          {/* CERTIFICATES TAB */}
+          {activeTab === 'certificates' && (
+            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Verification Certificates Ledger</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                  <thead>
+                    <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                      <th className="pb-3">Certificate ID</th>
+                      <th className="pb-3">Intern Cohort</th>
+                      <th className="pb-3">Certificate Title</th>
+                      <th className="pb-3">Status</th>
+                      <th className="pb-3">Issued / Valid Until</th>
+                      <th className="pb-3 text-right">Verification Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#222]">
+                    {filteredCertificates.map(cert => (
+                      <tr key={cert.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                        <td className="py-4 font-mono-sm text-xs text-on-surface font-semibold">{cert.certificate_id}</td>
+                        <td className="py-4 text-xs">
+                          <p className="font-semibold text-on-surface">{cert.interns?.profiles?.full_name}</p>
+                          <p className="text-[10px] text-on-surface-variant font-mono-sm">{cert.interns?.intern_id}</p>
+                        </td>
+                        <td className="py-4 text-xs font-semibold text-on-surface">{cert.title}</td>
+                        <td className="py-4 text-xs">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-mono-sm uppercase font-semibold ${
+                            cert.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-error-container/10 text-error'
+                          }`}>
+                            {cert.status}
+                          </span>
+                        </td>
+                        <td className="py-4 font-mono-sm text-xs text-on-surface">
+                          <p>Issued: {cert.issued_at ? new Date(cert.issued_at).toLocaleDateString() : 'N/A'}</p>
+                          {cert.valid_until && <p className="text-on-surface-variant">Expires: {new Date(cert.valid_until).toLocaleDateString()}</p>}
+                        </td>
+                        <td className="py-4 text-right">
+                          <div className="flex gap-2 justify-end">
+                            {cert.qr_code_url && (
+                              <a
+                                href={cert.qr_code_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2 py-1 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-on-surface rounded text-[10px] font-semibold cursor-pointer"
+                                title="View QR Code"
+                              >
+                                View QR
+                              </a>
+                            )}
+                            <Link
+                              href={`/verify/${cert.certificate_id}`}
+                              target="_blank"
+                              className="p-1 hover:text-primary transition-colors flex items-center justify-center text-on-surface-variant"
+                              title="Verify Certificate link"
+                            >
+                              <ExternalLink size={15} />
+                            </Link>
+                            {cert.status === 'active' && (
+                              <button
+                                onClick={() => {
+                                  setSelectedCert(cert)
+                                  setRevocationReason('')
+                                  setRevokeOpen(true)
+                                }}
+                                className="p-1 bg-error-container/20 hover:bg-error-container/45 text-error rounded cursor-pointer"
+                                title="Revoke Certificate"
+                              >
+                                <ShieldAlert size={15} />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredCertificates.length === 0 && (
+                      <tr>
+                        <td colSpan={6} className="py-8 text-center text-on-surface-variant">No certificates match search criteria.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
         </div>
       </main>
+
+      {/* --- DIALOG MODALS LAYER --- */}
+
+      {/* 1. Onboarding Form Dialog */}
+      {onboardOpen && onboardingProfile && (
+        <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#111] border border-[#222] rounded-lg max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-[#222] pb-3">
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">Onboard Intern Record</h3>
+                <p className="text-[10px] text-on-surface-variant font-mono-sm">Profile: {onboardingProfile.email}</p>
+              </div>
+              <button 
+                onClick={() => { setOnboardOpen(false); setOnboardingProfile(null); }} 
+                className="text-on-surface-variant hover:text-on-surface cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleOnboardIntern} className="space-y-4">
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Department</label>
+                <select
+                  value={onboardingForm.department}
+                  onChange={e => setOnboardingForm({ ...onboardingForm, department: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary cursor-pointer w-full"
+                >
+                  <option value="engineering">Engineering</option>
+                  <option value="design">Design</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="operations">Operations</option>
+                </select>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Start Date</label>
+                <input
+                  type="date"
+                  required
+                  value={onboardingForm.startDate}
+                  onChange={e => setOnboardingForm({ ...onboardingForm, startDate: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Short Biography</label>
+                <textarea
+                  placeholder="Tell us about this intern..."
+                  value={onboardingForm.bio}
+                  onChange={e => setOnboardingForm({ ...onboardingForm, bio: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary w-full h-20 resize-none"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Skills (Comma-separated)</label>
+                <input
+                  type="text"
+                  placeholder="React, TypeScript, Next.js, Figma"
+                  value={onboardingForm.skills}
+                  onChange={e => setOnboardingForm({ ...onboardingForm, skills: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">GitHub Profile URL</label>
+                <input
+                  type="url"
+                  placeholder="https://github.com/username"
+                  value={onboardingForm.githubUrl}
+                  onChange={e => setOnboardingForm({ ...onboardingForm, githubUrl: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">LinkedIn Profile URL</label>
+                <input
+                  type="url"
+                  placeholder="https://linkedin.com/in/username"
+                  value={onboardingForm.linkedinUrl}
+                  onChange={e => setOnboardingForm({ ...onboardingForm, linkedinUrl: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Portfolio URL</label>
+                <input
+                  type="url"
+                  placeholder="https://myportfolio.com"
+                  value={onboardingForm.portfolioUrl}
+                  onChange={e => setOnboardingForm({ ...onboardingForm, portfolioUrl: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submittingOnboard}
+                className="w-full bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+              >
+                {submittingOnboard ? <Loader className="animate-spin" size={14} /> : <UserCheck size={14} />}
+                Confirm Onboarding
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 2. Certificate Issuance Modal */}
+      {issueOpen && selectedIntern && (
+        <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#111] border border-[#222] rounded-lg max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-[#222] pb-3">
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">Issue Verification Certificate</h3>
+                <p className="text-[10px] text-on-surface-variant font-mono-sm">Recipient: {selectedIntern.profiles?.full_name} ({selectedIntern.intern_id})</p>
+              </div>
+              <button 
+                onClick={() => { setIssueOpen(false); setSelectedIntern(null); }} 
+                className="text-on-surface-variant hover:text-on-surface cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleIssueCertificate} className="space-y-4">
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Certificate Title</label>
+                <input
+                  type="text"
+                  required
+                  value={issuanceForm.title}
+                  onChange={e => setIssuanceForm({ ...issuanceForm, title: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Description / Achievement Summary</label>
+                <textarea
+                  placeholder="Detail what achievements this certificate acknowledges..."
+                  value={issuanceForm.description}
+                  onChange={e => setIssuanceForm({ ...issuanceForm, description: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary w-full h-24 resize-none"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Validity Limit (Optional Expiration)</label>
+                <input
+                  type="date"
+                  value={issuanceForm.validUntil}
+                  onChange={e => setIssuanceForm({ ...issuanceForm, validUntil: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submittingIssue}
+                className="w-full bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+              >
+                {submittingIssue ? <Loader className="animate-spin" size={14} /> : <Award size={14} />}
+                Generate & Publish Certificate
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Certificate Revocation Modal */}
+      {revokeOpen && selectedCert && (
+        <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#111] border border-[#222] rounded-lg max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-[#222] pb-3">
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-error uppercase tracking-wider">Revoke Certificate</h3>
+                <p className="text-[10px] text-on-surface-variant font-mono-sm">ID: {selectedCert.certificate_id}</p>
+              </div>
+              <button 
+                onClick={() => { setRevokeOpen(false); setSelectedCert(null); }} 
+                className="text-on-surface-variant hover:text-on-surface cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleRevokeCertificate} className="space-y-4">
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Reason for Revocation</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Intern did not meet cohort requirements / disciplinary action"
+                  value={revocationReason}
+                  onChange={e => setRevocationReason(e.target.value)}
+                  className="bg-[#0B0B0B] border border-error-container/30 text-on-surface text-xs rounded p-2.5 focus:border-error outline-none w-full"
+                />
+              </div>
+
+              <div className="bg-error-container/10 border border-error-container/20 rounded p-3 text-[11px] text-error flex items-start gap-2">
+                <ShieldAlert size={16} className="shrink-0 mt-0.5" />
+                <p>
+                  <strong>Warning:</strong> Revocation is a soft-delete status update but will immediately invalidate the certificate public verify page. This action cannot be easily undone.
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                disabled={submittingRevoke}
+                className="w-full bg-error-container text-error hover:bg-error-container/85 py-3 rounded transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {submittingRevoke ? <Loader className="animate-spin" size={14} /> : <ShieldAlert size={14} />}
+                Confirm Certificate Revocation
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 4. Showcase Settings Modal */}
+      {showcaseOpen && showcaseProject && (
+        <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-[#111] border border-[#222] rounded-lg max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-[#222] pb-3">
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">Public Showcase Settings</h3>
+                <p className="text-[10px] text-on-surface-variant font-mono-sm">Project: {showcaseProject.title}</p>
+              </div>
+              <button 
+                onClick={() => { setShowcaseOpen(false); setShowcaseProject(null); }} 
+                className="text-on-surface-variant hover:text-on-surface cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleSaveShowcase} className="space-y-4">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="isShowcaseCheckbox"
+                  checked={showcaseForm.isShowcase}
+                  onChange={e => setShowcaseForm({ ...showcaseForm, isShowcase: e.target.checked })}
+                  className="bg-[#0B0B0B] border border-[#222] rounded outline-none focus:ring-primary w-4 h-4 cursor-pointer text-primary"
+                />
+                <label htmlFor="isShowcaseCheckbox" className="font-semibold text-xs text-on-surface cursor-pointer">
+                  Feature in Public Portfolio Showcase
+                </label>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Showcase Image URL</label>
+                <input
+                  type="url"
+                  placeholder="https://mybucket.supabase.co/storage/v1/object/public/showcase/img.jpg"
+                  value={showcaseForm.showcaseImageUrl}
+                  onChange={e => setShowcaseForm({ ...showcaseForm, showcaseImageUrl: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Showcase Tech Tags (Comma-separated)</label>
+                <input
+                  type="text"
+                  placeholder="Next.js, Tailwind CSS, Supabase, PostgreSQL"
+                  value={showcaseForm.showcaseTags}
+                  onChange={e => setShowcaseForm({ ...showcaseForm, showcaseTags: e.target.value })}
+                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submittingShowcase}
+                className="w-full bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+              >
+                {submittingShowcase ? <Loader className="animate-spin" size={14} /> : <Settings size={14} />}
+                Save Showcase Configuration
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }
+

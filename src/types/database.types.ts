@@ -14,6 +14,103 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          id: string
+          actor_id: string | null
+          action: string
+          target_type: string
+          target_id: string | null
+          details: Record<string, unknown> | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          actor_id?: string | null
+          action: string
+          target_type: string
+          target_id?: string | null
+          details?: Record<string, unknown> | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          actor_id?: string | null
+          action?: string
+          target_type?: string
+          target_id?: string | null
+          details?: Record<string, unknown> | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificates: {
+        Row: {
+          id: string
+          intern_id: string
+          certificate_id: string
+          title: string
+          description: string | null
+          issued_at: string | null
+          valid_until: string | null
+          qr_code_url: string | null
+          certificate_url: string | null
+          status: string
+          revoked_at: string | null
+          revoked_reason: string | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          intern_id: string
+          certificate_id: string
+          title: string
+          description?: string | null
+          issued_at?: string | null
+          valid_until?: string | null
+          qr_code_url?: string | null
+          certificate_url?: string | null
+          status?: string
+          revoked_at?: string | null
+          revoked_reason?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          intern_id?: string
+          certificate_id?: string
+          title?: string
+          description?: string | null
+          issued_at?: string | null
+          valid_until?: string | null
+          qr_code_url?: string | null
+          certificate_url?: string | null
+          status?: string
+          revoked_at?: string | null
+          revoked_reason?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_intern_id_fkey"
+            columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contact_inquiries: {
         Row: {
           created_at: string | null
@@ -117,6 +214,68 @@ export type Database = {
           technologies?: string | null
         }
         Relationships: []
+      }
+      interns: {
+        Row: {
+          id: string
+          profile_id: string | null
+          intern_id: string
+          department: string
+          start_date: string
+          end_date: string | null
+          status: string
+          bio: string | null
+          skills: string[] | null
+          github_url: string | null
+          linkedin_url: string | null
+          portfolio_url: string | null
+          created_at: string | null
+          updated_at: string | null
+          deleted_at: string | null
+        }
+        Insert: {
+          id?: string
+          profile_id?: string | null
+          intern_id: string
+          department?: string
+          start_date?: string
+          end_date?: string | null
+          status?: string
+          bio?: string | null
+          skills?: string[] | null
+          github_url?: string | null
+          linkedin_url?: string | null
+          portfolio_url?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          deleted_at?: string | null
+        }
+        Update: {
+          id?: string
+          profile_id?: string | null
+          intern_id?: string
+          department?: string
+          start_date?: string
+          end_date?: string | null
+          status?: string
+          bio?: string | null
+          skills?: string[] | null
+          github_url?: string | null
+          linkedin_url?: string | null
+          portfolio_url?: string | null
+          created_at?: string | null
+          updated_at?: string | null
+          deleted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interns_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       messages: {
         Row: {
@@ -326,6 +485,54 @@ export type Database = {
         }
         Relationships: []
       }
+      project_contributors: {
+        Row: {
+          id: string
+          project_id: string
+          intern_id: string
+          role: string
+          contribution_summary: string | null
+          start_date: string | null
+          end_date: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          project_id: string
+          intern_id: string
+          role?: string
+          contribution_summary?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          project_id?: string
+          intern_id?: string
+          role?: string
+          contribution_summary?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_contributors_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_contributors_intern_id_fkey"
+            columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       project_requests: {
         Row: {
           budget: number | null
@@ -402,6 +609,9 @@ export type Database = {
           description: string | null
           estimated_budget: number | null
           id: string
+          is_showcase: boolean | null
+          showcase_image_url: string | null
+          showcase_tags: string[] | null
           status: string | null
           timeline_end: string | null
           timeline_start: string | null
@@ -415,6 +625,9 @@ export type Database = {
           description?: string | null
           estimated_budget?: number | null
           id?: string
+          is_showcase?: boolean | null
+          showcase_image_url?: string | null
+          showcase_tags?: string[] | null
           status?: string | null
           timeline_end?: string | null
           timeline_start?: string | null
@@ -428,6 +641,9 @@ export type Database = {
           description?: string | null
           estimated_budget?: number | null
           id?: string
+          is_showcase?: boolean | null
+          showcase_image_url?: string | null
+          showcase_tags?: string[] | null
           status?: string | null
           timeline_end?: string | null
           timeline_start?: string | null
@@ -491,6 +707,38 @@ export type Database = {
             columns: ["project_id"]
             isOneToOne: false
             referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verification_logs: {
+        Row: {
+          id: string
+          certificate_id: string
+          verified_at: string | null
+          ip_address: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          certificate_id: string
+          verified_at?: string | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          certificate_id?: string
+          verified_at?: string | null
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_logs_certificate_id_fkey"
+            columns: ["certificate_id"]
+            isOneToOne: false
+            referencedRelation: "certificates"
             referencedColumns: ["id"]
           },
         ]

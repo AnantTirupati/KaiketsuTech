@@ -93,7 +93,56 @@ export async function POST(request: Request) {
 
     if (inviteErr) {
       console.error('Invite error:', inviteErr)
-      return NextResponse.json({ error: 'User invitation failed' }, { status: 500 })
+      
+      // If user already exists, update their metadata and role to 'intern' and approve application
+      const isEmailExists = inviteErr.code === 'email_exists' || 
+                            inviteErr.status === 422 ||
+                            (inviteErr.message && inviteErr.message.includes('already been registered'))
+                            
+      if (isEmailExists) {
+        console.log(`User ${email} already exists. Attempting to update role to intern...`)
+        const { data: listData, error: listErr } = await supabaseAdmin.auth.admin.listUsers()
+        if (!listErr && listData?.users) {
+          const existingUser = listData.users.find(u => u.email?.toLowerCase() === email.trim().toLowerCase())
+          if (existingUser) {
+            // Update user to have the intern role and metadata
+            const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+              user_metadata: {
+                ...existingUser.user_metadata,
+                role: 'intern',
+                full_name: fullName
+              }
+            })
+            
+            if (updateErr) {
+              console.error('Error updating existing user to intern role:', updateErr)
+              return NextResponse.json({ 
+                error: `User already exists but failed to update their role: ${updateErr.message}` 
+              }, { status: 500 })
+            }
+            
+            // Update the application status to 'approved' in the database
+            const { error: appErr } = await supabase
+              .from('intern_applications')
+              .update({ status: 'approved' })
+              .eq('id', applicationId)
+
+            if (appErr) {
+              console.error('Update application status error:', appErr)
+            }
+
+            return NextResponse.json({ 
+              success: true, 
+              message: 'User was already registered. Their role has been updated to intern.',
+              user: existingUser 
+            })
+          }
+        }
+      }
+      
+      return NextResponse.json({ 
+        error: inviteErr.message || 'User invitation failed' 
+      }, { status: inviteErr.status || 500 })
     }
 
     // 5. Update intern application status to 'approved' in the database
@@ -109,6 +158,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, user: data.user })
   } catch (err: any) {
     console.error('Invite API catch error:', err)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    return NextResponse.json({ error: err?.message || 'Internal server error' }, { status: 500 })
   }
 }
