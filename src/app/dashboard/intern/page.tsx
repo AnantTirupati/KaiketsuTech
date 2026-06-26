@@ -8,7 +8,7 @@ import TopAppBar from '@/components/shared/TopAppBar'
 import { 
   CheckSquare, AlertTriangle, Play, CheckCircle2, 
   Award, Calendar, FolderOpen, Upload, Download, Trash, 
-  Send, Loader, MessageSquare, Layers, FileText, BarChart2, LogOut, Home, X
+  Send, Loader, MessageSquare, Layers, FileText, BarChart2, LogOut, Home, X, ExternalLink
 } from 'lucide-react'
 import Link from 'next/link'
 import { Database } from '@/types/database.types'
@@ -53,6 +53,7 @@ export default function InternDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Database['public']['Tables']['profiles']['Row'] | null>(null)
+  const [internId, setInternId] = useState<string | null>(null)
   const [tasks, setTasks] = useState<Task[]>([])
   const [projects, setProjects] = useState<Database['public']['Tables']['projects']['Row'][]>([])
   const [upcomingMilestones, setUpcomingMilestones] = useState<Database['public']['Tables']['milestones']['Row'][]>([])
@@ -133,6 +134,17 @@ export default function InternDashboard() {
         .eq('id', currentUser.id)
         .single()
       setProfile(profData || null)
+
+      // Fetch intern details (intern_id)
+      const { data: internRecord } = await supabase
+        .from('interns')
+        .select('intern_id')
+        .eq('profile_id', currentUser.id)
+        .is('deleted_at', null)
+        .maybeSingle()
+      if (internRecord) {
+        setInternId(internRecord.intern_id)
+      }
 
       // Fetch allocated projects (simulated or joined via tasks/profiles)
       // Since interns don't own projects but work on them, we select all projects
@@ -425,9 +437,22 @@ export default function InternDashboard() {
             </div>
             <div className="flex flex-col truncate">
               <span className="text-xs font-semibold text-on-surface truncate">{user?.email}</span>
-              <span className="text-[10px] text-on-surface-variant font-mono-sm">Technical Intern</span>
+              <span className="text-[10px] text-on-surface-variant font-mono-sm">
+                {internId || 'Technical Intern'}
+              </span>
             </div>
           </div>
+          {internId && (
+            <a 
+              href={`/intern/${internId}`} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+            >
+              <ExternalLink size={14} className="text-primary" />
+              View Public Profile
+            </a>
+          )}
           <Link 
             href="/"
             className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"

@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { User, Calendar, Code, ExternalLink, Award, ArrowLeft, Briefcase, Globe } from 'lucide-react'
+import { User, Calendar, Code, ExternalLink, Award, ArrowLeft, Briefcase, Globe, Download, FileText } from 'lucide-react'
 
 interface InternData {
   intern: Record<string, unknown> & {
@@ -44,10 +44,18 @@ interface InternData {
     qr_code_url: string | null
     status: string
   }>
+  application?: {
+    phone: string | null
+    experience: string | null
+    skills: string | null
+    technologies: string | null
+    resume_url: string | null
+    created_at: string | null
+  } | null
 }
 
 export default function InternProfileClient({ data }: { data: InternData }) {
-  const { intern, contributions, certificates } = data
+  const { intern, contributions, certificates, application } = data
   const profile = intern.profiles
   const name = profile?.full_name || 'KaiketsuTech Intern'
 
@@ -153,6 +161,74 @@ export default function InternProfileClient({ data }: { data: InternData }) {
             </div>
           </div>
         </motion.div>
+
+        {/* Application Details */}
+        {application && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="bg-[#111111] border border-[#222222] rounded-xl p-8 space-y-6"
+          >
+            <h2 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest flex items-center gap-2 border-b border-[#222222] pb-4">
+              <FileText size={14} className="text-primary" /> Application Credentials & Background
+            </h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Left Column: Metrics and Document */}
+              <div className="space-y-4">
+                {application.phone && (
+                  <div>
+                    <span className="text-xs text-on-surface-variant font-mono-sm uppercase tracking-wider block mb-1">Contact Phone</span>
+                    <span className="text-sm text-on-surface">{application.phone}</span>
+                  </div>
+                )}
+                {application.created_at && (
+                  <div>
+                    <span className="text-xs text-on-surface-variant font-mono-sm uppercase tracking-wider block mb-1">Applied On</span>
+                    <span className="text-sm text-on-surface">
+                      {new Date(application.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </span>
+                  </div>
+                )}
+                {application.technologies && (
+                  <div>
+                    <span className="text-xs text-on-surface-variant font-mono-sm uppercase tracking-wider block mb-1">Technologies Declared</span>
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {application.technologies.split(',').map((tech: string) => (
+                        <span key={tech} className="bg-[#1a1a1a] text-on-surface-variant border border-[#222] px-2 py-0.5 rounded text-[10px] font-mono-sm">
+                          {tech.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {application.resume_url && (
+                  <div className="pt-2">
+                    <a
+                      href={application.resume_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-[#222222] hover:bg-[#2a2a2a] border border-[#333333] hover:border-primary/50 text-on-surface text-xs font-semibold px-4 py-2.5 rounded transition-all cursor-pointer"
+                    >
+                      <Download size={14} className="text-primary" /> Download Submitted Resume
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Prior Experience */}
+              {application.experience && (
+                <div>
+                  <span className="text-xs text-on-surface-variant font-mono-sm uppercase tracking-wider block mb-1">Prior Experience</span>
+                  <div className="bg-[#1a1a1a] border border-[#222] p-4 rounded-lg text-sm leading-relaxed text-on-surface-variant max-h-[220px] overflow-y-auto whitespace-pre-line">
+                    {application.experience}
+                  </div>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
 
         {/* Project Contributions */}
         {contributions.length > 0 && (

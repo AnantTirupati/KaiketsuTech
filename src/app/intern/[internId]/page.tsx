@@ -29,13 +29,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 async function fetchInternData(internId: string) {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
-  // Fetch intern with profile
+  // Fetch intern with profile (including email)
   const { data: intern } = await supabase
     .from('interns')
     .select(`
       *,
       profiles (
         full_name,
+        email,
         avatar_url,
         rating
       )
@@ -45,6 +46,40 @@ async function fetchInternData(internId: string) {
     .maybeSingle()
 
   if (!intern) return null
+
+  // Fetch application details
+  let application = null
+  let resumeSignedUrl = null
+  if (intern?.profiles?.email) {
+    const { data: appData } = await supabase
+      .from('intern_applications')
+      .select('*')
+      .eq('email', intern.profiles.email)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (appData) {
+      application = appData
+      // Create signed URL for resume if present
+      if (appData.resume_url) {
+        try {
+          const adminClient = createClient(
+            process.env.NEXT_PUBLIC_SUPABASE_URL!,
+            process.env.SUPABASE_SERVICE_ROLE_KEY!
+          )
+          const { data: signedData } = await adminClient.storage
+            .from('resumes')
+            .createSignedUrl(appData.resume_url, 60 * 60 * 24 * 7) // 7 days
+          if (signedData?.signedUrl) {
+            resumeSignedUrl = signedData.signedUrl
+          }
+        } catch (err) {
+          console.error('Error generating signed URL for resume:', err)
+        }
+      }
+    }
+  }
 
   // Fetch project contributions
   const { data: contributions } = await supabase
@@ -89,7 +124,19 @@ async function fetchInternData(internId: string) {
     .eq('status', 'active')
     .order('issued_at', { ascending: false })
 
-  return { intern, contributions: formattedContributions, certificates: certificates || [] }
+  return {
+    intern,
+    contributions: formattedContributions,
+    certificates: certificates || [],
+    application: application ? {
+      phone: application.phone,
+      experience: application.experience,
+      skills: application.skills,
+      technologies: application.technologies,
+      resume_url: resumeSignedUrl,
+      created_at: application.created_at
+    } : null
+  }
 }
 
 export default async function InternProfilePage({ params }: Props) {
