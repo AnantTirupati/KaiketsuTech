@@ -84,8 +84,8 @@ export default function TopNavBar() {
   return (
     <nav className="bg-background/80 backdrop-blur-md text-primary font-body-md text-body-md fixed top-0 w-full z-50 border-b border-outline-variant/20 transition-all duration-300 ease-in-out">
       <div className="flex justify-between items-center gap-2 w-full max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop h-20">
-        <Link href="/" className="hover:opacity-90 transition-opacity shrink min-w-0">
-          <img src="/weblogo.svg" alt="KaiketsuTech Logo" className="h-7 sm:h-8 md:h-12 w-auto max-w-[160px] sm:max-w-[200px] md:max-w-none transition-all" />
+        <Link href="/" className="hover:opacity-90 transition-opacity shrink-0">
+          <img src="/weblogo.svg" alt="KaiketsuTech Logo" className="h-7 sm:h-8 md:h-12 w-auto max-w-[160px] sm:max-w-[200px] md:max-w-[240px] lg:max-w-[260px] xl:max-w-none transition-all" />
         </Link>
         
         <ul className="hidden lg:flex gap-4 xl:gap-8 items-center shrink-0">
