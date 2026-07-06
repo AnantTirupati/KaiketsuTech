@@ -41,8 +41,8 @@ export function buildVerificationUrl(certificateId: string): string {
  * Generate a QR code as a base64 PNG data URI
  * Encodes the verification URL for the given certificate ID
  */
-export async function generateQRCodeDataUri(certificateId: string): Promise<string> {
-  const url = buildVerificationUrl(certificateId)
+export async function generateQRCodeDataUri(certificateId: string, siteUrl?: string): Promise<string> {
+  const url = siteUrl ? `${siteUrl}/verify/${certificateId}` : buildVerificationUrl(certificateId)
   const dataUri = await QRCode.toDataURL(url, {
     errorCorrectionLevel: 'H',
     type: 'image/png',
