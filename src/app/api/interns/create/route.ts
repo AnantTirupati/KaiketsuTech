@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     }
 
     // Validate department
-    const validDepartments = ['engineering', 'design', 'marketing', 'operations']
+    const validDepartments = ['engineering', 'design', 'marketing', 'operations', 'management']
     if (!validDepartments.includes(department)) {
       return NextResponse.json({ error: 'Invalid department' }, { status: 400 })
     }

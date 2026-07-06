@@ -13,7 +13,7 @@ function ApplyFormContent() {
   const { toast } = useToast()
   const supabase = createClient()
 
-  const [roleTrack, setRoleTrack] = useState('full-stack-developer')
+  const [roleTitle, setRoleTitle] = useState('General Internship')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -29,10 +29,25 @@ function ApplyFormContent() {
   useEffect(() => {
     const roleParam = searchParams.get('role')
     if (roleParam) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setRoleTrack(roleParam)
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(roleParam)
+      if (isUuid) {
+        supabase
+          .from('job_postings')
+          .select('title')
+          .eq('id', roleParam)
+          .single()
+          .then(({ data }) => {
+            if (data?.title) {
+              // eslint-disable-next-line react-hooks/set-state-in-effect
+              setRoleTitle(data.title)
+            }
+          })
+      } else {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setRoleTitle(roleParam.replace(/-/g, ' '))
+      }
     }
-  }, [searchParams])
+  }, [searchParams, supabase])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -120,7 +135,7 @@ function ApplyFormContent() {
       <div className="mb-8 border-b border-[#222222] pb-6">
         <h2 className="font-headline-xl text-xl md:text-2xl text-on-surface font-bold">Internship Application</h2>
         <p className="font-body-md text-xs text-on-surface-variant mt-1">
-          Apply for the <span className="text-primary font-semibold capitalize">{roleTrack.replace('-', ' ')}</span> track.
+          Apply for the <span className="text-primary font-semibold capitalize">{roleTitle}</span> track.
         </p>
       </div>
 

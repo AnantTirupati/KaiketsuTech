@@ -1,39 +1,30 @@
 import Link from 'next/link'
 import { Briefcase, ArrowRight, ShieldCheck, Terminal, Cpu, LayoutTemplate } from 'lucide-react'
 import type { Metadata } from 'next'
+import { createClient } from '@/lib/supabase/server'
 
 export const metadata: Metadata = {
   title: 'Careers & Internship Openings | KaiketsuTech',
   description: 'Join KaiketsuTech and build production-grade enterprise software. Apply for frontend, backend, or full-stack developer intern roles.',
 }
 
-export default function CareersPage() {
-  const openRoles = [
-    {
-      id: 'full-stack-developer',
-      title: 'Full Stack Developer Intern',
-      track: 'Full Stack',
-      description: 'Develop production-grade React components, API route handlers, and data sync workers in TypeScript and Next.js.',
-      requirements: ['TypeScript / React', 'Next.js App Router', 'Node.js / Express', 'PostgreSQL / Supabase'],
-      icon: <Terminal className="text-primary" size={24} />
-    },
-    {
-      id: 'frontend-developer',
-      title: 'Frontend Developer Intern',
-      track: 'Frontend',
-      description: 'Architect typography scales, color palettes, and glassmorphic dashboards. Wire up Framer Motion micro-animations.',
-      requirements: ['React / TypeScript', 'CSS Grid & Flexbox', 'Tailwind CSS v4', 'Framer Motion'],
-      icon: <LayoutTemplate className="text-primary" size={24} />
-    },
-    {
-      id: 'backend-developer',
-      title: 'Backend Developer Intern',
-      track: 'Backend',
-      description: 'Map database schemas, write system flow triggers, and configure Supabase RLS security policies.',
-      requirements: ['PostgreSQL / SQL', 'Database Migrations', 'Node.js / Express', 'API Architecture'],
-      icon: <Cpu className="text-primary" size={24} />
-    }
-  ]
+export default async function CareersPage() {
+  const supabase = await createClient()
+
+  // Fetch open job postings from Supabase
+  const { data: openRoles } = await supabase
+    .from('job_postings')
+    .select('*')
+    .eq('status', 'open')
+    .order('created_at', { ascending: false })
+
+  const getRoleIcon = (track: string) => {
+    const t = track.toLowerCase()
+    if (t.includes('stack')) return <Terminal className="text-primary" size={24} />
+    if (t.includes('front')) return <LayoutTemplate className="text-primary" size={24} />
+    if (t.includes('back')) return <Cpu className="text-primary" size={24} />
+    return <Briefcase className="text-primary" size={24} />
+  }
 
   return (
     <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased overflow-x-hidden">
@@ -52,50 +43,56 @@ export default function CareersPage() {
 
         {/* Roles Section */}
         <section className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-12">
-          <h2 className="font-headline-xl text-2xl md:text-3xl font-bold text-on-surface mb-8 border-b border-[#222222] pb-4">
+          <h2 className="font-headline-xl text-2xl md:text-3xl font-bold text-on-surface mb-8 border-b border-[#222] pb-4">
             Active Intern Openings
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-            {openRoles.map((role) => (
-              <div key={role.id} className="bg-[#111111] border border-[#222222] rounded-lg p-6 flex flex-col justify-between hover:border-primary/50 transition-all group">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="w-12 h-12 rounded bg-[#1a1a1a] border border-[#333333] flex items-center justify-center">
-                      {role.icon}
+          {openRoles && openRoles.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+              {openRoles.map((role) => (
+                <div key={role.id} className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between hover:border-primary/50 transition-all group">
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="w-12 h-12 rounded bg-[#1a1a1a] border border-[#333] flex items-center justify-center">
+                        {getRoleIcon(role.track)}
+                      </div>
+                      <span className="font-mono-sm text-[10px] uppercase tracking-widest text-on-surface-variant/70 bg-[#222] px-2.5 py-1 rounded">
+                        {role.track}
+                      </span>
                     </div>
-                    <span className="font-mono-sm text-[10px] uppercase tracking-widest text-on-surface-variant/70 bg-[#222] px-2.5 py-1 rounded">
-                      {role.track}
-                    </span>
+                    <h3 className="font-headline-lg text-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">
+                      {role.title}
+                    </h3>
+                    <p className="font-body-md text-xs text-on-surface-variant mb-6 leading-relaxed">
+                      {role.description}
+                    </p>
+                    
+                    <div className="mb-8">
+                      <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mb-3 font-semibold">Technologies / Skills</p>
+                      <ul className="flex flex-wrap gap-2">
+                        {role.requirements?.map((req: string, index: number) => (
+                          <li key={index} className="text-[10px] font-mono-sm bg-[#1a1a1a] border border-[#222] text-on-surface px-2.5 py-1 rounded">
+                            {req}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                  <h3 className="font-headline-lg text-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">
-                    {role.title}
-                  </h3>
-                  <p className="font-body-md text-xs text-on-surface-variant mb-6 leading-relaxed">
-                    {role.description}
-                  </p>
-                  
-                  <div className="mb-8">
-                    <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mb-3 font-semibold">Technologies / Skills</p>
-                    <ul className="flex flex-wrap gap-2">
-                      {role.requirements.map((req, index) => (
-                        <li key={index} className="text-[10px] font-mono-sm bg-[#1a1a1a] border border-[#222] text-on-surface px-2.5 py-1 rounded">
-                          {req}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
 
-                <Link 
-                  href={`/apply?role=${role.id}`}
-                  className="w-full bg-primary-container text-white py-3 rounded font-label-md text-xs hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                >
-                  Apply For Role
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
-            ))}
-          </div>
+                  <Link 
+                    href={`/apply?role=${role.id}`}
+                    className="w-full bg-primary-container text-white py-3 rounded font-label-md text-xs hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  >
+                    Apply For Role
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16 border border-dashed border-[#222] rounded-lg">
+              <p className="text-on-surface-variant text-sm font-mono-sm">There are no open roles at this moment. Check back later!</p>
+            </div>
+          )}
         </section>
 
         {/* Benefits & Contact Panels */}
@@ -120,7 +117,7 @@ export default function CareersPage() {
               <div>
                 <h3 className="font-headline-xl text-xl font-bold mb-3 text-on-surface">General Applications</h3>
                 <p className="font-body-md text-xs text-on-surface-variant leading-relaxed mb-6">
-                  Don't see a role that fits your track but want to build with us? Send your resume and portfolio directly to our recruiting squad.
+                  Don&apos;t see a role that fits your track but want to build with us? Send your resume and portfolio directly to our recruiting squad.
                 </p>
               </div>
               <div className="mt-auto">

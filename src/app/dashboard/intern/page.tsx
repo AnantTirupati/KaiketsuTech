@@ -18,7 +18,7 @@ interface Task {
   id: string
   title: string
   status: 'todo' | 'in_progress' | 'done'
-  category: 'Frontend' | 'Backend' | 'Design Sys' | 'Other'
+  category: 'Frontend' | 'Backend' | 'Design Sys' | 'Management' | 'Operations' | 'Other'
   due_date?: string
 }
 

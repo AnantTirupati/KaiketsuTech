@@ -21,6 +21,11 @@ export default function VerificationResultClient({ result, certificateId }: Prop
 
   const config = statusConfig[result.status]
 
+  const formatDepartment = (dept: string) => {
+    if (dept.toLowerCase() === 'management') return 'Management Intern'
+    return dept
+  }
+
   return (
     <div className="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
       <main className="flex-grow pt-32 pb-section-gap flex flex-col gap-12 max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop">
@@ -80,9 +85,18 @@ export default function VerificationResultClient({ result, certificateId }: Prop
               <div className="space-y-4 text-sm">
                 <div className="flex items-center gap-3">
                   <Code size={16} className="text-on-surface-variant shrink-0" />
-                  <div>
-                    <span className="text-on-surface-variant">Department:</span>{' '}
-                    <span className="text-on-surface capitalize font-semibold">{result.intern.department}</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-on-surface-variant">Department:</span>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-mono-sm font-semibold uppercase tracking-wider ${
+                      result.intern.department === 'engineering' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                      result.intern.department === 'design' ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                      result.intern.department === 'marketing' ? 'bg-pink-500/10 text-pink-400 border border-pink-500/20' :
+                      result.intern.department === 'operations' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20' :
+                      result.intern.department === 'management' ? 'bg-primary-container/10 text-primary border border-primary-container/20' :
+                      'bg-outline-variant/10 text-on-surface border border-outline-variant/20'
+                    }`}>
+                      {formatDepartment(result.intern.department)}
+                    </span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">

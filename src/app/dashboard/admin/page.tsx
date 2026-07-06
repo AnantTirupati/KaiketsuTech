@@ -58,7 +58,7 @@ interface PaymentWithClient {
 }
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'projects' | 'clients' | 'payments' | 'interns' | 'certificates'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'projects' | 'clients' | 'payments' | 'interns' | 'certificates' | 'careers'>('overview')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -76,6 +76,16 @@ export default function AdminDashboard() {
   const [certificatesList, setCertificatesList] = useState<CertificateWithIntern[]>([])
   const [auditLogsList, setAuditLogsList] = useState<AuditLogWithActor[]>([])
   const [contributorsList, setContributorsList] = useState<ProjectContributorWithDetails[]>([])
+
+  // Careers (Job Postings) state
+  const [jobPostings, setJobPostings] = useState<Database['public']['Tables']['job_postings']['Row'][]>([])
+  const [newJob, setNewJob] = useState({
+    title: '',
+    track: 'Full Stack',
+    description: '',
+    requirements: ''
+  })
+  const [creatingJob, setCreatingJob] = useState(false)
 
   // Onboarding Form Modal State
   const [onboardOpen, setOnboardOpen] = useState(false)
@@ -240,7 +250,7 @@ export default function AdminDashboard() {
     projectId: '',
     internId: '',
     title: '',
-    category: 'Frontend' as 'Frontend' | 'Backend' | 'Design Sys' | 'Other'
+    category: 'Frontend' as 'Frontend' | 'Backend' | 'Design Sys' | 'Management' | 'Operations' | 'Other'
   })
   const [creatingTask, setCreatingTask] = useState(false)
 
@@ -309,6 +319,9 @@ export default function AdminDashboard() {
         `)
         .order('created_at', { ascending: false })
 
+      // Fetch job postings
+      const { data: jobData } = await supabase.from('job_postings').select('*').order('created_at', { ascending: false })
+
       setLeads(leadData || [])
       setProjects((projData as unknown as ProjectWithClient[]) || [])
       setClients(clientData || [])
@@ -320,6 +333,7 @@ export default function AdminDashboard() {
       setCertificatesList((certsData as unknown as CertificateWithIntern[]) || [])
       setAuditLogsList((auditData as unknown as AuditLogWithActor[]) || [])
       setContributorsList((contribData as unknown as ProjectContributorWithDetails[]) || [])
+      setJobPostings(jobData || [])
 
       setLoading(false)
     }
@@ -362,6 +376,8 @@ export default function AdminDashboard() {
       `)
       .order('created_at', { ascending: false })
 
+    const { data: jobData } = await supabase.from('job_postings').select('*').order('created_at', { ascending: false })
+
     setLeads(leadData || [])
     setProjects((projData as unknown as ProjectWithClient[]) || [])
     setPayments((payData as unknown as PaymentWithClient[]) || [])
@@ -372,6 +388,7 @@ export default function AdminDashboard() {
     setCertificatesList((certsData as unknown as CertificateWithIntern[]) || [])
     setAuditLogsList((auditData as unknown as AuditLogWithActor[]) || [])
     setContributorsList((contribData as unknown as ProjectContributorWithDetails[]) || [])
+    setJobPostings(jobData || [])
   }
 
   // --- ACTIONS ---
@@ -825,6 +842,64 @@ export default function AdminDashboard() {
     }
   }
 
+  // --- CAREERS MANAGEMENT ACTIONS ---
+
+  const handleCreateJobPosting = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!newJob.title || !newJob.description) return
+    setCreatingJob(true)
+    try {
+      const reqsArray = newJob.requirements
+        ? newJob.requirements.split(',').map(r => r.trim()).filter(Boolean)
+        : []
+
+      const { error } = await supabase.from('job_postings').insert({
+        title: newJob.title,
+        track: newJob.track,
+        description: newJob.description,
+        requirements: reqsArray,
+        status: 'open'
+      })
+
+      if (error) throw error
+      toast('Job posting created successfully.', 'success')
+      setNewJob({ title: '', track: 'Full Stack', description: '', requirements: '' })
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to create job posting', 'error')
+    } finally {
+      setCreatingJob(false)
+    }
+  }
+
+  const handleToggleJobStatus = async (jobId: string, currentStatus: string) => {
+    const nextStatus = currentStatus === 'open' ? 'closed' : 'open'
+    try {
+      const { error } = await supabase
+        .from('job_postings')
+        .update({ status: nextStatus })
+        .eq('id', jobId)
+
+      if (error) throw error
+      toast(`Job status updated to ${nextStatus}.`, 'success')
+      reloadData()
+    } catch (err) {
+      toast('Failed to update status.', 'error')
+    }
+  }
+
+  const handleDeleteJobPosting = async (jobId: string) => {
+    if (!confirm('Are you sure you want to delete this job posting?')) return
+    try {
+      const { error } = await supabase.from('job_postings').delete().eq('id', jobId)
+      if (error) throw error
+      toast('Job posting deleted.', 'success')
+      reloadData()
+    } catch (err) {
+      toast('Failed to delete job posting.', 'error')
+    }
+  }
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
@@ -882,7 +957,8 @@ export default function AdminDashboard() {
                 { id: 'clients', label: 'Client Accounts', icon: <Users size={18} /> },
                 { id: 'payments', label: 'Payments Ledger', icon: <DollarSign size={18} /> },
                 { id: 'interns', label: 'Intern Cohort', icon: <Users size={18} /> },
-                { id: 'certificates', label: 'Certificates', icon: <Award size={18} /> }
+                { id: 'certificates', label: 'Certificates', icon: <Award size={18} /> },
+                { id: 'careers', label: 'Careers Manager', icon: <Briefcase size={18} /> }
               ] as const
             ).map(tab => (
               <button
@@ -1124,7 +1200,7 @@ export default function AdminDashboard() {
               {/* Task Assigner Panel (Assign Interns) */}
               <div className="bg-[#111] border border-[#222] rounded-lg p-6">
                 <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Assign Task to Intern</h4>
-                <form onSubmit={handleCreateTask} className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <form onSubmit={handleCreateTask} className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <select 
                     value={newTask.projectId}
                     onChange={e => setNewTask({ ...newTask, projectId: e.target.value })}
@@ -1144,6 +1220,18 @@ export default function AdminDashboard() {
                     {interns.map(i => (
                       <option key={i.id} value={i.id}>{i.full_name || i.email}</option>
                     ))}
+                  </select>
+                  <select 
+                    value={newTask.category}
+                    onChange={e => setNewTask({ ...newTask, category: e.target.value as 'Frontend' | 'Backend' | 'Design Sys' | 'Management' | 'Operations' | 'Other' })}
+                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer"
+                  >
+                    <option value="Frontend">Frontend</option>
+                    <option value="Backend">Backend</option>
+                    <option value="Design Sys">Design Sys</option>
+                    <option value="Management">Management</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Other">Other</option>
                   </select>
                   <input 
                     type="text" 
@@ -1461,6 +1549,16 @@ export default function AdminDashboard() {
                               <button
                                 onClick={() => {
                                   setSelectedIntern(int)
+                                  const deptName = int.department === 'engineering' ? 'Software Engineering' :
+                                                   int.department === 'design' ? 'UI/UX Design' :
+                                                   int.department === 'marketing' ? 'Marketing' :
+                                                   int.department === 'operations' ? 'Operations' :
+                                                   int.department === 'management' ? 'Management & Operations' : int.department;
+                                  setIssuanceForm({
+                                    title: 'Certificate of Internship Completion',
+                                    description: `For successfully completing their internship as a ${deptName} Intern.`,
+                                    validUntil: ''
+                                  })
                                   setIssueOpen(true)
                                 }}
                                 className="px-2 py-1 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-on-surface rounded text-[10px] font-semibold cursor-pointer"
@@ -1781,6 +1879,146 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {/* CAREERS TAB */}
+          {activeTab === 'careers' && (
+            <div className="space-y-6">
+              {/* Provision New Job Posting */}
+              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Create New Job Posting</h4>
+                <form onSubmit={handleCreateJobPosting} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="flex flex-col gap-1">
+                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Job Title</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. AI Engineering Intern"
+                        required
+                        value={newJob.title}
+                        onChange={e => setNewJob({ ...newJob, title: e.target.value })}
+                        className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface w-full"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Track / Department</label>
+                      <select 
+                        value={newJob.track}
+                        onChange={e => setNewJob({ ...newJob, track: e.target.value })}
+                        className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer w-full"
+                      >
+                        <option value="Full Stack">Full Stack</option>
+                        <option value="Frontend">Frontend</option>
+                        <option value="Backend">Backend</option>
+                        <option value="Design">Design</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Management">Management</option>
+                        <option value="Operations">Operations</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Requirements / Skills (comma-separated)</label>
+                      <input 
+                        type="text" 
+                        placeholder="TypeScript, SQL, Project Management"
+                        value={newJob.requirements}
+                        onChange={e => setNewJob({ ...newJob, requirements: e.target.value })}
+                        className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface w-full"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Job Description</label>
+                    <textarea 
+                      placeholder="Enter detailed job description..."
+                      required
+                      value={newJob.description}
+                      onChange={e => setNewJob({ ...newJob, description: e.target.value })}
+                      className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface w-full h-24 resize-none"
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <button 
+                      type="submit" 
+                      disabled={creatingJob}
+                      className="bg-primary-container text-white px-6 py-2.5 rounded hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                    >
+                      {creatingJob ? <Loader className="animate-spin" size={14} /> : <Plus size={14} />}
+                      Create Job Posting
+                    </button>
+                  </div>
+                </form>
+              </div>
+
+              {/* Active Job Postings List */}
+              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
+                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Job Postings Ledger</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                    <thead>
+                      <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                        <th className="pb-3">Title</th>
+                        <th className="pb-3">Track</th>
+                        <th className="pb-3">Skills / Requirements</th>
+                        <th className="pb-3">Status</th>
+                        <th className="pb-3">Created At</th>
+                        <th className="pb-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#222]">
+                      {jobPostings.map(job => (
+                        <tr key={job.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                          <td className="py-4 font-semibold text-on-surface text-xs">{job.title}</td>
+                          <td className="py-4 text-xs font-semibold text-primary">{job.track}</td>
+                          <td className="py-4 text-xs">
+                            <div className="flex flex-wrap gap-1">
+                              {job.requirements?.map((req, idx) => (
+                                <span key={idx} className="bg-[#222] px-2 py-0.5 rounded text-[10px] text-on-surface-variant">{req}</span>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="py-4 text-xs">
+                            <span className={`px-2.5 py-0.5 rounded text-[10px] font-mono-sm uppercase font-semibold border ${
+                              job.status === 'open' 
+                                ? 'bg-green-500/10 text-[#4ade80] border-green-500/20' 
+                                : 'bg-[#222] text-on-surface-variant border-[#333]'
+                            }`}>
+                              {job.status}
+                            </span>
+                          </td>
+                          <td className="py-4 font-mono-sm text-[10px] text-on-surface-variant">
+                            {job.created_at ? new Date(job.created_at).toLocaleDateString() : 'N/A'}
+                          </td>
+                          <td className="py-4 text-right">
+                            <div className="flex gap-2 justify-end">
+                              <button
+                                onClick={() => handleToggleJobStatus(job.id, job.status)}
+                                className="px-2 py-1 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-on-surface rounded text-[10px] font-semibold cursor-pointer"
+                                title="Toggle Status"
+                              >
+                                {job.status === 'open' ? 'Close Posting' : 'Open Posting'}
+                              </button>
+                              <button
+                                onClick={() => handleDeleteJobPosting(job.id)}
+                                className="p-1 hover:text-error transition-colors cursor-pointer text-on-surface-variant"
+                                title="Delete Posting"
+                              >
+                                <Trash2 size={15} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                      {jobPostings.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="py-8 text-center text-on-surface-variant">No job postings found.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
       </main>
 
@@ -1815,6 +2053,7 @@ export default function AdminDashboard() {
                   <option value="design">Design</option>
                   <option value="marketing">Marketing</option>
                   <option value="operations">Operations</option>
+                  <option value="management">Management</option>
                 </select>
               </div>
 
