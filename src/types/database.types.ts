@@ -277,6 +277,39 @@ export type Database = {
           },
         ]
       }
+      job_postings: {
+        Row: {
+          id: string
+          title: string
+          track: string
+          description: string
+          requirements: string[] | null
+          status: string
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          title: string
+          track: string
+          description: string
+          requirements?: string[] | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          title?: string
+          track?: string
+          description?: string
+          requirements?: string[] | null
+          status?: string
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       messages: {
         Row: {
           content: string
