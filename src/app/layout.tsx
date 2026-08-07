@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { ToastProvider } from '@/components/ui/Toast'
-import TopNavBar from '@/components/shared/TopNavBar'
-import Footer from '@/components/shared/Footer'
+import SiteChrome from '@/components/marketing/SiteChrome'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -47,9 +46,7 @@ export default function RootLayout({
     <html lang="en" className="dark h-full antialiased">
       <body className="min-h-full bg-background text-on-surface flex flex-col">
         <ToastProvider>
-          <TopNavBar />
-          <main className="flex-1 flex flex-col">{children}</main>
-          <Footer />
+          <SiteChrome>{children}</SiteChrome>
         </ToastProvider>
       </body>
     </html>
