@@ -43,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark h-full antialiased">
+    <html lang="en" className="dark h-full antialiased" data-scroll-behavior="smooth">
       <body className="min-h-full bg-background text-on-surface flex flex-col">
         <ToastProvider>
           <SiteChrome>{children}</SiteChrome>
