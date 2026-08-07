@@ -1,7 +1,7 @@
 "use client";
 
+import { createElement, useRef, type ElementType } from "react";
 import { motion, useInView } from "framer-motion";
-import { useRef, type ElementType } from "react";
 import { useIntroDone } from "@/components/marketing/IntroDoneContext";
 
 /**
@@ -35,32 +35,38 @@ export default function KineticText({
   const introDone = useIntroDone();
   const show = inView && introDone;
   const words = text.split(" ");
-  return (
-    <Tag ref={ref} className={className}>
-      <span className="sr-only">{text}</span>
-      <span aria-hidden="true">
-        {words.map((word, i) => (
-          <span
-            key={i}
-            className={`inline-block overflow-hidden pb-[0.1em] align-top ${
-              i < words.length - 1 ? "mr-[0.28em]" : ""
-            }`}
+
+  // Plain JSX (<Tag ref={ref}>) doesn't type-check for a polymorphic
+  // ElementType under React 19's stricter intrinsic-element typing — this
+  // worked fine on React 18. createElement sidesteps that narrowing.
+  return createElement(
+    Tag,
+    { ref, className },
+    <span key="sr" className="sr-only">
+      {text}
+    </span>,
+    <span key="visual" aria-hidden="true">
+      {words.map((word, i) => (
+        <span
+          key={i}
+          className={`inline-block overflow-hidden pb-[0.1em] align-top ${
+            i < words.length - 1 ? "mr-[0.28em]" : ""
+          }`}
+        >
+          <motion.span
+            className="inline-block"
+            initial={{ y: "115%" }}
+            animate={show ? { y: "0%" } : { y: "115%" }}
+            transition={{
+              duration: 0.7,
+              delay: delay + i * 0.045,
+              ease: [0.22, 0.9, 0.2, 1],
+            }}
           >
-            <motion.span
-              className="inline-block"
-              initial={{ y: "115%" }}
-              animate={show ? { y: "0%" } : { y: "115%" }}
-              transition={{
-                duration: 0.7,
-                delay: delay + i * 0.045,
-                ease: [0.22, 0.9, 0.2, 1],
-              }}
-            >
-              {word}
-            </motion.span>
-          </span>
-        ))}
-      </span>
-    </Tag>
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </span>,
   );
 }
