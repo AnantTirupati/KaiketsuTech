@@ -35,9 +35,16 @@ const MARKETING_ROUTES = new Set([
   "/pricing",
 ]);
 
+// Routes with dynamic sub-paths that should also get the marketing theme —
+// e.g. /showcase/[slug] case-study pages. Exact-match the rest above rather
+// than prefix-matching everything, so a typo'd or future out-of-scope route
+// sharing a prefix (there isn't one today) can't accidentally opt in.
+const MARKETING_PREFIXES = ["/showcase/"];
+
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isMarketing = MARKETING_ROUTES.has(pathname);
+  const isMarketing =
+    MARKETING_ROUTES.has(pathname) || MARKETING_PREFIXES.some((p) => pathname.startsWith(p));
 
   if (!isMarketing) {
     return (
