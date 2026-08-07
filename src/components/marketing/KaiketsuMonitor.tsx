@@ -2,20 +2,8 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { Noto_Sans_JP } from "next/font/google";
 import * as THREE from "three";
 import { useIntroDone } from "@/components/marketing/IntroDoneContext";
-
-/**
- * Loaded via next/font instead of a CSS @import (which was render-blocking —
- * confirmed via Lighthouse: ~1.5s of FCP/LCP delay just for this one font
- * request). next/font self-hosts + preloads non-blocking, but the resolved
- * family name is a generated string only available through `.style.fontFamily`
- * — it can't be referenced by CSS variable from a raw Canvas 2D `ctx.font`
- * string the way DOM text can, so it's threaded into FONT_STACK explicitly
- * below rather than just being "Noto Sans JP" by name.
- */
-const notoSansJP = Noto_Sans_JP({ weight: ["400", "700", "900"], subsets: ["latin"], display: "swap" });
 
 /**
  * Ported from kaiketsu-portfolio-v2/components/KaiketsuMonitor.tsx, itself
@@ -45,7 +33,7 @@ const CANVAS_H = 648;
 const SUPERSAMPLE = 2;
 const PAD_X = 78;
 const LINE_H = 62;
-const FONT_STACK = `'JetBrains Mono', 'Menlo', 'Consolas', ${notoSansJP.style.fontFamily}, 'Hiragino Kaku Gothic Pro', 'Yu Gothic', monospace`;
+const FONT_STACK = "'JetBrains Mono', 'Menlo', 'Consolas', 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', monospace";
 const MONO = `38px ${FONT_STACK}`;
 const MONO_TAG = `30px ${FONT_STACK}`;
 const SANS_BOLD = "bold 92px 'Arial', 'Helvetica Neue', sans-serif";
@@ -161,11 +149,10 @@ export default function KaiketsuMonitor({ reducedMotion }: { reducedMotion: bool
   useEffect(() => {
     // 解決 is drawn on a <canvas>, which only gets CJK glyphs if a
     // CJK-capable font is actually loaded — plain font-family fallback isn't
-    // enough for canvas 2D the way it is for DOM text. next/font (see the
-    // notoSansJP loader above) already preloads it; this just waits for that
-    // load to actually finish before the boot loop starts drawing text.
-    document.fonts?.load(`38px ${notoSansJP.style.fontFamily}`).catch(() => {});
-    document.fonts?.load(`900 92px ${notoSansJP.style.fontFamily}`).catch(() => {});
+    // enough for canvas 2D the way it is for DOM text. Noto Sans JP is
+    // linked in src/app/globals.css; this just waits for it.
+    document.fonts?.load("38px 'Noto Sans JP'").catch(() => {});
+    document.fonts?.load("900 92px 'Noto Sans JP'").catch(() => {});
   }, []);
 
   const canvas = useMemo(() => {

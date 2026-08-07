@@ -4,7 +4,7 @@ import MagneticButton from "@/components/marketing/MagneticButton";
 import KineticText from "@/components/marketing/KineticText";
 
 export const metadata: Metadata = {
-  title: "About | KaiketsuTech",
+  title: "About",
   description: "KaiketsuTech is a crew of student developers who build real client work together.",
 };
 

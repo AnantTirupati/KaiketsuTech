@@ -4,7 +4,7 @@ import KineticText from '@/components/marketing/KineticText'
 import { marketingProjects } from '@/lib/marketing-projects'
 
 export const metadata: Metadata = {
-  title: 'Work | KaiketsuTech',
+  title: 'Work',
   description: 'Real sites, real clients — the work KaiketsuTech has actually shipped.',
 }
 

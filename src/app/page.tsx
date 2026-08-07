@@ -8,7 +8,7 @@ import ResolveSceneClient from "@/components/marketing/ResolveSceneClient";
 import { marketingProjects } from "@/lib/marketing-projects";
 
 export const metadata: Metadata = {
-  title: "KaiketsuTech — a crew of student builders, open for hire",
+  title: { absolute: "KaiketsuTech — a crew of student builders, open for hire" },
   description:
     "KaiketsuTech (解決) means 'solution.' A crew of student developers shipping real client work in web, mobile, and AI — and recruiting the next builders as we grow.",
 };

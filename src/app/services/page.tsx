@@ -1,142 +1,116 @@
-'use client'
-
-import { motion } from 'framer-motion'
-import { ArrowRight } from 'lucide-react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { WebDevMockup, ECommerceMockup, PlatformsMockup } from '@/components/shared/ServiceIllustrations'
+import Reveal from '@/components/marketing/Reveal'
+import KineticText from '@/components/marketing/KineticText'
+
+export const metadata: Metadata = {
+  title: 'Services',
+  description: 'Web development, custom software, AI-driven solutions, and the MLOps/DevOps foundation to run them reliably.',
+}
+
+const capabilities = [
+  {
+    title: 'Web Development',
+    description:
+      'High-performance web applications built on modern frameworks — optimized for speed, and built to actually stay maintainable.',
+    href: '/contact?subject=software',
+  },
+  {
+    title: 'Custom Software & MVPs',
+    description:
+      'Full applications beyond a templated site — multi-role platforms, internal tools, and first versions built to validate an idea fast.',
+    href: '/contact?subject=software',
+  },
+  {
+    title: 'AI-Driven Solutions',
+    description:
+      'Assistants grounded in your own data, and custom model features bolted onto existing products — built on established APIs, not hype.',
+    href: '/contact?subject=software',
+  },
+  {
+    title: 'MLOps & Infrastructure',
+    description:
+      'Model registries, versioned pipelines, and drift monitoring for ML systems that need to keep working after the demo.',
+    href: '/contact?subject=infrastructure',
+  },
+  {
+    title: 'DevOps & Cloud',
+    description:
+      'CI/CD ownership, infrastructure-as-code, and cloud cost review — the operational discipline behind a system that doesn’t page you at 2am.',
+    href: '/contact?subject=infrastructure',
+  },
+  {
+    title: 'Technical Consulting',
+    description:
+      'Architecture review and technical due diligence for teams that need a second, independent set of eyes before they commit.',
+    href: '/contact?subject=consulting',
+  },
+]
 
 export default function Services() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-      },
-    },
-  }
-
-  const cardVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring' as const,
-        stiffness: 100,
-        damping: 15,
-      },
-    },
-  }
-
-  const capabilities = [
-    {
-      title: 'Web Development',
-      description: 'High-performance web applications built on modern JavaScript frameworks. Optimized for speed and scalability.',
-      icon: <WebDevMockup />,
-      href: '/contact?subject=software',
-    },
-    {
-      title: 'E-Commerce',
-      description: 'Robust digital storefronts tailored for conversion. Seamless integrations and frictionless checkout experiences.',
-      icon: <ECommerceMockup />,
-      href: '/contact?subject=software',
-    },
-    {
-      title: 'Backend Systems',
-      description: 'Secure, scalable, and resilient server-side architectures. API design and microservices orchestration.',
-      icon: <PlatformsMockup />,
-      href: '/contact?subject=infrastructure',
-    },
-  ]
-
   return (
-    <div className="bg-background text-on-surface antialiased overflow-x-hidden min-h-screen">
-      {/* Hero Section */}
-      <section className="relative min-h-[600px] flex items-center justify-center pt-24 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="/background.png" 
-            alt="Services background" 
-            className="w-full h-full object-cover object-center scale-75 opacity-30"
-          />
-          {/* Radial mask to blend edges smoothly on all sides */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_20%,#1c110b_80%)]"></div>
-          {/* Vertical gradient to blend with the page section below */}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/10 to-transparent"></div>
-        </div>
-        <div className="relative z-10 max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop text-center">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="font-display-lg text-5xl md:text-7xl lg:text-7xl font-bold text-on-surface mb-stack-lg uppercase tracking-tight"
-          >
-            ELEVATE DIGITAL<br/>EXPERIENCES
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto mb-stack-lg"
-          >
-            Precision engineering for modern enterprises. We construct scalable, performant, and deeply resilient software architectures.
-          </motion.p>
-          <motion.a 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            href="#capabilities"
-            className="inline-flex items-center justify-center bg-primary-container text-white px-8 py-4 rounded font-label-md text-label-md font-semibold hover:bg-opacity-95 transition-all shadow-[0_4px_20px_rgba(249,115,22,0.2)]"
-          >
-            Explore Capabilities
-            <ArrowRight size={18} className="ml-2" />
-          </motion.a>
-        </div>
-      </section>
-
-      {/* Service Categories (Grid) */}
-      <section id="capabilities" className="py-section-gap">
-        <div className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop">
-          <div className="mb-16 text-center">
-            <h2 className="font-section-label text-section-label text-primary uppercase tracking-widest mb-stack-sm">Core Capabilities</h2>
-            <h3 className="font-display-lg text-4xl md:text-5xl lg:text-6xl font-bold text-on-surface">Precision Engineered Solutions</h3>
+    <>
+      <section className="px-[6vw] pb-[8vh] pt-[12vh]">
+        <Reveal>
+          <div className="mb-3 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-accent">
+            Services
           </div>
+          <KineticText
+            as="h1"
+            className="max-w-[18ch] font-marketing-sans text-[clamp(36px,6vw,64px)] font-bold leading-[1.02]"
+            text="Precision engineered solutions."
+          />
+          <p className="mt-6 max-w-[60ch] text-lg leading-relaxed text-marketing-muted">
+            From a five-page website to the MLOps foundation running a production model — scoped and
+            built by the people who&rsquo;ll actually maintain it.
+          </p>
+        </Reveal>
+      </section>
 
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-100px' }}
-            variants={containerVariants}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter"
-          >
-            {capabilities.map((cap) => (
-              <motion.div
-                key={cap.title}
-                variants={cardVariants}
-                className="bg-[#111111] border border-[#222222] rounded-lg p-stack-lg hover:border-primary transition-all duration-300 group cursor-pointer flex flex-col justify-between"
+      <section className="border-t border-marketing-border px-[6vw] py-[8vh]">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {capabilities.map((cap, i) => (
+            <Reveal
+              key={cap.title}
+              delay={i * 0.05}
+              className="flex flex-col justify-between gap-6 border border-marketing-border bg-marketing-bg-raised p-7 transition-colors hover:border-marketing-accent"
+            >
+              <div>
+                <h3 className="mb-3 font-marketing-sans text-lg font-bold text-marketing-fg">{cap.title}</h3>
+                <p className="text-[15px] leading-relaxed text-marketing-muted">{cap.description}</p>
+              </div>
+              <Link
+                href={cap.href}
+                className="font-marketing-mono text-xs uppercase tracking-[0.1em] text-marketing-muted-dim transition-colors hover:text-marketing-accent"
               >
-                <div>
-                  <div className="mb-stack-lg">
-                    {cap.icon}
-                  </div>
-                  <h4 className="font-headline-lg text-headline-lg text-on-surface mb-stack-sm text-xl">{cap.title}</h4>
-                  <p className="font-body-md text-body-md text-on-surface-variant mb-stack-lg">
-                    {cap.description}
-                  </p>
-                </div>
-                <Link 
-                  className="font-label-md text-label-md text-primary uppercase flex items-center gap-2 mt-auto hover:text-opacity-80 transition-colors" 
-                  href={cap.href}
-                >
-                  View Details 
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
+                View details →
+              </Link>
+            </Reveal>
+          ))}
         </div>
       </section>
-    </div>
+
+      <section className="border-t border-marketing-border px-[6vw] py-[10vh]">
+        <Reveal>
+          <h2 className="max-w-[18ch] font-marketing-sans text-[clamp(28px,4.5vw,48px)] font-bold text-marketing-fg">
+            See what these actually cost.
+          </h2>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <Link
+              href="/pricing"
+              className="rounded-full bg-marketing-accent px-7 py-3.5 text-sm font-semibold text-marketing-accent-ink transition-colors hover:bg-marketing-fg"
+            >
+              View pricing
+            </Link>
+            <Link
+              href="/contact"
+              className="rounded-full border border-marketing-border px-7 py-3.5 text-sm font-semibold text-marketing-fg transition-colors hover:border-marketing-accent"
+            >
+              Talk to us
+            </Link>
+          </div>
+        </Reveal>
+      </section>
+    </>
   )
 }

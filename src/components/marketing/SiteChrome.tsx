@@ -12,20 +12,28 @@ import MarketingFooter from "@/components/marketing/MarketingFooter";
 import PageTransition from "@/components/marketing/PageTransition";
 
 /**
- * Root layout renders every route through here. The v2 port only covers a
- * specific set of public pages — everything else (dashboard, auth, intern,
- * verify, portfolio, pricing, services, request-project, start-project, and
- * anything not listed below) must keep rendering exactly as it did before
- * this port: TopNavBar + Footer, unchanged, same as the old root layout did
- * unconditionally for every route.
+ * Root layout renders every route through here. Authenticated areas
+ * (dashboard, auth, login/register/forgot-password, intern, verify, api) and
+ * /request-project (its own bespoke chrome-free wizard, by design — see that
+ * page) must keep rendering exactly as before: TopNavBar + Footer, unchanged.
+ * Everything actually public now gets the v2 theme, per the user.
  *
  * A route-group restructuring (moving these page files under an app/(marketing)
  * folder) was the more "idiomatic" way to scope a different layout, but it
- * would have meant physically moving ~12 out-of-scope route folders — a much
- * larger, riskier diff than this one pathname check for a port explicitly
- * scoped to NOT touch those routes.
+ * would have meant physically moving the out-of-scope route folders too — a
+ * much larger, riskier diff than this one pathname check.
  */
-const MARKETING_ROUTES = new Set(["/", "/about", "/apply", "/careers", "/contact", "/showcase"]);
+const MARKETING_ROUTES = new Set([
+  "/",
+  "/about",
+  "/apply",
+  "/careers",
+  "/contact",
+  "/showcase",
+  "/services",
+  "/portfolio",
+  "/pricing",
+]);
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

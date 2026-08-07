@@ -5,7 +5,7 @@ import Reveal from '@/components/marketing/Reveal'
 import KineticText from '@/components/marketing/KineticText'
 
 export const metadata: Metadata = {
-  title: 'Careers | KaiketsuTech',
+  title: 'Careers',
   description: 'Join KaiketsuTech and build production-grade enterprise software. Apply for frontend, backend, or full-stack developer intern roles.',
 }
 

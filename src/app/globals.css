@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;500;600;700&family=Sora:wght@600&family=Geist+Mono:wght@400;600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+/* Noto Sans JP — the marketing hero's 3D monitor renders 解決 onto a <canvas>
+   texture. Canvas fillText doesn't fall back through a font stack the way
+   DOM text does, so a CJK-capable font must actually be loaded. Tried
+   next/font/google for this (avoids the render-blocking cost of this
+   @import), but Turbopack's font-fetching module reliably failed to resolve
+   when the font is only ever reached through a client-only, ssr:false
+   dynamic import chain (KaiketsuMonitor is loaded that way on purpose, to
+   keep three.js out of the server bundle). Reliability wins here. */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
 @import "tailwindcss";
 
 
