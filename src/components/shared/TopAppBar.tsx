@@ -35,20 +35,21 @@ function formatRelativeTime(dateStr: string) {
   return `${diffDays}d ago`
 }
 
-export default function TopAppBar({ 
-  title, 
-  placeholder = 'Search...', 
-  searchValue = '', 
+export default function TopAppBar({
+  title,
+  placeholder = 'Search...',
+  searchValue = '',
   onSearchChange,
   onMenuClick
 }: TopAppBarProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [notifications, setNotifications] = useState<Notification[]>([])
-  
+
   const supabase = createClient()
 
   useEffect(() => {
     let active = true
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let channel: any = null
 
     async function setupNotifications() {
@@ -56,7 +57,6 @@ export default function TopAppBar({
       const user = session?.user
       if (!user || !active) return
 
-      // Fetch existing notifications
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
@@ -72,7 +72,6 @@ export default function TopAppBar({
         setNotifications((data as unknown as Notification[]) || [])
       }
 
-      // Subscribe to Realtime postgres_changes
       channel = supabase
         .channel(`user-notifications-${user.id}`)
         .on(
@@ -142,109 +141,99 @@ export default function TopAppBar({
   }
 
   return (
-    <header className="w-full sticky top-0 z-40 bg-surface/85 backdrop-blur-md border-b border-outline-variant/35 flex justify-between items-center px-gutter py-4">
+    <header className="sticky top-0 z-40 flex w-full items-center justify-between border-b border-marketing-border bg-marketing-bg/85 px-6 py-4 backdrop-blur-md font-marketing-sans">
       <div className="flex items-center gap-4">
         {onMenuClick && (
-          <button 
+          <button
             onClick={onMenuClick}
-            className="md:hidden text-on-surface-variant hover:text-primary transition-all p-2 rounded-full cursor-pointer flex items-center justify-center"
+            className="flex cursor-pointer items-center justify-center p-2 text-marketing-muted-dim transition-colors hover:text-marketing-accent md:hidden"
             aria-label="Open sidebar"
           >
             <Menu size={20} />
           </button>
         )}
-        <h2 className="font-headline-lg text-xl md:text-2xl text-on-surface font-bold tracking-tight">{title}</h2>
+        <h2 className="font-marketing-sans text-xl font-bold tracking-tight text-marketing-fg md:text-2xl">{title}</h2>
       </div>
       <div className="flex items-center gap-4">
-        {/* Search Input */}
         <div className="relative hidden md:block">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant/70" size={16} />
-          <input 
-            className="bg-surface-container-high border border-outline-variant/40 text-on-surface text-sm rounded-full pl-10 pr-4 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64 transition-all placeholder:text-on-surface-variant/40" 
-            placeholder={placeholder} 
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-marketing-muted-dim" size={16} />
+          <input
+            className="w-64 border border-marketing-border bg-marketing-bg-raised py-2 pl-10 pr-4 text-sm text-marketing-fg outline-none transition-colors placeholder:text-marketing-muted-dim/60 focus:border-marketing-accent"
+            placeholder={placeholder}
             type="text"
             value={searchValue}
             onChange={e => onSearchChange?.(e.target.value)}
           />
         </div>
-        
-        {/* Notification Bell Button & Dropdown Container */}
+
         <div className="relative">
-          <button 
+          <button
             onClick={() => setIsOpen(!isOpen)}
-            className={`text-on-surface-variant hover:text-primary hover:bg-surface-container-highest/40 transition-all p-2 rounded-full cursor-pointer relative flex items-center justify-center active:scale-95 ${isOpen ? 'text-primary bg-surface-container-highest/40' : ''}`}
+            className={`relative flex cursor-pointer items-center justify-center p-2 text-marketing-muted-dim transition-colors hover:text-marketing-accent ${isOpen ? 'text-marketing-accent' : ''}`}
             title="Notifications"
           >
-            <Bell size={20} className="transition-transform duration-200 hover:rotate-12" />
+            <Bell size={20} />
             {hasUnread && (
-              <span className="absolute top-1 right-1 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-container"></span>
+              <span className="absolute right-1 top-1 flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-marketing-accent opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-marketing-accent"></span>
               </span>
             )}
           </button>
 
           {isOpen && (
             <>
-              {/* Overlay Backdrop to dismiss popover when clicking outside */}
-              <div 
-                className="fixed inset-0 z-40 cursor-default" 
+              <div
+                className="fixed inset-0 z-40 cursor-default"
                 onClick={() => setIsOpen(false)}
               />
-              
-              {/* Notification Popover Box */}
-              <div className="absolute right-0 top-full mt-3 w-80 md:w-96 rounded-xl border border-outline-variant/35 bg-surface-container-high/95 backdrop-blur-md shadow-2xl z-50 py-3 text-left animate-in fade-in slide-in-from-top-3 duration-200 ease-out origin-top-right">
-                {/* Header */}
-                <div className="flex items-center justify-between px-4 pb-2.5 border-b border-outline-variant/25">
-                  <span className="text-xs font-bold text-on-surface font-headline-lg">Notifications</span>
+
+              <div className="absolute right-0 top-full z-50 mt-3 w-80 border border-marketing-border bg-marketing-bg-raised py-3 text-left shadow-2xl md:w-96">
+                <div className="flex items-center justify-between border-b border-marketing-border px-4 pb-2.5">
+                  <span className="font-marketing-sans text-xs font-bold text-marketing-fg">Notifications</span>
                   {hasUnread && (
-                    <button 
+                    <button
                       onClick={markAllAsRead}
-                      className="text-[10px] text-primary hover:text-primary-container font-mono-sm uppercase cursor-pointer transition-colors"
+                      className="cursor-pointer font-marketing-mono text-[10px] uppercase text-marketing-accent transition-colors hover:text-marketing-fg"
                     >
                       Mark all as read
                     </button>
                   )}
                 </div>
-                
-                {/* Notification List */}
-                <div className="max-h-72 overflow-y-auto divide-y divide-outline-variant/15">
+
+                <div className="max-h-72 divide-y divide-marketing-border overflow-y-auto">
                   {notifications.length > 0 ? (
                     notifications.map(n => (
-                      <div 
-                        key={n.id} 
+                      <div
+                        key={n.id}
                         onClick={() => markAsRead(n.id)}
-                        className={`group p-3.5 flex gap-3 cursor-pointer transition-all relative hover:bg-surface-container-highest/60 ${!n.read ? 'bg-primary/5' : ''}`}
+                        className={`group relative flex cursor-pointer gap-3 p-3.5 transition-colors hover:bg-marketing-bg ${!n.read ? 'bg-marketing-accent/5' : ''}`}
                       >
-                        {/* Left edge accent for unread */}
                         {!n.read && (
-                          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary-container rounded-r" />
+                          <div className="absolute bottom-0 left-0 top-0 w-[3px] bg-marketing-accent" />
                         )}
-                        
-                        {/* Dynamic Notification Type Icon */}
+
                         <div className="mt-0.5 shrink-0">
-                          {n.type === 'success' && <CheckCircle2 size={15} className="text-[#4ade80]" />}
+                          {n.type === 'success' && <CheckCircle2 size={15} className="text-marketing-accent" />}
                           {n.type === 'warning' && <AlertTriangle size={15} className="text-amber-400" />}
                           {n.type === 'info' && <Info size={15} className="text-sky-400" />}
                         </div>
-                        
-                        {/* Text Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start gap-2">
-                            <p className={`text-[11px] truncate leading-tight ${!n.read ? 'font-bold text-on-surface' : 'font-semibold text-on-surface-variant/80'}`}>
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className={`truncate text-[11px] leading-tight ${!n.read ? 'font-bold text-marketing-fg' : 'font-semibold text-marketing-muted'}`}>
                               {n.title}
                             </p>
-                            <span className="text-[9px] text-on-surface-variant/50 font-mono-sm shrink-0">{formatRelativeTime(n.created_at)}</span>
+                            <span className="shrink-0 font-marketing-mono text-[9px] text-marketing-muted-dim">{formatRelativeTime(n.created_at)}</span>
                           </div>
-                          <p className="text-[10.5px] text-on-surface-variant/80 leading-relaxed mt-1 break-words">
+                          <p className="mt-1 break-words text-[10.5px] leading-relaxed text-marketing-muted">
                             {n.description}
                           </p>
                         </div>
 
-                        {/* Action Dismiss Button */}
-                        <button 
+                        <button
                           onClick={(e) => deleteNotification(n.id, e)}
-                          className="opacity-0 group-hover:opacity-100 hover:text-error text-on-surface-variant/40 transition-all p-0.5 shrink-0 self-center cursor-pointer"
+                          className="shrink-0 cursor-pointer self-center p-0.5 text-marketing-muted-dim opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
                           title="Dismiss"
                         >
                           <Trash2 size={13} />
@@ -252,7 +241,7 @@ export default function TopAppBar({
                       </div>
                     ))
                   ) : (
-                    <div className="py-8 text-center text-xs text-on-surface-variant/60 font-mono-sm">
+                    <div className="py-8 text-center font-marketing-mono text-xs text-marketing-muted-dim">
                       No notifications yet
                     </div>
                   )}
