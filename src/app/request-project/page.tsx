@@ -8,6 +8,10 @@ import { ArrowLeft, ArrowRight, ShieldCheck, Upload, FileText, Loader } from 'lu
 import Link from 'next/link'
 import confetti from 'canvas-confetti'
 
+const inputClass =
+  'w-full bg-marketing-bg border border-marketing-border rounded-lg py-3 px-4 text-sm text-marketing-fg placeholder:text-marketing-muted-dim focus:border-marketing-accent outline-none'
+const labelClass = 'font-mono text-xs font-bold uppercase tracking-wider text-marketing-muted-dim block'
+
 export default function RequestProject() {
   const [step, setStep] = useState(1)
   const [userId, setUserId] = useState<string | null>(null)
@@ -28,7 +32,7 @@ export default function RequestProject() {
     timelineWeeks: 12,
     priority: 'medium' as 'low' | 'medium' | 'high' | 'critical',
   })
-  
+
   const [attachedFiles, setAttachedFiles] = useState<File[]>([])
 
   useEffect(() => {
@@ -135,7 +139,7 @@ export default function RequestProject() {
       }
 
       toast('Your project request has been submitted successfully!', 'success')
-      
+
       confetti({
         particleCount: 120,
         spread: 70,
@@ -145,6 +149,7 @@ export default function RequestProject() {
       setTimeout(() => {
         router.push(userId ? '/dashboard/client' : '/')
       }, 2500)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err)
       toast(err.message || 'Failed to submit project request.', 'error')
@@ -154,77 +159,75 @@ export default function RequestProject() {
   }
 
   return (
-    <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased selection:bg-primary/30 selection:text-primary">
-      <header className="w-full py-stack-md px-margin-mobile md:px-margin-desktop flex justify-between items-center fixed top-0 z-50 bg-background/80 backdrop-blur-md border-b border-outline-variant">
-        <Link href="/" className="font-body-lg font-bold text-on-surface tracking-tighter flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <ArrowLeft size={18} className="text-primary" />
+    <div className="flex min-h-screen flex-col bg-marketing-bg font-marketing-sans text-marketing-fg antialiased selection:bg-marketing-accent/30 selection:text-marketing-accent">
+      <header className="fixed top-0 z-50 flex w-full items-center justify-between border-b border-marketing-border bg-marketing-bg/80 px-[6vw] py-4 backdrop-blur-md">
+        <Link href="/" className="flex items-center gap-2 font-bold tracking-tight text-marketing-fg transition-opacity hover:opacity-80">
+          <ArrowLeft size={18} className="text-marketing-accent" />
           Back to KaiketsuTech
         </Link>
-        <div className="flex items-center gap-2 text-on-surface-variant font-mono-sm text-xs">
-          <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          Secure Channel
+        <div className="flex items-center gap-2 font-marketing-mono text-xs text-marketing-muted-dim">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-marketing-accent" />
+          Secure channel
         </div>
       </header>
 
-      <main className="flex-grow pt-[120px] pb-24 flex flex-col items-center justify-center px-margin-mobile md:px-margin-desktop">
+      <main className="flex flex-grow flex-col items-center justify-center px-[6vw] pb-24 pt-[120px]">
         <div className="w-full max-w-3xl">
-          {/* Header */}
           <div className="mb-8 text-center md:text-left">
-            <h1 className="font-headline-xl text-3xl md:text-4xl font-bold text-on-surface mb-2">Request Software Project</h1>
-            <p className="font-body-lg text-body-lg text-on-surface-variant">Provide details of your engineering project requirements below.</p>
+            <h1 className="mb-2 font-marketing-sans text-3xl font-bold text-marketing-fg md:text-4xl">
+              Request a project
+            </h1>
+            <p className="text-marketing-muted">Tell us about your engineering project requirements.</p>
           </div>
 
-          {/* Stepper Progress */}
-          <div className="mb-12 relative flex items-center justify-between">
-            <div className="absolute top-1/2 left-0 w-full h-[2px] bg-[#222222] -z-10 -translate-y-1/2"></div>
-            <div 
-              className="absolute top-1/2 left-0 h-[2px] bg-primary -z-10 -translate-y-1/2 transition-all duration-500" 
+          {/* Stepper */}
+          <div className="relative mb-12 flex items-center justify-between">
+            <div className="absolute left-0 top-1/2 -z-10 h-[2px] w-full -translate-y-1/2 bg-marketing-border" />
+            <div
+              className="absolute left-0 top-1/2 -z-10 h-[2px] -translate-y-1/2 bg-marketing-accent transition-all duration-500"
               style={{ width: `${((step - 1) / 3) * 100}%` }}
-            ></div>
-
+            />
             {[1, 2, 3, 4].map((num) => (
-              <div key={num} className="flex flex-col items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold font-mono-sm text-xs border-2 transition-all duration-300 ${
-                  step >= num 
-                    ? 'bg-primary text-[#0B0B0B] border-primary' 
-                    : 'bg-[#111111] border-[#333333] text-on-surface-variant'
-                }`}>
-                  {num}
-                </div>
+              <div
+                key={num}
+                className={`flex h-8 w-8 items-center justify-center rounded-full border-2 font-marketing-mono text-xs font-bold transition-all duration-300 ${
+                  step >= num
+                    ? 'border-marketing-accent bg-marketing-accent text-marketing-accent-ink'
+                    : 'border-marketing-border bg-marketing-bg-raised text-marketing-muted-dim'
+                }`}
+              >
+                {num}
               </div>
             ))}
           </div>
 
-          {/* Form Content */}
-          <div className="glass-panel p-8 md:p-12 rounded-lg relative overflow-hidden bg-[#111111] border border-[#222222]">
-            <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
-            
-            <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
-              
-              {/* Step 1: Contact Details */}
+          <div className="border border-marketing-border bg-marketing-bg-raised p-8 md:p-12">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               {step === 1 && (
-                <div className="space-y-6">
+                <div className="flex flex-col gap-6">
                   <div>
-                    <h2 className="font-headline-lg text-xl font-bold mb-1">Company & Personal Identity</h2>
-                    <p className="font-body-md text-sm text-on-surface-variant">Who is requesting this project and on behalf of which company?</p>
+                    <h2 className="mb-1 text-xl font-bold text-marketing-fg">Company &amp; personal identity</h2>
+                    <p className="text-sm text-marketing-muted">
+                      Who is requesting this project, and on behalf of which company?
+                    </p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                    <div className="space-y-2">
-                      <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Company Name *</label>
-                      <input 
-                        className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                        placeholder="Vanguard Solutions" 
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                      <label className={labelClass}>Company name *</label>
+                      <input
+                        className={inputClass}
+                        placeholder="Vanguard Solutions"
                         required
                         type="text"
                         value={formData.companyName}
                         onChange={e => setFormData({ ...formData, companyName: e.target.value })}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Contact Person *</label>
-                      <input 
-                        className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                        placeholder="Your Name" 
+                    <div className="flex flex-col gap-2">
+                      <label className={labelClass}>Contact person *</label>
+                      <input
+                        className={inputClass}
+                        placeholder="Your name"
                         required
                         type="text"
                         value={formData.contactPerson}
@@ -232,23 +235,23 @@ export default function RequestProject() {
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                    <div className="space-y-2">
-                      <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Work Email *</label>
-                      <input 
-                        className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                        placeholder="example@gmail.com" 
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                      <label className={labelClass}>Work email *</label>
+                      <input
+                        className={inputClass}
+                        placeholder="example@gmail.com"
                         required
                         type="email"
                         value={formData.email}
                         onChange={e => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Phone Number</label>
-                      <input 
-                        className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                        placeholder="+91 1234567890" 
+                    <div className="flex flex-col gap-2">
+                      <label className={labelClass}>Phone number</label>
+                      <input
+                        className={inputClass}
+                        placeholder="+91 1234567890"
                         type="tel"
                         value={formData.phone}
                         onChange={e => setFormData({ ...formData, phone: e.target.value })}
@@ -258,135 +261,144 @@ export default function RequestProject() {
                 </div>
               )}
 
-              {/* Step 2: Project Specifications */}
               {step === 2 && (
-                <div className="space-y-6">
+                <div className="flex flex-col gap-6">
                   <div>
-                    <h2 className="font-headline-lg text-xl font-bold mb-1">Project Scope & Business Goals</h2>
-                    <p className="font-body-md text-sm text-on-surface-variant">What are you looking to build, and what are the main goals?</p>
+                    <h2 className="mb-1 text-xl font-bold text-marketing-fg">Project scope &amp; business goals</h2>
+                    <p className="text-sm text-marketing-muted">
+                      What are you looking to build, and what are the main goals?
+                    </p>
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Project Title *</label>
-                    <input 
-                      className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
-                      placeholder="E-commerce Application Modernization" 
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClass}>Project title *</label>
+                    <input
+                      className={inputClass}
+                      placeholder="E-commerce application modernization"
                       required
                       type="text"
                       value={formData.projectTitle}
                       onChange={e => setFormData({ ...formData, projectTitle: e.target.value })}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Project Description *</label>
-                    <textarea 
-                      className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none resize-none" 
-                      placeholder="Migrate legacy stack to Next.js 16, integrate unified payments checkout, and optimize SQL querying..." 
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClass}>Project description *</label>
+                    <textarea
+                      className={`resize-none ${inputClass}`}
+                      placeholder="Migrate legacy stack to Next.js 16, integrate unified payments checkout, and optimize SQL querying…"
                       rows={4}
                       required
                       value={formData.projectDescription}
                       onChange={e => setFormData({ ...formData, projectDescription: e.target.value })}
-                    ></textarea>
+                    />
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Business Goals</label>
-                    <textarea 
-                      className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none resize-none" 
-                      placeholder="Reduce server-side API response latency by 45% and scale system capacity for high concurrent traffic..." 
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClass}>Business goals</label>
+                    <textarea
+                      className={`resize-none ${inputClass}`}
+                      placeholder="Reduce server-side API response latency by 45% and scale system capacity for high concurrent traffic…"
                       rows={3}
                       value={formData.businessGoals}
                       onChange={e => setFormData({ ...formData, businessGoals: e.target.value })}
-                    ></textarea>
+                    />
                   </div>
                 </div>
               )}
 
-              {/* Step 3: Timelines, Priority & Budget */}
               {step === 3 && (
-                <div className="space-y-6">
+                <div className="flex flex-col gap-6">
                   <div>
-                    <h2 className="font-headline-lg text-xl font-bold mb-1">Budget, Timeline & Urgency</h2>
-                    <p className="font-body-md text-sm text-on-surface-variant">Map out target budget parameters, priority, and timeline expectations.</p>
+                    <h2 className="mb-1 text-xl font-bold text-marketing-fg">Budget, timeline &amp; urgency</h2>
+                    <p className="text-sm text-marketing-muted">
+                      Map out target budget parameters, priority, and timeline expectations.
+                    </p>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Target Budget (USD) *</label>
-                      <input 
-                        className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none" 
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="flex flex-col gap-2">
+                      <label className={labelClass}>Target budget (USD) *</label>
+                      <input
+                        className={inputClass}
                         type="number"
                         required
                         value={formData.budget}
                         onChange={e => setFormData({ ...formData, budget: parseInt(e.target.value) || 0 })}
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Urgency / Priority</label>
-                      <select 
-                        className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none cursor-pointer"
+                    <div className="flex flex-col gap-2">
+                      <label className={labelClass}>Urgency / priority</label>
+                      <select
+                        className={`cursor-pointer ${inputClass}`}
                         value={formData.priority}
-                        onChange={e => setFormData({ ...formData, priority: e.target.value as any })}
+                        onChange={e =>
+                          setFormData({ ...formData, priority: e.target.value as typeof formData.priority })
+                        }
                       >
-                        <option value="low">Low Priority</option>
-                        <option value="medium">Medium Priority</option>
-                        <option value="high">High Priority</option>
-                        <option value="critical">Critical Path / Urgent</option>
+                        <option value="low">Low priority</option>
+                        <option value="medium">Medium priority</option>
+                        <option value="high">High priority</option>
+                        <option value="critical">Critical path / urgent</option>
                       </select>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="font-label-md text-xs font-bold uppercase tracking-wider text-on-surface-variant block">Timeline: {formData.timelineWeeks} Weeks</label>
-                    <input 
-                      type="range" 
-                      min="4" 
-                      max="52" 
+                  <div className="flex flex-col gap-2">
+                    <label className={labelClass}>Timeline: {formData.timelineWeeks} weeks</label>
+                    <input
+                      type="range"
+                      min="4"
+                      max="52"
                       step="2"
-                      className="w-full accent-primary" 
+                      className="w-full accent-marketing-accent"
                       value={formData.timelineWeeks}
                       onChange={e => setFormData({ ...formData, timelineWeeks: parseInt(e.target.value) })}
                     />
-                    <div className="flex justify-between font-mono-sm text-xs text-on-surface-variant">
-                      <span>4 weeks (Rapid MVP)</span>
-                      <span>26 weeks (Mid-term)</span>
-                      <span>52 weeks (Full Eng.)</span>
+                    <div className="flex justify-between font-marketing-mono text-xs text-marketing-muted-dim">
+                      <span>4 weeks (rapid MVP)</span>
+                      <span>26 weeks (mid-term)</span>
+                      <span>52 weeks (full eng.)</span>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Step 4: Attachments & Submission */}
               {step === 4 && (
-                <div className="space-y-6">
+                <div className="flex flex-col gap-6">
                   <div>
-                    <h2 className="font-headline-lg text-xl font-bold mb-1">Requirement Documents & Attachments</h2>
-                    <p className="font-body-md text-sm text-on-surface-variant">Upload PDFs, wireframes, RFP documents, or specifications.</p>
+                    <h2 className="mb-1 text-xl font-bold text-marketing-fg">Requirement documents &amp; attachments</h2>
+                    <p className="text-sm text-marketing-muted">
+                      Upload PDFs, wireframes, RFP documents, or specifications.
+                    </p>
                   </div>
 
-                  <div className="relative border-2 border-dashed border-[#333333] hover:border-primary/50 transition-colors rounded-lg p-6 flex flex-col items-center justify-center text-center bg-[#0B0B0B] cursor-pointer">
-                    <input 
-                      type="file" 
+                  <div className="relative flex flex-col items-center justify-center gap-2 border-2 border-dashed border-marketing-border p-6 text-center transition-colors hover:border-marketing-accent">
+                    <input
+                      type="file"
                       multiple
                       onChange={handleFileChange}
-                      className="absolute inset-0 opacity-0 cursor-pointer"
+                      className="absolute inset-0 cursor-pointer opacity-0"
                     />
-                    <div className="flex flex-col items-center gap-2 text-on-surface-variant">
-                      <Upload size={28} />
-                      <span className="text-xs">Drag and drop files here or click to browse</span>
-                    </div>
+                    <Upload size={24} className="text-marketing-muted-dim" />
+                    <span className="text-xs text-marketing-muted-dim">
+                      Drag and drop files here or click to browse
+                    </span>
                   </div>
 
                   {attachedFiles.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-semibold">Attached Files</p>
-                      <div className="divide-y divide-[#222222] bg-[#0b0b0b] border border-[#222] rounded-lg">
+                    <div className="flex flex-col gap-2">
+                      <p className="font-marketing-mono text-[10px] font-semibold uppercase tracking-widest text-marketing-muted-dim">
+                        Attached files
+                      </p>
+                      <div className="divide-y divide-marketing-border border border-marketing-border">
                         {attachedFiles.map((file, i) => (
-                          <div key={i} className="p-3 flex justify-between items-center text-xs">
-                            <div className="flex items-center gap-2 text-primary">
+                          <div key={i} className="flex items-center justify-between p-3 text-xs">
+                            <div className="flex items-center gap-2 text-marketing-accent">
                               <FileText size={16} />
-                              <span>{file.name} ({(file.size / 1024).toFixed(1)} KB)</span>
+                              <span>
+                                {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                              </span>
                             </div>
                             <button
                               type="button"
                               onClick={() => removeFile(i)}
-                              className="text-error hover:underline text-[11px] cursor-pointer"
+                              className="cursor-pointer text-[11px] text-red-400 hover:underline"
                             >
                               Remove
                             </button>
@@ -398,13 +410,12 @@ export default function RequestProject() {
                 </div>
               )}
 
-              {/* Actions */}
-              <div className="pt-6 border-t border-[#222222] flex justify-between items-center mt-8">
+              <div className="mt-8 flex items-center justify-between border-t border-marketing-border pt-6">
                 <button
                   type="button"
                   onClick={prevStep}
                   disabled={step === 1 || submitting}
-                  className="px-6 py-3 bg-[#111111] border border-[#333333] text-on-surface font-label-md text-xs rounded hover:bg-[#1A1A1A] transition-colors disabled:opacity-30 cursor-pointer"
+                  className="cursor-pointer border border-marketing-border px-6 py-3 font-marketing-mono text-xs text-marketing-fg transition-colors hover:border-marketing-accent disabled:opacity-30"
                 >
                   Previous
                 </button>
@@ -413,7 +424,7 @@ export default function RequestProject() {
                   <button
                     type="button"
                     onClick={nextStep}
-                    className="px-8 py-3 bg-primary text-[#0B0B0B] font-label-md text-xs font-bold rounded hover:bg-opacity-90 transition-colors flex items-center gap-2 cursor-pointer"
+                    className="flex cursor-pointer items-center gap-2 rounded-full bg-marketing-accent px-8 py-3 font-marketing-mono text-xs font-bold text-marketing-accent-ink transition-colors hover:bg-marketing-fg"
                   >
                     Continue
                     <ArrowRight size={14} />
@@ -422,18 +433,18 @@ export default function RequestProject() {
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-8 py-3 bg-primary-container text-white font-label-md text-xs font-bold rounded hover:bg-opacity-95 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    className="flex cursor-pointer items-center gap-2 rounded-full bg-marketing-accent px-8 py-3 font-marketing-mono text-xs font-bold text-marketing-accent-ink transition-colors hover:bg-marketing-fg disabled:opacity-50"
                   >
-                    {submitting ? <Loader className="animate-spin" size={16} /> : 'Submit Request'}
+                    {submitting ? <Loader className="animate-spin" size={16} /> : 'Submit request'}
                   </button>
                 )}
               </div>
             </form>
           </div>
 
-          <div className="mt-8 flex justify-center gap-2 text-on-surface-variant/50">
+          <div className="mt-8 flex justify-center gap-2 text-marketing-muted-dim">
             <ShieldCheck size={16} />
-            <p className="font-mono-sm text-xs">End-to-end encrypted transmission</p>
+            <p className="font-marketing-mono text-xs">End-to-end encrypted transmission</p>
           </div>
         </div>
       </main>

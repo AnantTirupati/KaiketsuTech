@@ -4,7 +4,12 @@ import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/components/ui/Toast'
-import { Phone, Mail, MapPin, Clock, ChevronDown, Compass, ArrowRight } from 'lucide-react'
+import { Phone, Mail, MapPin, Clock, ChevronDown, Compass } from 'lucide-react'
+import Reveal from '@/components/marketing/Reveal'
+import KineticText from '@/components/marketing/KineticText'
+
+const inputClass =
+  'w-full border border-marketing-border bg-marketing-bg-raised px-4 py-3.5 text-[15px] text-marketing-fg placeholder:text-marketing-muted-dim focus:border-marketing-accent focus:outline-none'
 
 function ContactContent() {
   const searchParams = useSearchParams()
@@ -31,7 +36,7 @@ function ContactContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!formData.name || !formData.email || !formData.message) {
       toast('Please fill in all required fields.', 'warning')
       return
@@ -58,6 +63,7 @@ function ContactContent() {
         subject: '',
         message: '',
       })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err)
       toast(err.message || 'Failed to submit inquiry. Please try again.', 'error')
@@ -82,255 +88,224 @@ function ContactContent() {
   ]
 
   return (
-    <div className="bg-background text-on-surface flex flex-col min-h-screen selection:bg-primary-container selection:text-white">
-      <main className="flex-grow pt-32 pb-section-gap px-margin-mobile md:px-margin-desktop">
-        {/* Hero Section */}
-        <section className="max-w-max-width mx-auto mb-16 text-center md:text-left">
-          <h1 className="font-display-lg text-5xl md:text-7xl lg:text-7xl font-bold text-on-surface mb-stack-lg max-w-4xl font-bold">
-            Let's Engineer Your Future.
-          </h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
-            Initiate a dialogue with our senior engineering team. Whether you are scaling infrastructure or architecting a new enterprise solution, we are ready to build.
+    <>
+      <section className="px-[6vw] pb-[6vh] pt-[12vh]">
+        <Reveal>
+          <div className="mb-3 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-accent">
+            Contact
+          </div>
+          <KineticText
+            as="h1"
+            className="max-w-[16ch] font-marketing-sans text-[clamp(36px,6vw,64px)] font-bold leading-[1.02]"
+            text="Let's engineer your future."
+          />
+          <p className="mt-6 max-w-[60ch] text-lg leading-relaxed text-marketing-muted">
+            Initiate a dialogue with our engineering team. Whether you&rsquo;re scaling
+            infrastructure or architecting a new solution, we&rsquo;re ready to build.
           </p>
-        </section>
+        </Reveal>
+      </section>
 
-        {/* Contact Grid */}
-        <section className="max-w-max-width mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-24">
-          {/* Left: Contact Info Bento */}
-          <div className="lg:col-span-5 flex flex-col gap-gutter">
-            {/* Direct Line */}
-            <div className="bg-surface-container-low border border-outline-variant p-8 rounded-lg flex items-start gap-6 hover:border-primary-container transition-colors duration-300">
-              <div className="bg-surface-container p-3 rounded-lg flex-shrink-0 text-primary">
-                <Phone size={24} />
-              </div>
-              <div>
-                <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Direct Line</h3>
-                <p className="font-headline-lg text-xl md:text-2xl text-on-surface mb-1 font-semibold">+91 7467831005</p>
-                <p className="font-mono-sm text-xs text-on-surface-variant/70">Priority routing for existing clients</p>
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className="bg-surface-container-low border border-outline-variant p-8 rounded-lg flex items-start gap-6 hover:border-primary-container transition-colors duration-300">
-              <div className="bg-surface-container p-3 rounded-lg flex-shrink-0 text-primary">
-                <Mail size={24} />
-              </div>
-              <div>
-                <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Electronic Mail</h3>
-                <p className="font-body-lg text-base md:text-lg text-on-surface mb-1 font-semibold">
-                  <a href="mailto:hello@kaiketsutech.online" className="hover:text-primary transition-colors">hello@kaiketsutech.online</a>
-                </p>
-                <p className="font-body-lg text-base md:text-lg text-on-surface mb-1 font-semibold">
-                  <a href="mailto:support@kaiketsutech.online" className="hover:text-primary transition-colors">support@kaiketsutech.online</a>
-                </p>
-                <p className="font-mono-sm text-xs text-on-surface-variant/70">GPG Key available upon request</p>
-              </div>
-            </div>
-
-            {/* Location & Hours */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-              <div className="bg-surface-container-low border border-outline-variant p-6 rounded-lg flex flex-col justify-between hover:border-primary-container transition-colors duration-300">
-                <MapPin size={24} className="text-on-surface-variant mb-4" />
-                <div>
-                  <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Headquarters</h3>
-                  <p className="font-body-md text-sm text-on-surface">Kanpur, Uttar Pradesh, India</p>
-                </div>
-              </div>
-              <div className="bg-surface-container-low border border-outline-variant p-6 rounded-lg flex flex-col justify-between hover:border-primary-container transition-colors duration-300">
-                <Clock size={24} className="text-on-surface-variant mb-4" />
-                <div>
-                  <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-2 font-bold">Operations</h3>
-                  <p className="font-body-md text-sm text-on-surface">Mon - Fri<br/>09:00 - 18:00 IST</p>
-                  <p className="font-mono-sm text-xs text-on-surface-variant/70 mt-2">24/7 SLA Available</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Social Channels */}
-            <div className="bg-surface-container-low border border-outline-variant p-8 rounded-lg flex items-start gap-6 hover:border-primary-container transition-colors duration-300">
-              <div className="bg-surface-container p-3 rounded-lg flex-shrink-0 text-primary flex items-center justify-center">
-                <Compass size={24} />
-              </div>
-              <div className="flex-1">
-                <h3 className="font-label-md text-xs uppercase tracking-wider text-on-surface-variant mb-3 font-bold">Social Channels</h3>
-                <div className="flex flex-wrap gap-4">
-                  <a 
-                    href="https://www.linkedin.com/company/kaiketsutech/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 text-sm font-semibold text-on-surface hover:text-primary transition-colors duration-300"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-linkedin">
-                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
-                      <rect width="4" height="12" x="2" y="9"/>
-                      <circle cx="4" cy="4" r="2"/>
-                    </svg>
-                    <span>LinkedIn</span>
-                  </a>
-                  <a 
-                    href="https://www.instagram.com/kaiketsutech/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 text-sm font-semibold text-on-surface hover:text-primary transition-colors duration-300"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram">
-                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-                    </svg>
-                    <span>Instagram</span>
-                  </a>
-                </div>
-              </div>
+      <section className="grid grid-cols-1 gap-10 px-[6vw] pb-[10vh] lg:grid-cols-12">
+        {/* Contact info */}
+        <Reveal delay={0.05} className="flex flex-col gap-5 lg:col-span-5">
+          <div className="flex items-start gap-5 border border-marketing-border bg-marketing-bg-raised p-6">
+            <Phone size={22} className="mt-1 shrink-0 text-marketing-accent" />
+            <div>
+              <h3 className="mb-1 font-marketing-mono text-xs uppercase tracking-wider text-marketing-muted-dim">
+                Direct line
+              </h3>
+              <p className="text-lg font-semibold text-marketing-fg">+91 7467831005</p>
+              <p className="mt-1 font-marketing-mono text-xs text-marketing-muted-dim">
+                Priority routing for existing clients
+              </p>
             </div>
           </div>
 
-          {/* Right: Contact Form */}
-          <div className="lg:col-span-7 bg-surface-container-lowest border border-outline-variant p-8 md:p-12 rounded-lg relative overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary-container/5 rounded-full blur-3xl pointer-events-none"></div>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6 relative z-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-md text-sm text-on-surface-variant font-medium" htmlFor="name">Full Name</label>
-                  <input 
-                    className="form-input" 
-                    id="name" 
-                    placeholder="Your Name" 
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={e => setFormData({ ...formData, name: e.target.value })}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-md text-sm text-on-surface-variant font-medium" htmlFor="company">Organization</label>
-                  <input 
-                    className="form-input" 
-                    id="company" 
-                    placeholder="Vanguard Solutions" 
-                    type="text"
-                    value={formData.company}
-                    onChange={e => setFormData({ ...formData, company: e.target.value })}
-                  />
-                </div>
-              </div>
+          <div className="flex items-start gap-5 border border-marketing-border bg-marketing-bg-raised p-6">
+            <Mail size={22} className="mt-1 shrink-0 text-marketing-accent" />
+            <div>
+              <h3 className="mb-1 font-marketing-mono text-xs uppercase tracking-wider text-marketing-muted-dim">
+                Electronic mail
+              </h3>
+              <p className="font-semibold text-marketing-fg">
+                <a href="mailto:hello@kaiketsutech.online" className="hover:text-marketing-accent">
+                  hello@kaiketsutech.online
+                </a>
+              </p>
+              <p className="font-semibold text-marketing-fg">
+                <a href="mailto:support@kaiketsutech.online" className="hover:text-marketing-accent">
+                  support@kaiketsutech.online
+                </a>
+              </p>
+            </div>
+          </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="font-label-md text-sm text-on-surface-variant font-medium" htmlFor="email">Email Address</label>
-                <input 
-                  className="form-input" 
-                  id="email" 
-                  placeholder="example@gmail.com" 
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={e => setFormData({ ...formData, email: e.target.value })}
-                />
-              </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <div className="border border-marketing-border bg-marketing-bg-raised p-6">
+              <MapPin size={22} className="mb-4 text-marketing-muted-dim" />
+              <h3 className="mb-1 font-marketing-mono text-xs uppercase tracking-wider text-marketing-muted-dim">
+                Headquarters
+              </h3>
+              <p className="text-sm text-marketing-fg">Kanpur, Uttar Pradesh, India</p>
+            </div>
+            <div className="border border-marketing-border bg-marketing-bg-raised p-6">
+              <Clock size={22} className="mb-4 text-marketing-muted-dim" />
+              <h3 className="mb-1 font-marketing-mono text-xs uppercase tracking-wider text-marketing-muted-dim">
+                Operations
+              </h3>
+              <p className="text-sm text-marketing-fg">
+                Mon–Fri
+                <br />
+                09:00–18:00 IST
+              </p>
+            </div>
+          </div>
 
-              <div className="flex flex-col gap-2">
-                <label className="font-label-md text-sm text-on-surface-variant font-medium" htmlFor="subject">Inquiry Subject</label>
-                <select 
-                  className="form-input appearance-none cursor-pointer" 
-                  id="subject"
-                  required
-                  value={formData.subject}
-                  onChange={e => setFormData({ ...formData, subject: e.target.value })}
+          <div className="flex items-start gap-5 border border-marketing-border bg-marketing-bg-raised p-6">
+            <Compass size={22} className="mt-1 shrink-0 text-marketing-accent" />
+            <div>
+              <h3 className="mb-3 font-marketing-mono text-xs uppercase tracking-wider text-marketing-muted-dim">
+                Social channels
+              </h3>
+              <div className="flex flex-wrap gap-5">
+                <a
+                  href="https://www.linkedin.com/company/kaiketsutech/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-marketing-fg hover:text-marketing-accent"
                 >
-                  <option value="" disabled>Select an area of interest...</option>
-                  <option value="infrastructure">Infrastructure Scaling</option>
-                  <option value="software">Custom Software Development</option>
-                  <option value="consulting">Technical Consulting</option>
-                  <option value="other">Other Inquiry</option>
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="font-label-md text-sm text-on-surface-variant font-medium" htmlFor="message">Project Details</label>
-                <textarea 
-                  className="form-input resize-none" 
-                  id="message" 
-                  placeholder="Provide details about your project scope, timeline expectations, and core tech stacks..." 
-                  rows={5}
-                  required
-                  value={formData.message}
-                  onChange={e => setFormData({ ...formData, message: e.target.value })}
-                ></textarea>
-              </div>
-
-              <div className="mt-4 flex justify-end">
-                <button 
-                  className="bg-primary-container text-white px-8 py-4 rounded-lg font-label-md text-label-md font-bold tracking-wide hover:bg-opacity-95 transition-all flex items-center gap-2 group cursor-pointer disabled:opacity-50"
-                  type="submit"
-                  disabled={submitting}
+                  LinkedIn
+                </a>
+                <a
+                  href="https://www.instagram.com/kaiketsutech/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm font-semibold text-marketing-fg hover:text-marketing-accent"
                 >
-                  {submitting ? 'Sending...' : 'Send Message'}
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-              </div>
-            </form>
-          </div>
-        </section>
-
-        {/* Map Placeholder */}
-        <section className="max-w-max-width mx-auto mb-24 w-full">
-          <div className="w-full h-[400px] rounded-lg overflow-hidden border border-outline-variant/30 relative bg-surface-container flex items-center justify-center">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-surface-variant/20 via-background to-background opacity-80 z-0"></div>
-            <div className="relative z-10 bg-surface-container-highest/80 backdrop-blur-md px-6 py-4 rounded-lg border border-outline-variant shadow-2xl flex items-center gap-4">
-              <Compass className="text-primary animate-spin" style={{ animationDuration: '6s' }} />
-              <div>
-                <p className="font-label-md text-sm text-on-surface font-bold">Kanpur HQ</p>
-                <p className="font-mono-sm text-xs text-on-surface-variant">Coordinates: 26.4499° N, 80.3319° E</p>
+                  Instagram
+                </a>
               </div>
             </div>
           </div>
-        </section>
+        </Reveal>
 
-        {/* FAQ Section */}
-        <section className="max-w-3xl mx-auto w-full">
-          <div className="text-center mb-10">
-            <h2 className="font-headline-xl text-2xl md:text-3xl text-on-surface mb-4 font-bold">Operational Protocol FAQ</h2>
-            <p className="font-body-md text-body-md text-on-surface-variant">Common inquiries regarding our engagement models and technical processes.</p>
+        {/* Form */}
+        <Reveal delay={0.1} className="lg:col-span-7">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 border border-marketing-border bg-marketing-bg-raised p-8 md:p-10">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <input
+                type="text"
+                placeholder="Full name"
+                required
+                value={formData.name}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                className={inputClass}
+              />
+              <input
+                type="text"
+                placeholder="Organization (optional)"
+                value={formData.company}
+                onChange={e => setFormData({ ...formData, company: e.target.value })}
+                className={inputClass}
+              />
+            </div>
+
+            <input
+              type="email"
+              placeholder="Email"
+              required
+              value={formData.email}
+              onChange={e => setFormData({ ...formData, email: e.target.value })}
+              className={inputClass}
+            />
+
+            <select
+              required
+              value={formData.subject}
+              onChange={e => setFormData({ ...formData, subject: e.target.value })}
+              className={`${inputClass} cursor-pointer appearance-none`}
+            >
+              <option value="" disabled>
+                Select an area of interest…
+              </option>
+              <option value="infrastructure">Infrastructure scaling</option>
+              <option value="software">Custom software development</option>
+              <option value="consulting">Technical consulting</option>
+              <option value="other">Other inquiry</option>
+            </select>
+
+            <textarea
+              placeholder="Project scope, timeline, and core tech stacks…"
+              rows={5}
+              required
+              value={formData.message}
+              onChange={e => setFormData({ ...formData, message: e.target.value })}
+              className={`resize-y ${inputClass}`}
+            />
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="mt-2 self-start rounded-full bg-marketing-accent px-7 py-3.5 text-[15px] font-semibold text-marketing-accent-ink transition-colors hover:bg-marketing-fg disabled:opacity-50"
+            >
+              {submitting ? 'Sending…' : 'Send message'}
+            </button>
+          </form>
+        </Reveal>
+      </section>
+
+      {/* FAQ */}
+      <section className="border-t border-marketing-border px-[6vw] py-[10vh]">
+        <Reveal className="mx-auto max-w-3xl">
+          <div className="mb-10 text-center">
+            <h2 className="mb-3 font-marketing-sans text-2xl font-bold text-marketing-fg md:text-3xl">
+              Operational protocol FAQ
+            </h2>
+            <p className="text-marketing-muted">
+              Common questions about our engagement models and technical process.
+            </p>
           </div>
-          
-          <div className="flex flex-col gap-4">
-            {faqs.map((faq, idx) => (
-              <div 
-                key={idx}
-                className={`faq-item bg-surface-container-low border border-outline-variant rounded-lg p-6 cursor-pointer hover:border-on-surface-variant transition-colors ${
-                  activeFaq === idx ? 'active' : ''
-                }`}
-                onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-              >
-                <div className="flex justify-between items-center">
-                  <h3 className="font-headline-lg text-lg text-on-surface font-semibold">{faq.question}</h3>
-                  <ChevronDown className={`text-on-surface-variant faq-icon transition-transform ${
-                    activeFaq === idx ? 'rotate-180' : ''
-                  }`} />
+
+          <div className="flex flex-col gap-3">
+            {faqs.map((faq, idx) => {
+              const open = activeFaq === idx
+              return (
+                <div
+                  key={faq.question}
+                  className="cursor-pointer border border-marketing-border bg-marketing-bg-raised p-6"
+                  onClick={() => setActiveFaq(open ? null : idx)}
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <h3 className="font-semibold text-marketing-fg">{faq.question}</h3>
+                    <ChevronDown
+                      size={18}
+                      className={`shrink-0 text-marketing-muted-dim transition-transform ${open ? 'rotate-180' : ''}`}
+                    />
+                  </div>
+                  {open && (
+                    <p className="mt-4 text-[15px] leading-relaxed text-marketing-muted">{faq.answer}</p>
+                  )}
                 </div>
-                <div className="faq-content">
-                  <p className="font-body-md text-sm text-on-surface-variant leading-relaxed">
-                    {faq.answer}
-                  </p>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
-        </section>
-      </main>
-    </div>
+        </Reveal>
+      </section>
+    </>
   )
 }
 
 export default function Contact() {
   return (
-    <Suspense fallback={
-      <div className="bg-background text-on-surface flex items-center justify-center min-h-screen font-mono-sm">
-        Loading contact configuration...
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex min-h-[60vh] items-center justify-center font-marketing-mono text-marketing-muted-dim">
+          Loading contact configuration…
+        </div>
+      }
+    >
       <ContactContent />
     </Suspense>
   )
 }
-

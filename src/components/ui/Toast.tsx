@@ -27,6 +27,13 @@ export function useToast() {
   return context
 }
 
+const TYPE_STYLES: Record<ToastType, string> = {
+  success: 'border-marketing-accent/40 text-marketing-accent',
+  error: 'border-red-500/40 text-red-400',
+  warning: 'border-amber-500/40 text-amber-400',
+  info: 'border-marketing-border-strong text-marketing-fg',
+}
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([])
 
@@ -43,7 +50,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+      <div className="pointer-events-none fixed bottom-5 right-5 z-[200] flex w-full max-w-sm flex-col gap-2 font-marketing-sans">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div
@@ -52,25 +59,20 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className={`p-4 rounded-lg shadow-xl border flex items-start gap-3 pointer-events-auto bg-surface-container/90 backdrop-blur-md ${
-                t.type === 'success' ? 'border-[#4ade80]/30 text-[#4ade80]' :
-                t.type === 'error' ? 'border-error/30 text-error' :
-                t.type === 'warning' ? 'border-secondary/30 text-secondary' :
-                'border-outline-variant/30 text-on-surface'
-              }`}
+              className={`pointer-events-auto flex items-start gap-3 border bg-marketing-bg-raised/95 p-4 shadow-xl backdrop-blur-md ${TYPE_STYLES[t.type]}`}
             >
-              <div className="flex-shrink-0 mt-0.5">
+              <div className="mt-0.5 flex-shrink-0">
                 {t.type === 'success' && <CheckCircle size={18} />}
                 {t.type === 'error' && <AlertCircle size={18} />}
                 {t.type === 'warning' && <AlertCircle size={18} />}
                 {t.type === 'info' && <Info size={18} />}
               </div>
-              <div className="flex-1 text-sm font-medium text-on-surface">
+              <div className="flex-1 text-sm font-medium text-marketing-fg">
                 {t.message}
               </div>
-              <button 
-                onClick={() => removeToast(t.id)} 
-                className="text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer"
+              <button
+                onClick={() => removeToast(t.id)}
+                className="text-marketing-muted-dim transition-colors hover:text-marketing-fg cursor-pointer"
               >
                 <X size={16} />
               </button>

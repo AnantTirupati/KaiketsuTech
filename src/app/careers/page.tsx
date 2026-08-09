@@ -1,138 +1,113 @@
 import Link from 'next/link'
-import { Briefcase, ArrowRight, ShieldCheck, Terminal, Cpu, LayoutTemplate } from 'lucide-react'
 import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
+import Reveal from '@/components/marketing/Reveal'
+import KineticText from '@/components/marketing/KineticText'
 
 export const metadata: Metadata = {
-  title: 'Careers & Internship Openings | KaiketsuTech',
+  title: 'Careers',
   description: 'Join KaiketsuTech and build production-grade enterprise software. Apply for frontend, backend, or full-stack developer intern roles.',
 }
 
 export default async function CareersPage() {
   const supabase = await createClient()
 
-  // Fetch open job postings from Supabase
   const { data: openRoles } = await supabase
     .from('job_postings')
     .select('*')
     .eq('status', 'open')
     .order('created_at', { ascending: false })
 
-  const getRoleIcon = (track: string) => {
-    const t = track.toLowerCase()
-    if (t.includes('stack')) return <Terminal className="text-primary" size={24} />
-    if (t.includes('front')) return <LayoutTemplate className="text-primary" size={24} />
-    if (t.includes('back')) return <Cpu className="text-primary" size={24} />
-    return <Briefcase className="text-primary" size={24} />
-  }
-
   return (
-    <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased overflow-x-hidden">
-      <main className="flex-grow pt-32 pb-24">
-        {/* Careers Hero */}
-        <section className="relative py-20 flex flex-col items-center justify-center text-center px-margin-mobile md:px-margin-desktop overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primary-container/10 rounded-full blur-[100px] pointer-events-none"></div>
-          <div className="font-section-label text-section-label text-primary mb-stack-md uppercase tracking-widest font-bold">Join the Squad</div>
-          <h1 className="font-display-lg text-4xl md:text-6xl lg:text-7xl font-bold text-on-surface mb-stack-md tracking-tight">
-            Build the Future of Enterprise.
-          </h1>
-          <p className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
-            We work at the edge of complexity. If you want to develop deep technical capabilities and build mission-critical solutions, join our cohort.
-          </p>
-        </section>
-
-        {/* Roles Section */}
-        <section className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop py-12">
-          <h2 className="font-headline-xl text-2xl md:text-3xl font-bold text-on-surface mb-8 border-b border-[#222] pb-4">
-            Active Intern Openings
-          </h2>
-          {openRoles && openRoles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-              {openRoles.map((role) => (
-                <div key={role.id} className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between hover:border-primary/50 transition-all group">
-                  <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="w-12 h-12 rounded bg-[#1a1a1a] border border-[#333] flex items-center justify-center">
-                        {getRoleIcon(role.track)}
-                      </div>
-                      <span className="font-mono-sm text-[10px] uppercase tracking-widest text-on-surface-variant/70 bg-[#222] px-2.5 py-1 rounded">
-                        {role.track}
-                      </span>
-                    </div>
-                    <h3 className="font-headline-lg text-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors">
-                      {role.title}
-                    </h3>
-                    <p className="font-body-md text-xs text-on-surface-variant mb-6 leading-relaxed">
-                      {role.description}
-                    </p>
-                    
-                    <div className="mb-8">
-                      <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mb-3 font-semibold">Technologies / Skills</p>
-                      <ul className="flex flex-wrap gap-2">
-                        {role.requirements?.map((req: string, index: number) => (
-                          <li key={index} className="text-[10px] font-mono-sm bg-[#1a1a1a] border border-[#222] text-on-surface px-2.5 py-1 rounded">
-                            {req}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  <Link 
-                    href={`/apply?role=${role.id}`}
-                    className="w-full bg-primary-container text-white py-3 rounded font-label-md text-xs hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
-                  >
-                    Apply For Role
-                    <ArrowRight size={14} />
-                  </Link>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-16 border border-dashed border-[#222] rounded-lg">
-              <p className="text-on-surface-variant text-sm font-mono-sm">There are no open roles at this moment. Check back later!</p>
-            </div>
-          )}
-        </section>
-
-        {/* Benefits & Contact Panels */}
-        <section className="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop mt-16">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter text-left">
-            {/* Philosophy Card */}
-            <div className="bg-surface-container-low border border-outline-variant p-8 rounded-lg relative overflow-hidden flex flex-col justify-between hover:border-primary-container transition-colors duration-300">
-              <div>
-                <h3 className="font-headline-xl text-xl font-bold mb-3 text-on-surface">Our Engineering Philosophy</h3>
-                <p className="font-body-md text-xs text-on-surface-variant leading-relaxed mb-6">
-                  We do not write boilerplate code. Every squad member exercises extreme architectural ownership, deploying modular code and automated tests daily.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-on-surface-variant/70 mt-auto">
-                <ShieldCheck size={16} className="text-primary" />
-                <span className="font-mono-sm text-xs">Accelerated mentorship model</span>
-              </div>
-            </div>
-
-            {/* General Applications / Careers Email Card */}
-            <div className="bg-surface-container-low border border-outline-variant p-8 rounded-lg relative overflow-hidden flex flex-col justify-between hover:border-primary-container transition-colors duration-300">
-              <div>
-                <h3 className="font-headline-xl text-xl font-bold mb-3 text-on-surface">General Applications</h3>
-                <p className="font-body-md text-xs text-on-surface-variant leading-relaxed mb-6">
-                  Don&apos;t see a role that fits your track but want to build with us? Send your resume and portfolio directly to our recruiting squad.
-                </p>
-              </div>
-              <div className="mt-auto">
-                <a 
-                  href="mailto:careers@kaiketsutech.online" 
-                  className="inline-flex items-center gap-2 text-primary hover:text-white font-mono-sm text-sm font-semibold transition-colors duration-300 group/link"
-                >
-                  careers@kaiketsutech.online
-                  <ArrowRight size={14} className="group-hover/link:translate-x-1 transition-transform" />
-                </a>
-              </div>
-            </div>
+    <>
+      <section className="px-[6vw] pb-[8vh] pt-[12vh]">
+        <Reveal>
+          <div className="mb-3 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-accent">
+            Careers
           </div>
-        </section>
-      </main>
-    </div>
+          <KineticText
+            as="h1"
+            className="max-w-[16ch] font-marketing-sans text-[clamp(36px,6vw,64px)] font-bold leading-[1.02]"
+            text="Join the crew."
+          />
+          <p className="mt-5 max-w-[56ch] text-lg leading-relaxed text-marketing-muted">
+            We&rsquo;re small on purpose and growing deliberately. We care about what you&rsquo;ve
+            shipped, not what your resume says you know. Roles below are a starting point — if none
+            fit but you can build, reach out anyway.
+          </p>
+        </Reveal>
+      </section>
+
+      <section className="border-t border-marketing-border px-[6vw] py-[8vh]">
+        {openRoles && openRoles.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {openRoles.map((role, i) => (
+              <Reveal
+                key={role.id}
+                delay={i * 0.06}
+                className="flex flex-col gap-4 border border-marketing-border bg-marketing-bg-raised p-7 transition-colors hover:border-marketing-accent"
+              >
+                <div className="font-marketing-mono text-xs uppercase tracking-wider text-marketing-accent">
+                  {role.track}
+                </div>
+                <div className="font-marketing-sans text-lg font-bold text-marketing-fg">{role.title}</div>
+                <p className="flex-1 text-[15px] leading-relaxed text-marketing-muted">{role.description}</p>
+                <div className="flex flex-wrap gap-2">
+                  {role.requirements?.map((req: string) => (
+                    <span
+                      key={req}
+                      className="rounded-full border border-marketing-border px-2.5 py-1 font-marketing-mono text-xs text-marketing-muted-dim"
+                    >
+                      {req}
+                    </span>
+                  ))}
+                </div>
+                <Link
+                  href={`/apply?role=${role.id}`}
+                  className="mt-2 inline-flex items-center gap-2 rounded-full bg-marketing-accent px-5 py-2.5 text-sm font-semibold text-marketing-accent-ink transition-colors hover:bg-marketing-fg"
+                >
+                  Apply for role →
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <Reveal className="border border-dashed border-marketing-border p-12 text-center">
+            <p className="font-marketing-mono text-sm text-marketing-muted-dim">
+              There are no open roles at this moment. Check back later!
+            </p>
+          </Reveal>
+        )}
+      </section>
+
+      <section className="border-t border-marketing-border px-[6vw] py-[10vh]">
+        <Reveal className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="border border-marketing-border bg-marketing-bg-raised p-8">
+            <h2 className="mb-3 font-marketing-sans text-lg font-bold text-marketing-fg">
+              Our engineering philosophy
+            </h2>
+            <p className="text-[15px] leading-relaxed text-marketing-muted">
+              We don&rsquo;t write boilerplate. Every crew member gets real architectural ownership —
+              shipping modular code and automated tests, from day one.
+            </p>
+          </div>
+          <div className="border border-marketing-border bg-marketing-bg-raised p-8">
+            <h2 className="mb-3 font-marketing-sans text-lg font-bold text-marketing-fg">
+              General applications
+            </h2>
+            <p className="mb-4 text-[15px] leading-relaxed text-marketing-muted">
+              Don&rsquo;t see a role that fits but want to build with us anyway? Send your resume and
+              portfolio directly.
+            </p>
+            <a
+              href="mailto:careers@kaiketsutech.online"
+              className="font-marketing-mono text-sm text-marketing-accent hover:underline"
+            >
+              careers@kaiketsutech.online
+            </a>
+          </div>
+        </Reveal>
+      </section>
+    </>
   )
 }

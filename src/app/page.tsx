@@ -1,146 +1,185 @@
-'use client'
+import Link from "next/link";
+import type { Metadata } from "next";
+import MagneticButton from "@/components/marketing/MagneticButton";
+import KineticText from "@/components/marketing/KineticText";
+import Marquee from "@/components/marketing/Marquee";
+import Reveal from "@/components/marketing/Reveal";
+import ResolveSceneClient from "@/components/marketing/ResolveSceneClient";
+import { marketingProjects } from "@/lib/marketing-projects";
 
-import { motion } from 'framer-motion'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import DashboardShowcase from '@/components/shared/DashboardShowcase'
-import { WebDevMockup, ECommerceMockup, PlatformsMockup } from '@/components/shared/ServiceIllustrations'
+export const metadata: Metadata = {
+  title: { absolute: "KaiketsuTech — a crew of student builders, open for hire" },
+  description:
+    "KaiketsuTech (解決) means 'solution.' A crew of student developers shipping real client work in web, mobile, and AI — and recruiting the next builders as we grow.",
+};
+
+const capabilities = [
+  "Web Development",
+  "Mobile Apps",
+  "AI / ML",
+  "Security Research",
+  "Cloud & Infra",
+  "Freelance Ops",
+];
+
+const approach = [
+  {
+    n: "01",
+    title: "We build it real",
+    desc: "Every project on this site is either live at a real URL or a working prototype with an honest status label. Nothing here is a mockup.",
+  },
+  {
+    n: "02",
+    title: "We break it on purpose",
+    desc: "Before anything ships, we try to defeat our own assumptions — the way AirGated's own threat model got tested with live impersonation attempts.",
+  },
+  {
+    n: "03",
+    title: "We say what's not done",
+    desc: "Prototype means prototype. We label status honestly instead of dressing up in-progress work as finished product.",
+  },
+];
 
 export default function Home() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: 'easeOut' as const,
-      },
-    },
-  }
+  const featured = marketingProjects.slice(0, 3);
 
   return (
-    <div className="bg-background text-on-surface font-body-md antialiased overflow-x-hidden">
-      {/* Hero Section */}
-      <header className="relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary-container/5 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
-        <div className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop w-full grid grid-cols-1 lg:grid-cols-2 gap-stack-lg lg:gap-gutter items-center z-10">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="flex flex-col gap-stack-md max-w-2xl"
-          >
-            <motion.p 
-              variants={itemVariants}
-              className="font-section-label text-section-label text-primary uppercase tracking-widest flex items-center gap-2"
-            >
-              <span className="w-8 h-px bg-primary"></span>
-              Elevate Digital Experiences
-            </motion.p>
-            <motion.h1 
-              variants={itemVariants}
-              className="font-display-lg text-5xl md:text-7xl lg:text-5xl font-bold text-on-surface"
-            >
-              Building Digital Experiences That Drive Business Growth
-            </motion.h1>
-            <motion.p 
-              variants={itemVariants}
-              className="font-body-lg text-body-lg text-on-surface-variant max-w-xl"
-            >
-              We engineer premium software solutions tailored for high-end enterprises. Precision, scalability, and relentless innovation are the core of our technical DNA.
-            </motion.p>
-            <motion.div 
-              variants={itemVariants}
-              className="flex flex-wrap items-center gap-4 mt-4"
-            >
-              <Link 
-                className="inline-flex items-center justify-center bg-primary-container text-white px-8 py-4 rounded font-label-md text-label-md font-semibold hover:bg-opacity-95 transition-all shadow-[0_4px_20px_rgba(249,115,22,0.2)] hover:shadow-[0_4px_30px_rgba(249,115,22,0.4)]" 
-                href="/start-project"
-              >
-                Start a Project
-              </Link>
-              <Link 
-                className="inline-flex items-center justify-center bg-transparent border border-outline-variant text-on-surface px-8 py-4 rounded font-label-md text-label-md font-medium hover:border-primary hover:text-primary transition-all" 
-                href="/portfolio"
-              >
-                View Portfolio
-              </Link>
-            </motion.div>
-          </motion.div>
-
-          <motion.div 
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="relative w-full flex items-center justify-center lg:justify-end"
-          >
-            <DashboardShowcase />
-          </motion.div>
+    <>
+      <section className="grid grid-cols-1 gap-10 px-[6vw] pb-[10vh] pt-[12vh] lg:grid-cols-[1.2fr_1fr] lg:items-center lg:gap-4">
+        <div>
+          <Reveal className="flex items-center gap-2.5 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-muted-dim">
+            <span className="h-1.5 w-1.5 rounded-full bg-marketing-accent" />
+            A student crew, open for hire and open for talent
+          </Reveal>
+          <KineticText
+            as="h1"
+            delay={0.05}
+            className="mt-6 max-w-[16ch] text-balance font-marketing-sans text-[clamp(40px,7.5vw,96px)] font-bold leading-[0.98]"
+            text="Kaiketsu means solution. That's the job."
+          />
+          <Reveal delay={0.1}>
+            <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-marketing-muted">
+              We&rsquo;re a crew of student developers shipping real client work — web, mobile, AI,
+              and security research — while we build out the next generation of the team.
+            </p>
+          </Reveal>
+          <Reveal delay={0.15} className="mt-9 flex flex-wrap gap-4">
+            <MagneticButton href="/contact">Start a project</MagneticButton>
+            <MagneticButton href="/showcase" variant="outline">
+              See the work
+            </MagneticButton>
+          </Reveal>
         </div>
-      </header>
 
-      {/* Services Section */}
-      <section className="py-section-gap bg-surface-container-lowest relative" id="services">
-        <div className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="font-section-label text-section-label text-primary uppercase tracking-widest mb-4">Our Expertise</h2>
-            <h3 className="font-display-lg text-5xl md:text-7xl lg:text-6xl font-bold text-on-surface">Precision Engineering for Modern Demands</h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Card 1 */}
-            <motion.div 
-              whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="group bg-surface p-8 rounded-lg border border-outline-variant hover:border-primary transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(249,115,22,0.1)] flex flex-col h-full"
-            >
-              <WebDevMockup />
-              <h4 className="font-headline-lg text-headline-lg text-on-surface mb-3 text-3xl">Website Development</h4>
-              <p className="font-body-md text-body-md text-on-surface-variant flex-grow">
-                Immersive, high-performance web platforms built with cutting-edge frameworks ensuring seamless user experiences.
-              </p>
-            </motion.div>
-
-            {/* Card 2 */}
-            <motion.div 
-              whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="group bg-surface p-8 rounded-lg border border-outline-variant hover:border-primary transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(249,115,22,0.1)] flex flex-col h-full"
-            >
-              <ECommerceMockup />
-              <h4 className="font-headline-lg text-headline-lg text-on-surface mb-3 text-3xl">E-Commerce</h4>
-              <p className="font-body-md text-body-md text-on-surface-variant flex-grow">
-                Scalable, secure, and conversion-optimized digital storefronts tailored for complex enterprise inventories.
-              </p>
-            </motion.div>
-
-            {/* Card 3 */}
-            <motion.div 
-              whileHover={{ y: -5 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="group bg-surface p-8 rounded-lg border border-outline-variant hover:border-primary transition-all duration-300 hover:shadow-[0_10px_40px_-10px_rgba(249,115,22,0.1)] flex flex-col h-full"
-            >
-              <PlatformsMockup />
-              <h4 className="font-headline-lg text-headline-lg text-on-surface mb-3 text-3xl">Business Platforms</h4>
-              <p className="font-body-md text-body-md text-on-surface-variant flex-grow">
-                Custom internal tools and dashboards designed to streamline operations and enhance data visibility.
-              </p>
-            </motion.div>
-          </div>
+        {/* Resolves from scattered to clean form the moment the terminal intro
+            finishes — the visual echo of "kaiketsu = resolve." Fixed height box
+            so the canvas never causes layout shift; hidden below sm since a
+            WebGL scene isn't worth the battery on small screens crammed next
+            to hero text. */}
+        <div className="hidden h-[340px] w-full sm:block lg:h-[440px]">
+          <ResolveSceneClient />
         </div>
       </section>
-    </div>
-  )
+
+      <Marquee items={capabilities} />
+
+      <section className="border-b border-marketing-border px-[6vw] py-[10vh]">
+        <Reveal className="mb-10 flex items-end justify-between gap-6">
+          <div>
+            <div className="mb-3 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-accent">
+              Work
+            </div>
+            <h2 className="max-w-[16ch] font-marketing-sans text-[clamp(28px,4vw,44px)] font-bold text-marketing-fg">
+              Real sites, real clients, one prototype worth bragging about.
+            </h2>
+          </div>
+          <Link
+            href="/showcase"
+            className="hidden shrink-0 font-marketing-mono text-sm text-marketing-muted-dim hover:text-marketing-accent sm:block"
+          >
+            All work →
+          </Link>
+        </Reveal>
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {featured.map((p, i) => (
+            <Reveal key={p.slug} delay={i * 0.05}>
+              <Link href="/showcase" className="group block h-full">
+                <div className="flex h-full flex-col justify-between gap-6 border border-marketing-border bg-marketing-bg-raised p-7 transition-colors group-hover:border-marketing-accent">
+                  <div>
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className="font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-muted-dim">
+                        {p.category}
+                      </span>
+                      <span
+                        className={`font-marketing-mono text-xs uppercase tracking-[0.1em] ${
+                          p.status === "Live" ? "text-marketing-accent" : "text-marketing-muted-dim"
+                        }`}
+                      >
+                        {p.status === "Live" ? "● live" : "○ prototype"}
+                      </span>
+                    </div>
+                    <h3 className="font-marketing-sans text-2xl font-bold leading-tight text-marketing-fg">
+                      {p.name}
+                    </h3>
+                    <p className="mt-3 text-[15px] leading-relaxed text-marketing-muted">{p.oneLiner}</p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {p.stack.map((s) => (
+                      <span
+                        key={s}
+                        className="rounded-full border border-marketing-border px-2.5 py-1 font-marketing-mono text-xs text-marketing-muted-dim"
+                      >
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="font-marketing-mono text-xs uppercase tracking-[0.1em] text-marketing-muted-dim transition-colors group-hover:text-marketing-accent">
+                    See all work →
+                  </div>
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-b border-marketing-border px-[6vw] py-[10vh]">
+        <Reveal className="mb-12">
+          <div className="mb-3 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-accent">
+            How we work
+          </div>
+          <h2 className="max-w-[20ch] font-marketing-sans text-[clamp(28px,4vw,44px)] font-bold text-marketing-fg">
+            Three rules, no exceptions.
+          </h2>
+        </Reveal>
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-3">
+          {approach.map((step, i) => (
+            <Reveal
+              key={step.n}
+              delay={i * 0.08}
+              className="border-t border-marketing-border-strong pt-5"
+            >
+              <div className="mb-3 font-marketing-mono text-sm text-marketing-accent">{step.n}</div>
+              <h3 className="mb-2 font-marketing-sans text-lg font-bold text-marketing-fg">{step.title}</h3>
+              <p className="text-[15px] leading-relaxed text-marketing-muted">{step.desc}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
+      <section className="px-[6vw] py-[10vh]">
+        <Reveal>
+          <h2 className="max-w-[18ch] text-balance font-marketing-sans text-[clamp(28px,5vw,56px)] font-bold leading-tight text-marketing-fg">
+            Have work that needs shipping, or want to be the one shipping it?
+          </h2>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <MagneticButton href="/contact">Start a project</MagneticButton>
+            <MagneticButton href="/careers" variant="outline">
+              Join the crew
+            </MagneticButton>
+          </div>
+        </Reveal>
+      </section>
+    </>
+  );
 }

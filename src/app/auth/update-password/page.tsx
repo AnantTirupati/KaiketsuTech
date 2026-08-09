@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Lock, ArrowRight, Loader } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/components/ui/Toast'
+import AuthShell from '@/components/marketing/AuthShell'
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('')
@@ -82,7 +83,6 @@ export default function UpdatePasswordPage() {
 
       toast('Password set successfully! Redirecting to dashboard...', 'success')
 
-      // Get user profile to determine redirect destination
       const { data: { user } } = await supabase.auth.getUser()
       if (user) {
         const { data: profile } = await supabase
@@ -90,12 +90,13 @@ export default function UpdatePasswordPage() {
           .select('role')
           .eq('id', user.id)
           .single()
-        
+
         const role = profile?.role || 'client'
         router.push(`/dashboard/${role}`)
       } else {
         router.push('/login')
       }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error('Password update error:', err)
       toast(err.message || 'Failed to update password. Please try again.', 'error')
@@ -106,34 +107,30 @@ export default function UpdatePasswordPage() {
 
   if (checkingSession) {
     return (
-      <div className="h-screen flex justify-center items-center bg-[#0B0B0B]">
-        <Loader className="animate-spin text-primary" size={36} />
+      <div className="flex min-h-screen items-center justify-center bg-marketing-bg">
+        <Loader className="animate-spin text-marketing-accent" size={32} />
       </div>
     )
   }
 
   return (
-    <div className="bg-[#0B0B0B] text-on-surface min-h-screen flex antialiased overflow-hidden items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="bg-[#111111] border border-[#222222] rounded-lg p-8 shadow-2xl relative overflow-hidden w-full max-w-md">
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary-container to-transparent opacity-50"></div>
-        
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="font-headline-lg text-xl md:text-2xl text-on-surface mb-2 font-bold">Set Your Password</h2>
-          <p className="font-body-md text-sm text-on-surface-variant">Please choose a password to complete your account setup.</p>
+    <AuthShell>
+      <div className="w-full max-w-md border border-marketing-border bg-marketing-bg-raised p-8">
+        <div className="mb-8 text-center">
+          <h2 className="mb-2 font-marketing-sans text-xl font-bold text-marketing-fg md:text-2xl">Set your password</h2>
+          <p className="text-sm text-marketing-muted">Please choose a password to complete your account setup.</p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <div className="space-y-1">
-            <label className="block font-label-md text-sm text-on-surface-variant" htmlFor="password">New Password</label>
+        <form onSubmit={handleUpdate} className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="block text-sm text-marketing-fg" htmlFor="password">New password</label>
             <div className="relative">
-              <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50" />
-              <input 
-                className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 pl-10 pr-4 font-body-md text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none"
-                id="password" 
-                placeholder="••••••••" 
-                required 
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-marketing-muted-dim" />
+              <input
+                className="w-full border border-marketing-border bg-marketing-bg py-3 pl-10 pr-4 text-sm text-marketing-fg placeholder:text-marketing-muted-dim/50 focus:border-marketing-accent focus:outline-none"
+                id="password"
+                placeholder="••••••••"
+                required
                 type="password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
@@ -141,15 +138,15 @@ export default function UpdatePasswordPage() {
             </div>
           </div>
 
-          <div className="space-y-1">
-            <label className="block font-label-md text-sm text-on-surface-variant" htmlFor="confirm_password">Confirm Password</label>
+          <div className="flex flex-col gap-1.5">
+            <label className="block text-sm text-marketing-fg" htmlFor="confirm_password">Confirm password</label>
             <div className="relative">
-              <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50" />
-              <input 
-                className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 pl-10 pr-4 font-body-md text-sm text-on-surface placeholder:text-on-surface-variant/50 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all outline-none"
-                id="confirm_password" 
-                placeholder="••••••••" 
-                required 
+              <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-marketing-muted-dim" />
+              <input
+                className="w-full border border-marketing-border bg-marketing-bg py-3 pl-10 pr-4 text-sm text-marketing-fg placeholder:text-marketing-muted-dim/50 focus:border-marketing-accent focus:outline-none"
+                id="confirm_password"
+                placeholder="••••••••"
+                required
                 type="password"
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
@@ -157,16 +154,16 @@ export default function UpdatePasswordPage() {
             </div>
           </div>
 
-          <button 
-            className="w-full bg-primary-container text-white font-label-md text-sm py-3 rounded-lg hover:bg-opacity-95 transition-colors mt-6 flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50"
+          <button
+            className="mt-2 flex w-full items-center justify-center gap-2 bg-marketing-accent px-6 py-3 text-sm font-semibold text-marketing-accent-ink transition-colors hover:bg-marketing-fg disabled:opacity-50"
             type="submit"
             disabled={loading}
           >
-            {loading ? <Loader className="animate-spin" size={18} /> : 'Complete Setup'}
-            <ArrowRight size={18} />
+            {loading ? <Loader className="animate-spin" size={18} /> : 'Complete setup'}
+            {!loading && <ArrowRight size={16} />}
           </button>
         </form>
       </div>
-    </div>
+    </AuthShell>
   )
 }

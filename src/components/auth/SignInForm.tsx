@@ -8,6 +8,9 @@ import { signInWithEmail, signInWithGoogle } from '@/lib/auth'
 import { useToast } from '@/components/ui/Toast'
 import { createClient } from '@/lib/supabase/client'
 
+const inputClass =
+  'w-full border border-marketing-border bg-marketing-bg px-4 py-3 text-sm text-marketing-fg placeholder:text-marketing-muted-dim/50 focus:border-marketing-accent focus:outline-none'
+
 export default function SignInForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -31,7 +34,6 @@ export default function SignInForm() {
       const data = await signInWithEmail(email, password)
       toast('Logged in successfully.', 'success')
 
-      // Fetch user profile to redirect to correct dashboard
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
@@ -41,6 +43,7 @@ export default function SignInForm() {
       const role = profile?.role || 'client'
       router.push(`/dashboard/${role}`)
       router.refresh()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err)
       toast(err.message || 'Invalid email or password.', 'error')
@@ -53,6 +56,7 @@ export default function SignInForm() {
     setGoogleLoading(true)
     try {
       await signInWithGoogle('client')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       console.error(err)
       toast(err.message || 'Google Sign In failed.', 'error')
@@ -61,83 +65,76 @@ export default function SignInForm() {
   }
 
   return (
-    <div className="w-full max-w-[440px] glass-panel rounded-lg p-8 shadow-2xl relative">
-      <div className="mb-stack-lg">
-        <h2 className="font-headline-xl text-2xl md:text-3xl text-on-surface mb-2 font-bold">Sign In</h2>
-        <p className="font-body-md text-sm text-on-surface-variant">Enter your credentials to continue to the platform.</p>
+    <div className="w-full max-w-[440px] border border-marketing-border bg-marketing-bg-raised p-8">
+      <div className="mb-8">
+        <h2 className="mb-2 font-marketing-sans text-2xl font-bold text-marketing-fg">Sign in</h2>
+        <p className="text-sm text-marketing-muted">Enter your credentials to continue to the platform.</p>
       </div>
 
-      <form onSubmit={handleSignIn} className="space-y-6">
-        {/* Email Field */}
-        <div className="space-y-2">
-          <label className="font-label-md text-sm text-on-surface flex items-center gap-2" htmlFor="email">
-            <Mail size={18} className="text-on-surface-variant" />
-            Work Email
+      <form onSubmit={handleSignIn} className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <label className="flex items-center gap-2 text-sm text-marketing-fg" htmlFor="email">
+            <Mail size={16} className="text-marketing-muted-dim" />
+            Work email
           </label>
-          <input 
-            className="w-full px-4 py-3 bg-surface-container border border-outline-variant rounded-lg text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all"
-            id="email" 
-            type="email" 
-            placeholder="example@gmail.com" 
+          <input
+            className={inputClass}
+            id="email"
+            type="email"
+            placeholder="example@gmail.com"
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
           />
         </div>
 
-        {/* Password Field */}
-        <div className="space-y-2">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <label className="font-label-md text-sm text-on-surface flex items-center gap-2" htmlFor="password">
-              <Lock size={18} className="text-on-surface-variant" />
+            <label className="flex items-center gap-2 text-sm text-marketing-fg" htmlFor="password">
+              <Lock size={16} className="text-marketing-muted-dim" />
               Password
             </label>
-            <Link 
-              className="font-label-md text-xs text-primary hover:text-primary-container transition-colors" 
-              href="/forgot-password"
-            >
-              Forgot Password?
+            <Link className="font-marketing-mono text-xs text-marketing-accent hover:underline" href="/forgot-password">
+              Forgot password?
             </Link>
           </div>
-          <input 
-            className="w-full px-4 py-3 bg-surface-container border border-outline-variant rounded-lg text-on-surface font-body-md text-body-md placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all"
-            id="password" 
-            type="password" 
-            placeholder="••••••••" 
+          <input
+            className={inputClass}
+            id="password"
+            type="password"
+            placeholder="••••••••"
             required
             value={password}
             onChange={e => setPassword(e.target.value)}
           />
         </div>
 
-        {/* Primary Action */}
-        <button 
-          className="w-full bg-primary-container hover:bg-[#d8600d] text-white font-label-md text-sm py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-[0_4px_14px_0_rgba(249,115,22,0.39)] cursor-pointer disabled:opacity-50"
+        <button
+          className="flex w-full items-center justify-center gap-2 bg-marketing-accent px-6 py-3 text-sm font-semibold text-marketing-accent-ink transition-colors hover:bg-marketing-fg disabled:opacity-50"
           type="submit"
           disabled={loading}
         >
-          {loading ? <Loader className="animate-spin" size={18} /> : 'Sign In'}
-          <ArrowRight size={18} />
+          {loading ? <Loader className="animate-spin" size={18} /> : 'Sign in'}
+          {!loading && <ArrowRight size={16} />}
         </button>
       </form>
 
-      <div className="mt-8 mb-6 flex items-center">
-        <div className="flex-grow border-t border-outline-variant/50"></div>
-        <span className="mx-4 font-mono-sm text-xs text-on-surface-variant uppercase tracking-wider">Or</span>
-        <div className="flex-grow border-t border-outline-variant/50"></div>
+      <div className="my-6 flex items-center gap-4">
+        <div className="h-px flex-grow bg-marketing-border" />
+        <span className="font-marketing-mono text-xs uppercase tracking-wider text-marketing-muted-dim">Or</span>
+        <div className="h-px flex-grow bg-marketing-border" />
       </div>
 
-      {/* Google Sign In */}
-      <button 
+      <button
         onClick={handleGoogleSignIn}
         disabled={googleLoading}
-        className="w-full bg-surface hover:bg-surface-container-high border border-outline-variant text-on-surface font-label-md text-sm py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-3 border border-marketing-border px-6 py-3 text-sm text-marketing-fg transition-colors hover:border-marketing-accent disabled:opacity-50"
         type="button"
       >
         {googleLoading ? (
           <Loader className="animate-spin" size={18} />
         ) : (
-          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path d="M22.56 12.25C22.56 11.47 22.49 10.72 22.36 10H12V14.26H17.92C17.66 15.63 16.88 16.81 15.72 17.58V20.34H19.28C21.36 18.42 22.56 15.6 22.56 12.25Z" fill="#4285F4"></path>
             <path d="M12 23C14.97 23 17.46 22.02 19.28 20.34L15.72 17.58C14.74 18.24 13.48 18.66 12 18.66C9.14 18.66 6.71 16.73 5.84 14.14H2.17V16.99C3.99 20.59 7.69 23 12 23Z" fill="#34A853"></path>
             <path d="M5.84 14.14C5.62 13.48 5.49 12.76 5.49 12C5.49 11.24 5.62 10.52 5.84 9.86V7.01H2.17C1.42 8.5 1 10.2 1 12C1 13.8 1.42 15.5 2.17 16.99L5.84 14.14Z" fill="#FBBC05"></path>
@@ -147,11 +144,10 @@ export default function SignInForm() {
         Continue with Google
       </button>
 
-      {/* Bottom Link */}
-      <p className="mt-8 text-center font-body-md text-sm text-on-surface-variant">
-        Don't have an account? 
-        <Link className="font-label-md text-sm text-primary hover:text-primary-container transition-colors ml-1 underline" href="/register">
-          Create Account
+      <p className="mt-8 text-center text-sm text-marketing-muted">
+        Don&rsquo;t have an account?{' '}
+        <Link className="text-marketing-accent hover:underline" href="/register">
+          Create account
         </Link>
       </p>
     </div>

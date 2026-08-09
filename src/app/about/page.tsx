@@ -1,96 +1,91 @@
-'use client'
+import type { Metadata } from "next";
+import Reveal from "@/components/marketing/Reveal";
+import MagneticButton from "@/components/marketing/MagneticButton";
+import KineticText from "@/components/marketing/KineticText";
 
-import { motion } from 'framer-motion'
-import ArchitectureIllustration from '@/components/shared/ArchitectureIllustration'
+export const metadata: Metadata = {
+  title: "About",
+  description: "KaiketsuTech is a crew of student developers who build real client work together.",
+};
 
-export default function About() {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        duration: 0.8,
-        ease: 'easeOut' as const,
-      },
-    },
-  }
-
+export default function AboutPage() {
   return (
-    <div className="bg-background text-on-surface antialiased selection:bg-primary-container selection:text-white flex flex-col min-h-screen">
-      <main className="flex-grow pt-32 pb-section-gap flex flex-col gap-section-gap">
-        {/* Hero Section */}
-        <section className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop relative w-full">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center"
-          >
-            <div className="lg:col-span-8 flex flex-col gap-stack-lg z-10">
-              <motion.h1 
-                variants={itemVariants}
-                className="font-display-lg text-5xl md:text-7xl lg:text-7xl font-bold text-on-surface"
-              >
-                We Build Digital Solutions That <span className="text-primary-container text-glow">Scale</span>
-              </motion.h1>
-              <motion.p 
-                variants={itemVariants}
-                className="font-body-lg text-body-lg text-on-surface-variant max-w-2xl"
-              >
-                At KaiketsuTech, we engineer precision software for modern enterprises. We don't just write code; we architect systems designed for longevity, performance, and impact.
-              </motion.p>
-            </div>
-            
-            <motion.div 
-              variants={itemVariants}
-              className="lg:col-span-4 hidden lg:block"
-            >
-              <ArchitectureIllustration />
-            </motion.div>
-          </motion.div>
-        </section>
+    <>
+      <section className="px-[6vw] pb-[8vh] pt-[12vh]">
+        <Reveal>
+          <div className="mb-3 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-accent">
+            About
+          </div>
+          <KineticText
+            as="h1"
+            className="max-w-[18ch] font-marketing-sans text-[clamp(36px,6vw,64px)] font-bold leading-[1.02]"
+            text="解決 — kaiketsu, “solution.”"
+          />
+          <p className="mt-6 max-w-[60ch] text-lg leading-relaxed text-marketing-muted">
+            KaiketsuTech started as a handful of friends who kept getting asked to build things —
+            school websites, event registration pages, booking systems — and realized we&rsquo;d
+            rather do it as a crew than one-off freelance gigs. The name is literal: kaiketsu is the
+            Japanese word for &ldquo;solution.&rdquo; That&rsquo;s the whole job description.
+          </p>
+        </Reveal>
+      </section>
 
-        {/* Company Story */}
-        <section className="max-w-max-width mx-auto px-margin-mobile md:px-margin-desktop w-full">
-          <motion.div 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="glass-panel p-8 md:p-12 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-12"
-          >
-            <div className="flex flex-col gap-stack-md">
-              <span className="font-section-label text-section-label text-primary-container uppercase tracking-wider block">The Genesis</span>
-              <h2 className="font-display-lg text-5xl md:text-7xl lg:text-5xl font-bold text-on-surface">Built by Engineers, For Engineers.</h2>
-            </div>
-            <div className="flex flex-col gap-stack-lg font-body-md text-body-md text-on-surface-variant">
-              <p>
-                KaiketsuTech was founded on a simple premise: enterprise software doesn't have to be bloated, slow, or difficult to maintain. We saw a gap between visionary business goals and the technical execution required to achieve them.
-              </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-4 border-t border-outline-variant/20">
-                <div>
-                  <h3 className="font-headline-lg text-headline-lg text-on-surface mb-2 text-3xl">Mission</h3>
-                  <p className="text-sm">To deliver uncompromising technical excellence that translates directly to business value.</p>
-                </div>
-                <div>
-                  <h3 className="font-headline-lg text-headline-lg text-on-surface mb-2 text-3xl">Vision</h3>
-                  <p className="text-sm">To be the invisible engine powering the next generation of industry-defining platforms.</p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        </section>
-      </main>
-    </div>
-  )
+      <section className="border-t border-marketing-border px-[6vw] py-[8vh]">
+        <Reveal className="grid grid-cols-1 gap-12 md:grid-cols-2">
+          <div>
+            <h2 className="mb-4 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-muted-dim">
+              How we&rsquo;re structured
+            </h2>
+            <p className="text-[17px] leading-relaxed text-marketing-fg/90">
+              Two things happen under one roof. Client work — real sites and systems for real
+              businesses and institutions, built and shipped by the crew. And crew-building — we
+              scout student developers who can already ship, bring them in, and grow the team as the
+              work grows.
+            </p>
+          </div>
+          <div>
+            <h2 className="mb-4 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-muted-dim">
+              What funds what
+            </h2>
+            <p className="text-[17px] leading-relaxed text-marketing-fg/90">
+              Client work isn&rsquo;t a side hustle to our own ideas — it&rsquo;s the funding model
+              for them. Revenue from shipping other people&rsquo;s products is what lets us spend
+              time on research work, and on bringing on more student developers as interns rather
+              than treating the crew as fixed.
+            </p>
+          </div>
+        </Reveal>
+      </section>
+
+      <section className="border-t border-marketing-border px-[6vw] py-[8vh]">
+        <Reveal>
+          <h2 className="mb-4 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-muted-dim">
+            The crew
+          </h2>
+          <p className="max-w-[56ch] text-[17px] leading-relaxed text-marketing-fg/90">
+            Team profiles are going up here as the crew signs off on photos and bios — this section
+            is intentionally not filled with placeholder headshots. Check the{" "}
+            <a href="/careers" className="text-marketing-accent hover:underline">
+              careers page
+            </a>{" "}
+            if you want to be one of the names that lands here.
+          </p>
+        </Reveal>
+      </section>
+
+      <section className="border-t border-marketing-border px-[6vw] py-[10vh]">
+        <Reveal>
+          <h2 className="max-w-[18ch] font-marketing-sans text-[clamp(28px,4.5vw,48px)] font-bold">
+            Want to work with us, or work here?
+          </h2>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <MagneticButton href="/contact">Start a project</MagneticButton>
+            <MagneticButton href="/careers" variant="outline">
+              Join the crew
+            </MagneticButton>
+          </div>
+        </Reveal>
+      </section>
+    </>
+  );
 }

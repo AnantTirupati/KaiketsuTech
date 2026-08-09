@@ -5,7 +5,11 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/components/ui/Toast'
-import { ArrowLeft, ArrowRight, Upload, FileText, Loader } from 'lucide-react'
+import { ArrowLeft, Upload, FileText, Loader } from 'lucide-react'
+import Reveal from '@/components/marketing/Reveal'
+
+const inputClass =
+  'w-full border border-marketing-border bg-marketing-bg-raised px-4 py-3 text-[15px] text-marketing-fg placeholder:text-marketing-muted-dim focus:border-marketing-accent focus:outline-none'
 
 function ApplyFormContent() {
   const searchParams = useSearchParams()
@@ -78,7 +82,6 @@ function ApplyFormContent() {
     toast('Uploading resume and processing application...', 'info')
 
     try {
-      // 1. Upload resume to Supabase Storage
       const fileExt = resumeFile.name.split('.').pop()
       const randomId = Math.random().toString(36).substring(2, 12)
       const resumePath = `${Date.now()}_${randomId}.${fileExt}`
@@ -94,7 +97,6 @@ function ApplyFormContent() {
         throw new Error(`Resume upload failed: ${uploadError.message}`)
       }
 
-      // 2. Insert application record into database
       const { error: dbError } = await supabase
         .from('intern_applications')
         .insert({
@@ -129,167 +131,128 @@ function ApplyFormContent() {
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-[#111111] border border-[#222222] rounded-lg p-8 md:p-12 shadow-2xl relative overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-primary-container to-transparent opacity-60"></div>
-      
-      <div className="mb-8 border-b border-[#222222] pb-6">
-        <h2 className="font-headline-xl text-xl md:text-2xl text-on-surface font-bold">Internship Application</h2>
-        <p className="font-body-md text-xs text-on-surface-variant mt-1">
-          Apply for the <span className="text-primary font-semibold capitalize">{roleTitle}</span> track.
+    <div className="w-full max-w-2xl border border-marketing-border bg-marketing-bg-raised p-8 md:p-12">
+      <div className="mb-8 border-b border-marketing-border pb-6">
+        <h2 className="font-marketing-sans text-xl font-bold text-marketing-fg md:text-2xl">
+          Internship application
+        </h2>
+        <p className="mt-1 text-sm text-marketing-muted">
+          Applying for the <span className="capitalize text-marketing-accent">{roleTitle}</span> track.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Step 1: Personal Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="fullname">Full Name *</label>
-            <input 
-              id="fullname"
-              type="text"
-              required
-              className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="Your Name"
-              value={fullName}
-              onChange={e => setFullName(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="email">Email Address *</label>
-            <input 
-              id="email"
-              type="email"
-              required
-              className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="example@gmail.com"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="phone">Phone Number</label>
-            <input 
-              id="phone"
-              type="tel"
-              className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="+91 1234567890"
-              value={phone}
-              onChange={e => setPhone(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="experience">Years of Experience</label>
-            <input 
-              id="experience"
-              type="text"
-              className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="Self-taught, 2 years build/production experience"
-              value={experience}
-              onChange={e => setExperience(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Step 2: Technical profile */}
-        <div className="space-y-2">
-          <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="skills">Core Skills</label>
-          <input 
-            id="skills"
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <input
             type="text"
-            className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-            placeholder="React, Node.js, SQL, TypeScript, Git"
-            value={skills}
-            onChange={e => setSkills(e.target.value)}
+            placeholder="Full name"
+            required
+            value={fullName}
+            onChange={e => setFullName(e.target.value)}
+            className={inputClass}
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            required
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            className={inputClass}
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="technologies">Technologies Worked With</label>
-          <input 
-            id="technologies"
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <input
+            type="tel"
+            placeholder="Phone (optional)"
+            value={phone}
+            onChange={e => setPhone(e.target.value)}
+            className={inputClass}
+          />
+          <input
             type="text"
-            className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-            placeholder="Next.js, Tailwind CSS, PostgreSQL, Supabase"
-            value={technologies}
-            onChange={e => setTechnologies(e.target.value)}
+            placeholder="Experience — self-taught, 2 yrs production work…"
+            value={experience}
+            onChange={e => setExperience(e.target.value)}
+            className={inputClass}
           />
         </div>
 
-        {/* Step 3: Web links */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="space-y-2">
-            <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="portfolio">Portfolio URL</label>
-            <input 
-              id="portfolio"
-              type="url"
-              className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="https://myportfolio.com"
-              value={portfolioUrl}
-              onChange={e => setPortfolioUrl(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="github">GitHub URL</label>
-            <input 
-              id="github"
-              type="url"
-              className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="https://github.com/profile"
-              value={githubUrl}
-              onChange={e => setGithubUrl(e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider" htmlFor="linkedin">LinkedIn URL</label>
-            <input 
-              id="linkedin"
-              type="url"
-              className="w-full bg-[#0B0B0B] border border-[#222] rounded-lg py-3 px-4 text-sm focus:border-primary-container outline-none"
-              placeholder="https://linkedin.com/in/profile"
-              value={linkedinUrl}
-              onChange={e => setLinkedinUrl(e.target.value)}
-            />
-          </div>
+        <input
+          type="text"
+          placeholder="Core skills — React, Node.js, SQL, TypeScript"
+          value={skills}
+          onChange={e => setSkills(e.target.value)}
+          className={inputClass}
+        />
+
+        <input
+          type="text"
+          placeholder="Technologies worked with — Next.js, Tailwind, Supabase"
+          value={technologies}
+          onChange={e => setTechnologies(e.target.value)}
+          className={inputClass}
+        />
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <input
+            type="url"
+            placeholder="Portfolio URL"
+            value={portfolioUrl}
+            onChange={e => setPortfolioUrl(e.target.value)}
+            className={inputClass}
+          />
+          <input
+            type="url"
+            placeholder="GitHub URL"
+            value={githubUrl}
+            onChange={e => setGithubUrl(e.target.value)}
+            className={inputClass}
+          />
+          <input
+            type="url"
+            placeholder="LinkedIn URL"
+            value={linkedinUrl}
+            onChange={e => setLinkedinUrl(e.target.value)}
+            className={inputClass}
+          />
         </div>
 
-        {/* Step 4: Resume upload */}
-        <div className="space-y-2 border-t border-[#222222] pt-6">
-          <label className="block font-label-md text-xs text-on-surface-variant font-bold uppercase tracking-wider">Upload Resume (PDF/Word under 5MB) *</label>
-          <div className="relative border-2 border-dashed border-[#333333] hover:border-primary/50 transition-colors rounded-lg p-6 flex flex-col items-center justify-center text-center bg-[#0B0B0B] cursor-pointer">
-            <input 
-              type="file" 
+        <div className="border-t border-marketing-border pt-6">
+          <label className="mb-2 block font-marketing-mono text-xs uppercase tracking-wider text-marketing-muted-dim">
+            Resume (PDF/Word, under 5MB) *
+          </label>
+          <div className="relative flex flex-col items-center justify-center gap-2 border-2 border-dashed border-marketing-border p-6 text-center transition-colors hover:border-marketing-accent">
+            <input
+              type="file"
               accept=".pdf,.doc,.docx"
+              required
               onChange={handleFileChange}
-              className="absolute inset-0 opacity-0 cursor-pointer"
+              className="absolute inset-0 cursor-pointer opacity-0"
             />
             {resumeFile ? (
-              <div className="flex items-center gap-2 text-primary">
-                <FileText size={28} />
-                <span className="text-xs font-semibold">{resumeFile.name} ({(resumeFile.size / 1024).toFixed(1)} KB)</span>
+              <div className="flex items-center gap-2 text-marketing-accent">
+                <FileText size={24} />
+                <span className="text-xs font-semibold">
+                  {resumeFile.name} ({(resumeFile.size / 1024).toFixed(1)} KB)
+                </span>
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-2 text-on-surface-variant">
-                <Upload size={28} />
-                <span className="text-xs">Drag and drop file here or click to browse</span>
+              <div className="flex flex-col items-center gap-2 text-marketing-muted-dim">
+                <Upload size={24} />
+                <span className="text-xs">Drag and drop, or click to browse</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="pt-6 border-t border-[#222222] flex justify-end">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="px-8 py-3 bg-primary text-[#0B0B0B] font-label-md text-xs font-bold rounded hover:bg-opacity-90 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
-          >
-            {submitting ? <Loader className="animate-spin" size={16} /> : 'Submit Application'}
-            <ArrowRight size={16} />
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={submitting}
+          className="mt-2 flex items-center justify-center gap-2 self-start rounded-full bg-marketing-accent px-7 py-3.5 text-[15px] font-semibold text-marketing-accent-ink transition-colors hover:bg-marketing-fg disabled:opacity-50"
+        >
+          {submitting ? <Loader className="animate-spin" size={16} /> : 'Submit application'}
+        </button>
       </form>
     </div>
   )
@@ -297,23 +260,28 @@ function ApplyFormContent() {
 
 export default function ApplyPage() {
   return (
-    <div className="bg-background text-on-surface min-h-screen flex flex-col font-body-md antialiased">
-      <main className="flex-grow pt-32 pb-24 px-margin-mobile md:px-margin-desktop">
-        <div className="max-w-2xl mx-auto mb-8">
-          <Link href="/careers" className="font-body-md font-semibold text-on-surface-variant hover:text-primary transition-colors flex items-center gap-2">
-            <ArrowLeft size={16} />
-            Back to Careers
-          </Link>
-        </div>
+    <section className="flex flex-col items-center px-[6vw] pb-[10vh] pt-[12vh]">
+      <div className="mb-8 w-full max-w-2xl">
+        <Link
+          href="/careers"
+          className="flex items-center gap-2 font-marketing-mono text-xs uppercase tracking-wider text-marketing-muted-dim transition-colors hover:text-marketing-accent"
+        >
+          <ArrowLeft size={14} />
+          Back to careers
+        </Link>
+      </div>
 
-        <Suspense fallback={
-          <div className="w-full max-w-2xl mx-auto bg-[#111111] border border-[#222222] rounded-lg p-12 flex justify-center items-center">
-            <Loader className="animate-spin text-primary" size={32} />
-          </div>
-        }>
+      <Reveal className="w-full max-w-2xl">
+        <Suspense
+          fallback={
+            <div className="flex w-full items-center justify-center border border-marketing-border bg-marketing-bg-raised p-12">
+              <Loader className="animate-spin text-marketing-accent" size={28} />
+            </div>
+          }
+        >
           <ApplyFormContent />
         </Suspense>
-      </main>
-    </div>
+      </Reveal>
+    </section>
   )
 }

@@ -5,9 +5,9 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useToast } from '@/components/ui/Toast'
 import TopAppBar from '@/components/shared/TopAppBar'
-import { 
-  CheckSquare, AlertTriangle, Play, CheckCircle2, 
-  Award, Calendar, FolderOpen, Upload, Download, Trash, 
+import {
+  CheckSquare, Play, CheckCircle2,
+  Award, Calendar, FolderOpen, Upload, Download, Trash,
   Send, Loader, MessageSquare, Layers, FileText, BarChart2, LogOut, Home, X, ExternalLink
 } from 'lucide-react'
 import Link from 'next/link'
@@ -59,11 +59,9 @@ export default function InternDashboard() {
   const [upcomingMilestones, setUpcomingMilestones] = useState<Database['public']['Tables']['milestones']['Row'][]>([])
   const [loading, setLoading] = useState(true)
 
-  // Deliverables file upload state
   const [deliverables, setDeliverables] = useState<DeliverableFile[]>([])
   const [uploading, setUploading] = useState(false)
 
-  // Messaging State
   const [selectedProject, setSelectedProject] = useState<Database['public']['Tables']['projects']['Row'] | null>(null)
   const [messages, setMessages] = useState<MessageWithSender[]>([])
   const [newMessage, setNewMessage] = useState('')
@@ -74,15 +72,12 @@ export default function InternDashboard() {
   const router = useRouter()
   const { toast } = useToast()
 
-  // Search filter state
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Reset search query on tab change to prevent stale filters carryover
   useEffect(() => {
     setSearchQuery('')
   }, [activeTab])
 
-  // Filtered lists based on search query
   const filteredTasks = tasks.filter(t => {
     const term = searchQuery.toLowerCase().trim()
     if (!term) return true
@@ -127,7 +122,6 @@ export default function InternDashboard() {
       }
       setUser(currentUser)
 
-      // Fetch logged-in user profile
       const { data: profData } = await supabase
         .from('profiles')
         .select('*')
@@ -135,7 +129,6 @@ export default function InternDashboard() {
         .single()
       setProfile(profData || null)
 
-      // Fetch intern details (intern_id)
       const { data: internRecord } = await supabase
         .from('interns')
         .select('intern_id')
@@ -146,8 +139,6 @@ export default function InternDashboard() {
         setInternId(internRecord.intern_id)
       }
 
-      // Fetch allocated projects (simulated or joined via tasks/profiles)
-      // Since interns don't own projects but work on them, we select all projects
       const { data: pData } = await supabase
         .from('projects')
         .select('*')
@@ -156,15 +147,13 @@ export default function InternDashboard() {
         setSelectedProject(pData[0])
       }
 
-      // Fetch intern tasks
       const { data: tData } = await supabase
         .from('tasks')
         .select('*')
         .eq('assigned_to', currentUser.id)
-      
+
       setTasks((tData as Task[]) || [])
 
-      // Fetch pending milestones for allocated projects
       if (pData && pData.length > 0) {
         const projectIds = pData.map(p => p.id)
         const { data: mData } = await supabase
@@ -183,7 +172,6 @@ export default function InternDashboard() {
     loadData()
   }, [supabase, router])
 
-  // Poll for messages when selectedProject changes
   useEffect(() => {
     if (!selectedProject) return
 
@@ -218,11 +206,11 @@ export default function InternDashboard() {
     return () => clearInterval(intervalId)
   }, [selectedProject, supabase])
 
-  // Load deliverables from storage bucket
   useEffect(() => {
     if (activeTab === 'deliverables' && user) {
       loadDeliverables()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, user])
 
   const loadDeliverables = async () => {
@@ -280,7 +268,7 @@ export default function InternDashboard() {
         if (data?.signedUrl) {
           window.open(data.signedUrl, '_blank')
         }
-      } catch (err) {
+      } catch {
         toast('Failed to download deliverable.', 'error')
       }
     }
@@ -323,7 +311,7 @@ export default function InternDashboard() {
           .insert({ project_id: selectedProject.id })
           .select()
           .single()
-        
+
         if (convErr) throw convErr
         conv = newConv
       }
@@ -339,7 +327,7 @@ export default function InternDashboard() {
 
       if (error) throw error
       setNewMessage('')
-    } catch (err) {
+    } catch {
       toast('Failed to send message.', 'error')
     } finally {
       setSendingMessage(false)
@@ -353,14 +341,12 @@ export default function InternDashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen flex justify-center items-center bg-[#0B0B0B]">
-        <Loader className="animate-spin text-primary" size={36} />
+      <div className="flex h-screen items-center justify-center bg-marketing-bg">
+        <Loader className="animate-spin text-marketing-accent" size={36} />
       </div>
     )
   }
 
-  const tasksTodo = tasks.filter(t => t.status === 'todo').length
-  const tasksInProgress = tasks.filter(t => t.status === 'in_progress').length
   const tasksDone = tasks.filter(t => t.status === 'done').length
 
   const totalTasks = tasks.length
@@ -372,37 +358,35 @@ export default function InternDashboard() {
   const filteredTasksDone = filteredTasks.filter(t => t.status === 'done').length
 
   return (
-    <div className="bg-[#0B0B0B] text-on-surface antialiased min-h-screen flex font-body-md overflow-hidden relative">
-      {/* Mobile Sidebar Overlay Backdrop */}
+    <div className="relative flex h-screen min-h-screen overflow-hidden bg-marketing-bg font-marketing-sans text-marketing-fg antialiased">
       {sidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+        <div
+          className="fixed inset-0 z-40 bg-black/60 md:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* SideNavBar */}
-      <aside className={`bg-surface-container-low w-64 h-screen border-r border-[#222] flex flex-col justify-between shrink-0 transition-transform duration-300 z-50
+      <aside className={`z-50 flex h-screen w-64 shrink-0 flex-col justify-between border-r border-marketing-border bg-marketing-bg-raised transition-transform duration-300
         fixed inset-y-0 left-0 md:static md:translate-x-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <div>
-          <div className="p-6 border-b border-[#222]">
+          <div className="border-b border-marketing-border p-6">
             <div className="flex items-center justify-between">
-              <Link href="/" className="block hover:opacity-85 transition-opacity">
-                <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+              <Link href="/" className="block font-marketing-mono text-sm font-bold tracking-tight text-marketing-fg transition-colors hover:text-marketing-accent">
+                KAIKETSU<span className="text-marketing-accent">_</span>TECH
               </Link>
-              <button 
+              <button
                 onClick={() => setSidebarOpen(false)}
-                className="md:hidden text-on-surface-variant hover:text-primary transition-all p-2 rounded-full cursor-pointer flex items-center justify-center"
+                className="flex cursor-pointer items-center justify-center p-2 text-marketing-muted-dim transition-colors hover:text-marketing-accent md:hidden"
                 aria-label="Close Sidebar"
               >
                 <X size={18} />
               </button>
             </div>
-            <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold">Intern Workspace</p>
+            <p className="mt-2 font-marketing-mono text-[10px] font-bold uppercase tracking-widest text-marketing-muted-dim">Intern Workspace</p>
           </div>
-          <nav className="px-4 py-6 space-y-1">
+          <nav className="space-y-1 px-4 py-6">
             {(
               [
                 { id: 'overview', label: 'Kanban Sprint Board', icon: <CheckSquare size={18} /> },
@@ -418,10 +402,10 @@ export default function InternDashboard() {
                   setActiveTab(tab.id)
                   setSidebarOpen(false)
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
-                  activeTab === tab.id 
-                    ? 'bg-primary-container text-white' 
-                    : 'text-on-surface-variant hover:bg-[#1a1a1a] hover:text-on-surface'
+                className={`flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-xs font-semibold transition-colors ${
+                  activeTab === tab.id
+                    ? 'bg-marketing-accent text-marketing-accent-ink'
+                    : 'text-marketing-muted-dim hover:bg-marketing-bg hover:text-marketing-fg'
                 }`}
               >
                 {tab.icon}
@@ -430,39 +414,39 @@ export default function InternDashboard() {
             ))}
           </nav>
         </div>
-        <div className="p-4 border-t border-[#222] flex flex-col gap-3">
+        <div className="flex flex-col gap-3 border-t border-marketing-border p-4">
           <div className="flex items-center gap-3 px-2">
-            <div className="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-primary font-bold font-mono-sm text-xs">
+            <div className="flex h-8 w-8 items-center justify-center bg-marketing-accent/10 font-marketing-mono text-xs font-bold text-marketing-accent">
               {user?.email?.charAt(0).toUpperCase()}
             </div>
             <div className="flex flex-col truncate">
-              <span className="text-xs font-semibold text-on-surface truncate">{user?.email}</span>
-              <span className="text-[10px] text-on-surface-variant font-mono-sm">
+              <span className="truncate text-xs font-semibold text-marketing-fg">{user?.email}</span>
+              <span className="font-marketing-mono text-[10px] text-marketing-muted-dim">
                 {internId || 'Technical Intern'}
               </span>
             </div>
           </div>
           {internId && (
-            <a 
-              href={`/intern/${internId}`} 
-              target="_blank" 
+            <a
+              href={`/intern/${internId}`}
+              target="_blank"
               rel="noopener noreferrer"
-              className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+              className="flex w-full cursor-pointer items-center justify-center gap-2 border border-marketing-border py-2 text-xs font-semibold text-marketing-fg transition-colors hover:border-marketing-accent"
             >
-              <ExternalLink size={14} className="text-primary" />
+              <ExternalLink size={14} className="text-marketing-accent" />
               View Public Profile
             </a>
           )}
-          <Link 
+          <Link
             href="/"
-            className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 border border-marketing-border py-2 text-xs font-semibold text-marketing-fg transition-colors hover:border-marketing-accent"
           >
             <Home size={14} />
             Go to Home
           </Link>
-          <button 
+          <button
             onClick={handleLogout}
-            className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 border border-marketing-border py-2 text-xs font-semibold text-marketing-fg transition-colors hover:border-marketing-accent"
           >
             <LogOut size={14} />
             Sign Out
@@ -470,151 +454,134 @@ export default function InternDashboard() {
         </div>
       </aside>
 
-      {/* Main Workspace Area */}
-      <main className="flex-1 flex flex-col h-screen overflow-hidden">
-        <TopAppBar 
-          title={activeTab === 'overview' ? 'Kanban Sprint Board' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)} 
-          placeholder="Search tasks..." 
+      <main className="flex h-screen flex-1 flex-col overflow-hidden">
+        <TopAppBar
+          title={activeTab === 'overview' ? 'Kanban Sprint Board' : activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+          placeholder="Search tasks..."
           searchValue={searchQuery}
           onSearchChange={setSearchQuery}
           onMenuClick={() => setSidebarOpen(true)}
         />
 
-        {/* Canvas */}
-        <div className="flex-1 overflow-y-auto p-gutter pt-8 max-w-max-width w-full mx-auto space-y-6">
+        <div className="mx-auto w-full max-w-6xl flex-1 space-y-6 overflow-y-auto p-6 pt-8">
 
-          {/* OVERVIEW / KANBAN TAB */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              {/* Quick stats row */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <Award className="text-primary" size={80} />
-                  </div>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="relative flex flex-col justify-between overflow-hidden border border-marketing-border bg-marketing-bg-raised p-6">
                   <div>
-                    <h4 className="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Sprint Performance</h4>
+                    <h4 className="font-marketing-mono text-[10px] font-bold uppercase tracking-widest text-marketing-muted-dim">Sprint Performance</h4>
                     <div className="mt-4 flex items-baseline gap-2">
-                      <span className="text-4xl font-bold text-on-surface">
+                      <span className="text-4xl font-bold text-marketing-fg">
                         {totalTasks > 0 ? Math.round((tasksDone / totalTasks) * 100) : 0}%
                       </span>
-                      <span className="font-mono-sm text-xs text-primary">{tasksDone}/{totalTasks} Tasks</span>
+                      <span className="font-marketing-mono text-xs text-marketing-accent">{tasksDone}/{totalTasks} Tasks</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <Calendar className="text-primary" size={80} />
-                  </div>
+                <div className="relative flex flex-col justify-between overflow-hidden border border-marketing-border bg-marketing-bg-raised p-6">
                   <div>
-                    <h4 className="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Upcoming Milestones</h4>
+                    <h4 className="font-marketing-mono text-[10px] font-bold uppercase tracking-widest text-marketing-muted-dim">Upcoming Milestones</h4>
                     {upcomingMilestones.length > 0 ? (
-                      <div className="mt-4 flex items-center gap-2 text-xs truncate">
-                        <span className="font-semibold text-on-surface truncate" title={upcomingMilestones[0].title || ''}>
+                      <div className="mt-4 flex items-center gap-2 truncate text-xs">
+                        <span className="truncate font-semibold text-marketing-fg" title={upcomingMilestones[0].title || ''}>
                           {upcomingMilestones[0].title}
                         </span>
-                        <span className="text-primary font-mono-sm shrink-0">
+                        <span className="shrink-0 font-marketing-mono text-marketing-accent">
                           • {upcomingMilestones[0].due_date ? new Date(upcomingMilestones[0].due_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date'}
                         </span>
                       </div>
                     ) : (
-                      <div className="mt-4 text-xs text-on-surface-variant font-mono-sm">
+                      <div className="mt-4 font-marketing-mono text-xs text-marketing-muted-dim">
                         No pending milestones
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between relative overflow-hidden group">
-                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                    <FolderOpen className="text-primary" size={80} />
-                  </div>
+                <div className="relative flex flex-col justify-between overflow-hidden border border-marketing-border bg-marketing-bg-raised p-6">
                   <div>
-                    <h4 className="font-label-md text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Active Allocations</h4>
+                    <h4 className="font-marketing-mono text-[10px] font-bold uppercase tracking-widest text-marketing-muted-dim">Active Allocations</h4>
                     <div className="mt-4 text-xs">
-                      <span className="font-semibold text-on-surface">{projects.length} Active Projects</span>
+                      <span className="font-semibold text-marketing-fg">{projects.length} Active Projects</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Kanban Columns */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-12">
-                {/* To Do Column */}
-                <div className="bg-[#111111] border border-[#222222] rounded p-3">
-                  <h5 className="font-mono-sm text-xs text-on-surface-variant uppercase tracking-wider mb-3 flex justify-between font-bold">
-                    To Do <span className="bg-[#222222] px-2 rounded">{filteredTasksTodo}</span>
+              <div className="grid grid-cols-1 gap-4 pb-12 sm:grid-cols-3">
+                <div className="border border-marketing-border bg-marketing-bg-raised p-3">
+                  <h5 className="mb-3 flex justify-between font-marketing-mono text-xs font-bold uppercase tracking-wider text-marketing-muted-dim">
+                    To Do <span className="bg-marketing-bg px-2">{filteredTasksTodo}</span>
                   </h5>
                   <div className="space-y-2">
                     {filteredTasks.filter(t => t.status === 'todo').map((task) => (
-                      <div key={task.id} className="bg-[#1a1a1a] p-3 rounded border border-[#333333] hover:border-[#555] transition-colors">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-[9px] font-mono-sm px-2 py-0.5 rounded bg-[#2a1b12] text-primary">{task.category}</span>
-                          <button 
+                      <div key={task.id} className="border border-marketing-border bg-marketing-bg p-3 transition-colors hover:border-marketing-border-strong">
+                        <div className="mb-2 flex items-start justify-between">
+                          <span className="bg-marketing-accent/10 px-2 py-0.5 font-marketing-mono text-[9px] text-marketing-accent">{task.category}</span>
+                          <button
                             onClick={() => moveTask(task.id, 'in_progress')}
-                            className="text-xs text-primary hover:underline transition-colors cursor-pointer flex items-center gap-0.5"
+                            className="flex cursor-pointer items-center gap-0.5 text-xs text-marketing-accent transition-colors hover:underline"
                           >
-                            Start <Play size={10} className="fill-icon" />
+                            Start <Play size={10} />
                           </button>
                         </div>
-                        <p className="font-body-md text-sm text-on-surface">{task.title}</p>
+                        <p className="text-sm text-marketing-fg">{task.title}</p>
                       </div>
                     ))}
                     {filteredTasksTodo === 0 && (
-                      <div className="py-8 text-center text-on-surface-variant/40 text-xs font-mono-sm border border-dashed border-[#222] rounded">
+                      <div className="border border-dashed border-marketing-border py-8 text-center font-marketing-mono text-xs text-marketing-muted-dim">
                         No tasks in queue
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* In Progress Column */}
-                <div className="bg-[#111111] border border-[#222222] rounded p-3 relative">
-                  <div className="absolute top-0 left-0 w-full h-[2px] bg-primary-container"></div>
-                  <h5 className="font-mono-sm text-xs text-on-surface-variant uppercase tracking-wider mb-3 flex justify-between font-bold">
-                    In Progress <span className="bg-[#222222] px-2 rounded text-primary">{filteredTasksInProgress}</span>
+                <div className="relative border border-marketing-border bg-marketing-bg-raised p-3">
+                  <div className="absolute left-0 top-0 h-[2px] w-full bg-marketing-accent"></div>
+                  <h5 className="mb-3 flex justify-between font-marketing-mono text-xs font-bold uppercase tracking-wider text-marketing-muted-dim">
+                    In Progress <span className="bg-marketing-bg px-2 text-marketing-accent">{filteredTasksInProgress}</span>
                   </h5>
                   <div className="space-y-2">
                     {filteredTasks.filter(t => t.status === 'in_progress').map((task) => (
-                      <div key={task.id} className="bg-[#1a1a1a] p-3 rounded border border-primary-container/30 shadow-[0_0_15px_rgba(249,115,22,0.05)] hover:border-primary transition-colors">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-[9px] font-mono-sm px-2 py-0.5 rounded bg-[#2a1b12] text-primary">{task.category}</span>
-                          <button 
+                      <div key={task.id} className="border border-marketing-accent/30 bg-marketing-bg p-3 transition-colors hover:border-marketing-accent">
+                        <div className="mb-2 flex items-start justify-between">
+                          <span className="bg-marketing-accent/10 px-2 py-0.5 font-marketing-mono text-[9px] text-marketing-accent">{task.category}</span>
+                          <button
                             onClick={() => moveTask(task.id, 'done')}
-                            className="text-xs text-[#4ade80] hover:underline transition-colors cursor-pointer flex items-center gap-0.5"
+                            className="flex cursor-pointer items-center gap-0.5 text-xs text-marketing-accent transition-colors hover:underline"
                           >
                             Complete <CheckSquare size={10} />
                           </button>
                         </div>
-                        <p className="font-body-md text-sm text-on-surface">{task.title}</p>
+                        <p className="text-sm text-marketing-fg">{task.title}</p>
                       </div>
                     ))}
                     {filteredTasksInProgress === 0 && (
-                      <div className="py-8 text-center text-on-surface-variant/40 text-xs font-mono-sm border border-dashed border-[#222] rounded">
+                      <div className="border border-dashed border-marketing-border py-8 text-center font-marketing-mono text-xs text-marketing-muted-dim">
                         No tasks active
                       </div>
                     )}
                   </div>
                 </div>
 
-                {/* Done Column */}
-                <div className="bg-[#111111] border border-[#222222] rounded p-3 opacity-70">
-                  <h5 className="font-mono-sm text-xs text-on-surface-variant uppercase tracking-wider mb-3 flex justify-between font-bold">
-                    Done <span className="bg-[#222222] px-2 rounded">{filteredTasksDone}</span>
+                <div className="border border-marketing-border bg-marketing-bg-raised p-3 opacity-70">
+                  <h5 className="mb-3 flex justify-between font-marketing-mono text-xs font-bold uppercase tracking-wider text-marketing-muted-dim">
+                    Done <span className="bg-marketing-bg px-2">{filteredTasksDone}</span>
                   </h5>
                   <div className="space-y-2">
                     {filteredTasks.filter(t => t.status === 'done').map((task) => (
-                      <div key={task.id} className="bg-[#1a1a1a] p-3 rounded border border-[#333333]">
-                        <div className="flex justify-between items-start mb-2">
-                          <span className="text-[9px] font-mono-sm px-2 py-0.5 rounded bg-[#222] text-on-surface-variant">{task.category}</span>
-                          <CheckCircle2 size={12} className="text-[#4ade80]" />
+                      <div key={task.id} className="border border-marketing-border bg-marketing-bg p-3">
+                        <div className="mb-2 flex items-start justify-between">
+                          <span className="bg-marketing-bg-raised px-2 py-0.5 font-marketing-mono text-[9px] text-marketing-muted-dim">{task.category}</span>
+                          <CheckCircle2 size={12} className="text-marketing-accent" />
                         </div>
-                        <p className="font-body-md text-sm text-on-surface-variant line-through">{task.title}</p>
+                        <p className="text-sm text-marketing-muted line-through">{task.title}</p>
                       </div>
                     ))}
                     {filteredTasksDone === 0 && (
-                      <div className="py-8 text-center text-on-surface-variant/40 text-xs font-mono-sm border border-dashed border-[#222] rounded">
+                      <div className="border border-dashed border-marketing-border py-8 text-center font-marketing-mono text-xs text-marketing-muted-dim">
                         No completed tasks
                       </div>
                     )}
@@ -624,80 +591,78 @@ export default function InternDashboard() {
             </div>
           )}
 
-          {/* PROJECTS TAB */}
           {activeTab === 'projects' && (
-            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Assigned Projects</h3>
-              <div className="divide-y divide-[#222222]">
+            <div className="border border-marketing-border bg-marketing-bg-raised p-6">
+              <h3 className="mb-6 font-marketing-mono text-xs font-semibold uppercase tracking-widest text-marketing-muted-dim">Assigned Projects</h3>
+              <div className="divide-y divide-marketing-border">
                 {filteredProjects.map(proj => (
-                  <div key={proj.id} className="py-4 hover:bg-[#1a1a1a]/20 px-2 rounded transition-colors flex items-center justify-between">
+                  <div key={proj.id} className="flex items-center justify-between rounded px-2 py-4 transition-colors hover:bg-marketing-bg">
                     <div>
-                      <h4 className="font-body-md font-semibold text-on-surface text-sm">{proj.title}</h4>
-                      <p className="font-mono-sm text-xs text-on-surface-variant mt-1 capitalize">Status: {(proj.status || '').replace('_', ' ')}</p>
+                      <h4 className="text-sm font-semibold text-marketing-fg">{proj.title}</h4>
+                      <p className="mt-1 font-marketing-mono text-xs capitalize text-marketing-muted-dim">Status: {(proj.status || '').replace('_', ' ')}</p>
                     </div>
                     <div className="text-right">
-                      <span className="font-mono-sm text-[10px] text-on-surface-variant block uppercase">TIMELINE</span>
-                      <span className="text-xs text-on-surface">{proj.timeline_start || 'Pending'} — {proj.timeline_end || 'Pending'}</span>
+                      <span className="block font-marketing-mono text-[10px] uppercase text-marketing-muted-dim">TIMELINE</span>
+                      <span className="text-xs text-marketing-fg">{proj.timeline_start || 'Pending'} — {proj.timeline_end || 'Pending'}</span>
                     </div>
                   </div>
                 ))}
                 {filteredProjects.length === 0 && (
-                  <div className="py-8 text-center text-on-surface-variant text-sm">No allocated projects found.</div>
+                  <div className="py-8 text-center text-sm text-marketing-muted">No allocated projects found.</div>
                 )}
               </div>
             </div>
           )}
 
-          {/* DELIVERABLES TAB */}
           {activeTab === 'deliverables' && (
-            <div className="bg-[#111] border border-[#222] rounded-lg p-6 space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#222] pb-6">
+            <div className="space-y-6 border border-marketing-border bg-marketing-bg-raised p-6">
+              <div className="flex flex-col justify-between gap-4 border-b border-marketing-border pb-6 md:flex-row md:items-center">
                 <div>
-                  <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest">Deliverable Code / Artifact Submission</h3>
-                  <p className="text-xs text-on-surface-variant mt-1">Upload code bundles, blueprints, or design deliverables for Admin review.</p>
+                  <h3 className="font-marketing-mono text-xs font-semibold uppercase tracking-widest text-marketing-muted-dim">Deliverable Code / Artifact Submission</h3>
+                  <p className="mt-1 text-xs text-marketing-muted">Upload code bundles, blueprints, or design deliverables for Admin review.</p>
                 </div>
                 <div className="relative">
-                  <button className="bg-primary-container text-white py-3 px-6 rounded hover:bg-[#d8600d] transition-colors flex items-center gap-2 cursor-pointer font-bold text-xs shadow-md">
+                  <button className="flex cursor-pointer items-center gap-2 bg-marketing-accent px-6 py-3 text-xs font-bold text-marketing-accent-ink transition-colors hover:bg-marketing-fg">
                     <Upload size={16} />
                     Upload Deliverable
-                    <input 
-                      type="file" 
-                      onChange={handleDeliverableUpload} 
+                    <input
+                      type="file"
+                      onChange={handleDeliverableUpload}
                       disabled={uploading}
-                      className="absolute inset-0 opacity-0 cursor-pointer" 
+                      className="absolute inset-0 cursor-pointer opacity-0"
                     />
                   </button>
                 </div>
               </div>
 
               {uploading && (
-                <div className="flex items-center gap-2 text-xs text-primary font-mono-sm">
+                <div className="flex items-center gap-2 font-marketing-mono text-xs text-marketing-accent">
                   <Loader className="animate-spin" size={16} />
                   Uploading payload to deliverables workspace...
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {filteredDeliverables.map((file, i) => (
-                  <div key={i} className="bg-[#1a1a1a] border border-[#222] p-4 rounded-lg flex items-center justify-between gap-4">
+                  <div key={i} className="flex items-center justify-between gap-4 border border-marketing-border bg-marketing-bg p-4">
                     <div className="flex items-center gap-3 truncate">
-                      <FileText className="text-primary shrink-0" size={24} />
+                      <FileText className="shrink-0 text-marketing-accent" size={24} />
                       <div className="truncate">
-                        <p className="text-sm font-semibold text-on-surface truncate">{file.name}</p>
-                        <p className="text-[10px] font-mono-sm text-on-surface-variant">{((file.metadata?.size || 0) / 1024).toFixed(1)} KB</p>
+                        <p className="truncate text-sm font-semibold text-marketing-fg">{file.name}</p>
+                        <p className="font-marketing-mono text-[10px] text-marketing-muted-dim">{((file.metadata?.size || 0) / 1024).toFixed(1)} KB</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button 
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
                         onClick={() => handleDeliverableDownload(file.name)}
-                        className="p-2 bg-[#222] border border-[#333] hover:border-primary/50 rounded hover:text-primary transition-all cursor-pointer"
+                        className="cursor-pointer border border-marketing-border p-2 transition-colors hover:border-marketing-accent hover:text-marketing-accent"
                         title="Download"
                       >
                         <Download size={14} />
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDeliverableDelete(file.name)}
-                        className="p-2 bg-[#222] border border-[#333] hover:border-error/50 rounded hover:text-error transition-all cursor-pointer"
+                        className="cursor-pointer border border-marketing-border p-2 transition-colors hover:border-red-500/50 hover:text-red-400"
                         title="Delete"
                       >
                         <Trash size={14} />
@@ -706,7 +671,7 @@ export default function InternDashboard() {
                   </div>
                 ))}
                 {filteredDeliverables.length === 0 && (
-                  <div className="col-span-2 py-8 text-center text-on-surface-variant text-sm border border-dashed border-[#222] rounded-lg">
+                  <div className="col-span-2 border border-dashed border-marketing-border py-8 text-center text-sm text-marketing-muted">
                     No deliverables uploaded yet.
                   </div>
                 )}
@@ -714,46 +679,44 @@ export default function InternDashboard() {
             </div>
           )}
 
-          {/* PERFORMANCE TAB */}
           {activeTab === 'performance' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
-              <div className="bg-[#111] border border-[#222] p-6 rounded-lg text-center">
-                <CheckSquare size={36} className="text-primary mx-auto mb-3" />
-                <h4 className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Tasks Completed</h4>
-                <p className="text-3xl font-bold mt-2">{tasksDone}</p>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              <div className="border border-marketing-border bg-marketing-bg-raised p-6 text-center">
+                <CheckSquare size={36} className="mx-auto mb-3 text-marketing-accent" />
+                <h4 className="font-marketing-mono text-[10px] font-bold uppercase tracking-widest text-marketing-muted-dim">Tasks Completed</h4>
+                <p className="mt-2 text-3xl font-bold text-marketing-fg">{tasksDone}</p>
               </div>
-              <div className="bg-[#111] border border-[#222] p-6 rounded-lg text-center">
-                <Calendar size={36} className="text-primary mx-auto mb-3" />
-                <h4 className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Deadline Met Ratio</h4>
-                <p className="text-3xl font-bold mt-2">{deadlineRatio}%</p>
+              <div className="border border-marketing-border bg-marketing-bg-raised p-6 text-center">
+                <Calendar size={36} className="mx-auto mb-3 text-marketing-accent" />
+                <h4 className="font-marketing-mono text-[10px] font-bold uppercase tracking-widest text-marketing-muted-dim">Deadline Met Ratio</h4>
+                <p className="mt-2 text-3xl font-bold text-marketing-fg">{deadlineRatio}%</p>
               </div>
-              <div className="bg-[#111] border border-[#222] p-6 rounded-lg text-center">
-                <Award size={36} className="text-primary mx-auto mb-3" />
-                <h4 className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Performance Rating</h4>
-                <p className="text-3xl font-bold mt-2">
-                  {(profile?.rating ? Number(profile.rating).toFixed(1) : '5.0')} <span className="text-xs text-on-surface-variant">/ 5.0</span>
+              <div className="border border-marketing-border bg-marketing-bg-raised p-6 text-center">
+                <Award size={36} className="mx-auto mb-3 text-marketing-accent" />
+                <h4 className="font-marketing-mono text-[10px] font-bold uppercase tracking-widest text-marketing-muted-dim">Performance Rating</h4>
+                <p className="mt-2 text-3xl font-bold text-marketing-fg">
+                  {(profile?.rating ? Number(profile.rating).toFixed(1) : '5.0')} <span className="text-xs text-marketing-muted-dim">/ 5.0</span>
                 </p>
               </div>
             </div>
           )}
 
-          {/* MESSAGES TAB */}
           {activeTab === 'messages' && (
-            <div className="bg-[#111] border border-[#222] rounded-lg h-[500px] flex flex-col overflow-hidden">
-              <div className="p-4 border-b border-[#222] bg-[#1a1a1a] flex justify-between items-center shrink-0">
+            <div className="flex h-[500px] flex-col overflow-hidden border border-marketing-border bg-marketing-bg-raised">
+              <div className="flex shrink-0 items-center justify-between border-b border-marketing-border bg-marketing-bg p-4">
                 <div>
-                  <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest">Squad Channels Comms</h3>
+                  <h3 className="font-marketing-mono text-xs font-semibold uppercase tracking-widest text-marketing-muted-dim">Squad Channels Comms</h3>
                   {selectedProject ? (
-                    <p className="text-[11px] font-mono-sm text-primary mt-0.5">Project: {selectedProject.title}</p>
+                    <p className="mt-0.5 font-marketing-mono text-[11px] text-marketing-accent">Project: {selectedProject.title}</p>
                   ) : (
-                    <p className="text-[11px] font-mono-sm text-on-surface-variant mt-0.5">Select a project to chat</p>
+                    <p className="mt-0.5 font-marketing-mono text-[11px] text-marketing-muted-dim">Select a project to chat</p>
                   )}
                 </div>
                 {projects.length > 1 && (
-                  <select 
-                    value={selectedProject?.id || ''} 
+                  <select
+                    value={selectedProject?.id || ''}
                     onChange={e => setSelectedProject(projects.find(p => p.id === e.target.value) || null)}
-                    className="bg-[#0B0B0B] border border-[#333] text-on-surface font-mono-sm text-xs rounded p-2 focus:border-primary outline-none cursor-pointer"
+                    className="cursor-pointer border border-marketing-border bg-marketing-bg p-2 font-marketing-mono text-xs text-marketing-fg outline-none focus:border-marketing-accent"
                   >
                     {projects.map(p => (
                       <option key={p.id} value={p.id}>{p.title}</option>
@@ -762,18 +725,18 @@ export default function InternDashboard() {
                 )}
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#0c0c0c]">
+              <div className="flex-1 space-y-4 overflow-y-auto bg-marketing-bg p-4">
                 {filteredMessages.map((msg, i) => {
                   const isOwn = msg.sender_id === user?.id
                   return (
                     <div key={i} className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
-                      <span className="font-mono-sm text-[9px] text-on-surface-variant/80 uppercase mb-1">
+                      <span className="mb-1 font-marketing-mono text-[9px] uppercase text-marketing-muted-dim">
                         {msg.profiles?.full_name || 'System'} ({msg.profiles?.role || 'user'})
                       </span>
-                      <div className={`max-w-[70%] rounded-lg p-3 text-xs leading-relaxed ${
-                        isOwn 
-                          ? 'bg-primary-container text-white rounded-br-none' 
-                          : 'bg-[#1a1a1a] border border-[#222] text-on-surface rounded-bl-none'
+                      <div className={`max-w-[70%] p-3 text-xs leading-relaxed ${
+                        isOwn
+                          ? 'bg-marketing-accent text-marketing-accent-ink'
+                          : 'border border-marketing-border bg-marketing-bg-raised text-marketing-fg'
                       }`}>
                         {msg.content}
                       </div>
@@ -781,26 +744,26 @@ export default function InternDashboard() {
                   )
                 })}
                 {filteredMessages.length === 0 && (
-                  <div className="h-full flex items-center justify-center text-on-surface-variant text-xs font-mono-sm">
+                  <div className="flex h-full items-center justify-center font-marketing-mono text-xs text-marketing-muted-dim">
                     No messaging history. Send a text below to initiate contact.
                   </div>
                 )}
                 <div ref={messagesEndRef} />
               </div>
 
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-[#222] bg-[#1a1a1a] flex gap-2 shrink-0">
-                <input 
-                  type="text" 
+              <form onSubmit={handleSendMessage} className="flex shrink-0 gap-2 border-t border-marketing-border bg-marketing-bg p-4">
+                <input
+                  type="text"
                   value={newMessage}
                   onChange={e => setNewMessage(e.target.value)}
                   disabled={!selectedProject || sendingMessage}
                   placeholder={selectedProject ? "Type technical response..." : "Select project first..."}
-                  className="flex-1 bg-[#0B0B0B] border border-[#333] focus:border-primary rounded px-4 py-3 text-xs outline-none text-on-surface"
+                  className="flex-1 border border-marketing-border bg-marketing-bg-raised px-4 py-3 text-xs text-marketing-fg outline-none focus:border-marketing-accent"
                 />
                 <button
                   type="submit"
                   disabled={!newMessage.trim() || sendingMessage}
-                  className="bg-primary-container text-white px-4 py-3 rounded hover:bg-[#d8600d] transition-colors flex items-center justify-center shrink-0 cursor-pointer disabled:opacity-50"
+                  className="flex shrink-0 cursor-pointer items-center justify-center bg-marketing-accent px-4 py-3 text-marketing-accent-ink transition-colors hover:bg-marketing-fg disabled:opacity-50"
                 >
                   {sendingMessage ? <Loader className="animate-spin" size={14} /> : <Send size={14} />}
                 </button>
