@@ -907,8 +907,8 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="h-screen flex justify-center items-center bg-[#0B0B0B]">
-        <Loader className="animate-spin text-primary" size={36} />
+      <div className="h-screen flex justify-center items-center bg-marketing-bg">
+        <Loader className="animate-spin text-marketing-accent" size={36} />
       </div>
     )
   }
@@ -918,7 +918,7 @@ export default function AdminDashboard() {
   const activeProjectsCount = projects.filter(p => p.status !== 'completed').length
 
   return (
-    <div className="bg-[#0B0B0B] text-on-surface antialiased min-h-screen flex font-body-md overflow-hidden relative">
+    <div className="bg-marketing-bg text-marketing-fg antialiased min-h-screen flex font-marketing-sans overflow-hidden relative">
       {/* Mobile Sidebar Overlay Backdrop */}
       {sidebarOpen && (
         <div 
@@ -928,25 +928,25 @@ export default function AdminDashboard() {
       )}
 
       {/* Sidebar Navigation */}
-      <aside className={`bg-surface-container-low w-64 h-screen border-r border-[#222] flex flex-col justify-between shrink-0 transition-transform duration-300 z-50
+      <aside className={`bg-marketing-bg-raised w-64 h-screen border-r border-marketing-border flex flex-col justify-between shrink-0 transition-transform duration-300 z-50
         fixed inset-y-0 left-0 md:static md:translate-x-0
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <div>
-          <div className="p-6 border-b border-[#222]">
+          <div className="p-6 border-b border-marketing-border">
             <div className="flex items-center justify-between">
-              <Link href="/" className="block hover:opacity-85 transition-opacity">
-                <img src="/weblogo.svg" alt="Kaiketsu Logo" className="h-10 w-auto" />
+              <Link href="/" className="block font-marketing-mono text-sm font-bold tracking-tight text-marketing-fg transition-colors hover:text-marketing-accent">
+                KAIKETSU<span className="text-marketing-accent">_</span>TECH
               </Link>
               <button 
                 onClick={() => setSidebarOpen(false)}
-                className="md:hidden text-on-surface-variant hover:text-primary transition-all p-2 rounded-full cursor-pointer flex items-center justify-center"
+                className="md:hidden text-marketing-muted hover:text-marketing-accent transition-all p-2 cursor-pointer flex items-center justify-center"
                 aria-label="Close Sidebar"
               >
                 <X size={18} />
               </button>
             </div>
-            <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest mt-2 font-bold font-black">Admin Console</p>
+            <p className="font-marketing-mono text-[10px] text-marketing-muted uppercase tracking-widest mt-2 font-bold font-black">Admin Console</p>
           </div>
           <nav className="px-4 py-6 space-y-1">
             {(
@@ -967,10 +967,10 @@ export default function AdminDashboard() {
                   setActiveTab(tab.id)
                   setSidebarOpen(false)
                 }}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-semibold cursor-pointer transition-all ${
+                className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-semibold cursor-pointer transition-all ${
                   activeTab === tab.id 
-                    ? 'bg-primary-container text-white' 
-                    : 'text-on-surface-variant hover:bg-[#1a1a1a] hover:text-on-surface'
+                    ? 'bg-marketing-accent text-marketing-accent-ink' 
+                    : 'text-marketing-muted hover:bg-marketing-bg hover:text-marketing-fg'
                 }`}
               >
                 {tab.icon}
@@ -979,26 +979,26 @@ export default function AdminDashboard() {
             ))}
           </nav>
         </div>
-        <div className="p-4 border-t border-[#222] flex flex-col gap-3">
+        <div className="p-4 border-t border-marketing-border flex flex-col gap-3">
           <div className="flex items-center gap-3 px-2">
-            <div className="w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-primary font-bold font-mono-sm text-xs">
+            <div className="w-8 h-8 bg-marketing-accent/20 flex items-center justify-center text-marketing-accent font-bold font-marketing-mono text-xs">
               A
             </div>
             <div className="flex flex-col truncate">
-              <span className="text-xs font-semibold text-on-surface truncate">{user?.email}</span>
-              <span className="text-[10px] text-on-surface-variant font-mono-sm">Administrator</span>
+              <span className="text-xs font-semibold text-marketing-fg truncate">{user?.email}</span>
+              <span className="text-[10px] text-marketing-muted font-marketing-mono">Administrator</span>
             </div>
           </div>
           <Link 
             href="/"
-            className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+            className="w-full bg-marketing-bg-raised hover:bg-marketing-bg border border-marketing-border text-marketing-fg py-2 flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
           >
             <Home size={14} />
             Go to Home
           </Link>
           <button 
             onClick={handleLogout}
-            className="w-full bg-[#111111] hover:bg-[#1a1a1a] border border-[#222] text-on-surface py-2 rounded flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
+            className="w-full bg-marketing-bg-raised hover:bg-marketing-bg border border-marketing-border text-marketing-fg py-2 flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer"
           >
             <LogOut size={14} />
             Sign Out
@@ -1024,62 +1024,62 @@ export default function AdminDashboard() {
             <div className="space-y-6">
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter">
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between">
-                  <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Total Revenue</p>
-                  <h3 className="text-3xl font-bold text-[#4ade80] mt-2">${totalRevenue.toLocaleString()}</h3>
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6 flex flex-col justify-between">
+                  <p className="font-marketing-mono text-[10px] text-marketing-muted uppercase tracking-widest font-bold">Total Revenue</p>
+                  <h3 className="text-3xl font-bold text-marketing-accent mt-2">${totalRevenue.toLocaleString()}</h3>
                 </div>
 
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between">
-                  <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Active Projects</p>
-                  <h3 className="text-3xl font-bold text-on-surface mt-2">{activeProjectsCount}</h3>
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6 flex flex-col justify-between">
+                  <p className="font-marketing-mono text-[10px] text-marketing-muted uppercase tracking-widest font-bold">Active Projects</p>
+                  <h3 className="text-3xl font-bold text-marketing-fg mt-2">{activeProjectsCount}</h3>
                 </div>
 
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between">
-                  <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Registered Clients</p>
-                  <h3 className="text-3xl font-bold text-on-surface mt-2">{clients.length}</h3>
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6 flex flex-col justify-between">
+                  <p className="font-marketing-mono text-[10px] text-marketing-muted uppercase tracking-widest font-bold">Registered Clients</p>
+                  <h3 className="text-3xl font-bold text-marketing-fg mt-2">{clients.length}</h3>
                 </div>
 
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 flex flex-col justify-between">
-                  <p className="font-mono-sm text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">Active Interns</p>
-                  <h3 className="text-3xl font-bold text-on-surface mt-2">{interns.length}</h3>
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6 flex flex-col justify-between">
+                  <p className="font-marketing-mono text-[10px] text-marketing-muted uppercase tracking-widest font-bold">Active Interns</p>
+                  <h3 className="text-3xl font-bold text-marketing-fg mt-2">{interns.length}</h3>
                 </div>
               </div>
 
               {/* Recent Orders / Quick lists */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-gutter">
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Pending Requests (Leads)</h4>
-                  <div className="divide-y divide-[#222222]">
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                  <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Pending Requests (Leads)</h4>
+                  <div className="divide-y divide-marketing-border">
                     {filteredLeads.filter(l => l.status === 'pending').slice(0, 5).map(lead => (
                       <div key={lead.id} className="py-3 flex justify-between items-center text-xs">
                         <div>
-                          <p className="font-semibold text-on-surface">{lead.project_title || 'Untitled Lead'}</p>
-                          <p className="text-on-surface-variant mt-0.5">{lead.company_name}</p>
+                          <p className="font-semibold text-marketing-fg">{lead.project_title || 'Untitled Lead'}</p>
+                          <p className="text-marketing-muted mt-0.5">{lead.company_name}</p>
                         </div>
                         <button 
                           onClick={() => setActiveTab('leads')}
-                          className="text-primary hover:underline text-[10px] font-mono-sm uppercase"
+                          className="text-marketing-accent hover:underline text-[10px] font-marketing-mono uppercase"
                         >
                           Review
                         </button>
                       </div>
                     ))}
                     {filteredLeads.filter(l => l.status === 'pending').length === 0 && (
-                      <div className="py-4 text-center text-on-surface-variant text-xs font-mono-sm">No pending leads.</div>
+                      <div className="py-4 text-center text-marketing-muted text-xs font-marketing-mono">No pending leads.</div>
                     )}
                   </div>
                 </div>
 
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Live Project Status</h4>
-                  <div className="divide-y divide-[#222222]">
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                  <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Live Project Status</h4>
+                  <div className="divide-y divide-marketing-border">
                     {filteredProjects.slice(0, 5).map(proj => (
                       <div key={proj.id} className="py-3 flex justify-between items-center text-xs">
                         <div>
-                          <p className="font-semibold text-on-surface">{proj.title}</p>
-                          <p className="text-on-surface-variant mt-0.5 font-mono-sm text-[10px]">Client: {proj.profiles?.email || 'N/A'}</p>
+                          <p className="font-semibold text-marketing-fg">{proj.title}</p>
+                          <p className="text-marketing-muted mt-0.5 font-marketing-mono text-[10px]">Client: {proj.profiles?.email || 'N/A'}</p>
                         </div>
-                        <span className="bg-primary-container/10 text-primary px-2 py-0.5 rounded text-[10px] font-mono-sm capitalize">
+                        <span className="bg-marketing-accent/10 text-marketing-accent px-2 py-0.5 text-[10px] font-marketing-mono capitalize">
                           {(proj.status || '').replace('_', ' ')}
                         </span>
                       </div>
@@ -1092,12 +1092,12 @@ export default function AdminDashboard() {
 
           {/* LEADS TAB */}
           {activeTab === 'leads' && (
-            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Requested Leads</h3>
+            <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+              <h3 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-6">Requested Leads</h3>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                   <thead>
-                    <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                    <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                       <th className="pb-3">Lead / Company</th>
                       <th className="pb-3">Contact</th>
                       <th className="pb-3">Budget</th>
@@ -1105,21 +1105,21 @@ export default function AdminDashboard() {
                       <th className="pb-3 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#222]">
+                  <tbody className="divide-y divide-marketing-border">
                     {filteredLeads.map(lead => (
-                      <tr key={lead.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                      <tr key={lead.id} className="hover:bg-marketing-bg/45 transition-colors">
                         <td className="py-4">
-                          <p className="font-semibold text-on-surface text-xs md:text-sm">{lead.project_title || 'Untitled Request'}</p>
-                          <p className="text-xs text-on-surface-variant mt-0.5">{lead.company_name}</p>
+                          <p className="font-semibold text-marketing-fg text-xs md:text-sm">{lead.project_title || 'Untitled Request'}</p>
+                          <p className="text-xs text-marketing-muted mt-0.5">{lead.company_name}</p>
                         </td>
                         <td className="py-4 text-xs">
-                          <p className="text-on-surface">{lead.first_name} {lead.last_name}</p>
-                          <p className="text-on-surface-variant">{lead.work_email}</p>
+                          <p className="text-marketing-fg">{lead.first_name} {lead.last_name}</p>
+                          <p className="text-marketing-muted">{lead.work_email}</p>
                         </td>
-                        <td className="py-4 font-mono-sm text-xs text-on-surface">${Number(lead.budget || 0).toLocaleString()}</td>
-                        <td className="py-4 font-mono-sm text-xs capitalize">
-                          <span className={`px-2 py-0.5 rounded text-[10px] ${
-                            lead.priority === 'critical' || lead.priority === 'high' ? 'bg-error-container/20 text-error' : 'bg-[#222] text-on-surface-variant'
+                        <td className="py-4 font-marketing-mono text-xs text-marketing-fg">${Number(lead.budget || 0).toLocaleString()}</td>
+                        <td className="py-4 font-marketing-mono text-xs capitalize">
+                          <span className={`px-2 py-0.5 text-[10px] ${
+                            lead.priority === 'critical' || lead.priority === 'high' ? 'bg-red-500/20 text-red-400' : 'bg-marketing-border text-marketing-muted'
                           }`}>
                             {lead.priority || 'medium'}
                           </span>
@@ -1129,21 +1129,21 @@ export default function AdminDashboard() {
                             <div className="flex gap-2 justify-end">
                               <button 
                                 onClick={() => handleLeadAction(lead.id, 'approved')}
-                                className="p-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded cursor-pointer"
+                                className="p-1 bg-marketing-accent/10 hover:bg-marketing-accent/20 text-marketing-accent cursor-pointer"
                                 title="Approve & Create Project"
                               >
                                 <Check size={16} />
                               </button>
                               <button 
                                 onClick={() => handleLeadAction(lead.id, 'rejected')}
-                                className="p-1 bg-error-container/20 hover:bg-error-container/40 text-error rounded cursor-pointer"
+                                className="p-1 bg-red-500/20 hover:bg-red-500/40 text-red-400 cursor-pointer"
                                 title="Reject Lead"
                               >
                                 <X size={16} />
                               </button>
                             </div>
                           ) : (
-                            <span className="font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest">{lead.status}</span>
+                            <span className="font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest">{lead.status}</span>
                           )}
                         </td>
                       </tr>
@@ -1158,8 +1158,8 @@ export default function AdminDashboard() {
           {activeTab === 'projects' && (
             <div className="space-y-6">
               {/* Project Provision Form */}
-              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Provision New Project</h4>
+              <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Provision New Project</h4>
                 <form onSubmit={handleCreateProject} className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <input 
                     type="text" 
@@ -1167,19 +1167,19 @@ export default function AdminDashboard() {
                     required
                     value={newProject.title}
                     onChange={e => setNewProject({ ...newProject, title: e.target.value })}
-                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface"
+                    className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg"
                   />
                   <input 
                     type="text" 
                     placeholder="Project Description"
                     value={newProject.description}
                     onChange={e => setNewProject({ ...newProject, description: e.target.value })}
-                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface"
+                    className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg"
                   />
                   <select 
                     value={newProject.clientId}
                     onChange={e => setNewProject({ ...newProject, clientId: e.target.value })}
-                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer"
+                    className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg cursor-pointer"
                   >
                     <option value="">Select Client Account</option>
                     {clients.map(cli => (
@@ -1189,7 +1189,7 @@ export default function AdminDashboard() {
                   <button 
                     type="submit" 
                     disabled={creatingProject}
-                    className="bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                    className="bg-marketing-accent text-marketing-accent-ink py-3 hover:bg-marketing-fg transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
                   >
                     {creatingProject ? <Loader className="animate-spin" size={14} /> : <Plus size={14} />}
                     Create Project
@@ -1198,13 +1198,13 @@ export default function AdminDashboard() {
               </div>
 
               {/* Task Assigner Panel (Assign Interns) */}
-              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Assign Task to Intern</h4>
+              <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Assign Task to Intern</h4>
                 <form onSubmit={handleCreateTask} className="grid grid-cols-1 md:grid-cols-5 gap-4">
                   <select 
                     value={newTask.projectId}
                     onChange={e => setNewTask({ ...newTask, projectId: e.target.value })}
-                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer"
+                    className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg cursor-pointer"
                   >
                     <option value="">Select Project</option>
                     {projects.map(p => (
@@ -1214,7 +1214,7 @@ export default function AdminDashboard() {
                   <select 
                     value={newTask.internId}
                     onChange={e => setNewTask({ ...newTask, internId: e.target.value })}
-                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer"
+                    className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg cursor-pointer"
                   >
                     <option value="">Select Intern</option>
                     {interns.map(i => (
@@ -1224,7 +1224,7 @@ export default function AdminDashboard() {
                   <select 
                     value={newTask.category}
                     onChange={e => setNewTask({ ...newTask, category: e.target.value as 'Frontend' | 'Backend' | 'Design Sys' | 'Management' | 'Operations' | 'Other' })}
-                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer"
+                    className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg cursor-pointer"
                   >
                     <option value="Frontend">Frontend</option>
                     <option value="Backend">Backend</option>
@@ -1239,12 +1239,12 @@ export default function AdminDashboard() {
                     required
                     value={newTask.title}
                     onChange={e => setNewTask({ ...newTask, title: e.target.value })}
-                    className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface"
+                    className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg"
                   />
                   <button 
                     type="submit" 
                     disabled={creatingTask}
-                    className="bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                    className="bg-marketing-accent text-marketing-accent-ink py-3 hover:bg-marketing-fg transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
                   >
                     {creatingTask ? <Loader className="animate-spin" size={14} /> : <UserCheck size={14} />}
                     Assign Task
@@ -1253,12 +1253,12 @@ export default function AdminDashboard() {
               </div>
 
               {/* Projects Table */}
-              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Managed Projects</h4>
+              <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Managed Projects</h4>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                  <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                     <thead>
-                      <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                      <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                         <th className="pb-3">Project</th>
                         <th className="pb-3">Client Email</th>
                         <th className="pb-3">Budget</th>
@@ -1266,24 +1266,24 @@ export default function AdminDashboard() {
                         <th className="pb-3 text-right">Delete</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#222]">
+                    <tbody className="divide-y divide-marketing-border">
                       {filteredProjects.map(proj => (
-                        <tr key={proj.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
-                          <td className="py-4 font-semibold text-on-surface">
+                        <tr key={proj.id} className="hover:bg-marketing-bg/45 transition-colors">
+                          <td className="py-4 font-semibold text-marketing-fg">
                             {proj.title}
                             {proj.is_showcase && (
-                              <span className="ml-2 bg-primary-container/20 text-primary text-[10px] font-mono px-1.5 py-0.5 rounded">
+                              <span className="ml-2 bg-marketing-accent/20 text-marketing-accent text-[10px] font-mono px-1.5 py-0.5">
                                 Showcase
                               </span>
                             )}
                           </td>
                           <td className="py-4 text-xs">{proj.profiles?.email || 'No client assigned'}</td>
-                          <td className="py-4 font-mono-sm text-xs">${Number(proj.estimated_budget || 0).toLocaleString()}</td>
+                          <td className="py-4 font-marketing-mono text-xs">${Number(proj.estimated_budget || 0).toLocaleString()}</td>
                           <td className="py-4">
                             <select
                               value={proj.status || ''}
                               onChange={e => handleUpdateProjectStatus(proj.id, e.target.value)}
-                              className="bg-[#0B0B0B] border border-[#222] text-on-surface font-mono-sm text-xs rounded p-1.5 focus:border-primary outline-none cursor-pointer capitalize"
+                              className="bg-marketing-bg border border-marketing-border text-marketing-fg font-marketing-mono text-xs p-1.5 focus:border-marketing-accent outline-none cursor-pointer capitalize"
                             >
                               <option value="planning">planning</option>
                               <option value="in_progress">in progress</option>
@@ -1303,14 +1303,14 @@ export default function AdminDashboard() {
                                   })
                                   setShowcaseOpen(true)
                                 }}
-                                className="p-1 hover:text-primary transition-colors cursor-pointer"
+                                className="p-1 hover:text-marketing-accent transition-colors cursor-pointer"
                                 title="Showcase Settings"
                               >
                                 <Settings size={16} />
                               </button>
                               <button 
                                 onClick={() => handleDeleteProject(proj.id)}
-                                className="p-1 hover:text-error transition-colors cursor-pointer"
+                                className="p-1 hover:text-red-400 transition-colors cursor-pointer"
                                 title="Delete Project"
                               >
                                 <Trash2 size={16} />
@@ -1328,16 +1328,16 @@ export default function AdminDashboard() {
 
           {/* CLIENTS TAB */}
           {activeTab === 'clients' && (
-            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Client Accounts</h3>
-              <div className="divide-y divide-[#222222]">
+            <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+              <h3 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-6">Client Accounts</h3>
+              <div className="divide-y divide-marketing-border">
                 {filteredClients.map(cli => (
                   <div key={cli.id} className="py-4 flex justify-between items-center text-xs md:text-sm">
                     <div>
-                      <p className="font-semibold text-on-surface">{cli.full_name || 'Client Partner'}</p>
-                      <p className="text-on-surface-variant font-mono-sm text-xs mt-0.5">{cli.email}</p>
+                      <p className="font-semibold text-marketing-fg">{cli.full_name || 'Client Partner'}</p>
+                      <p className="text-marketing-muted font-marketing-mono text-xs mt-0.5">{cli.email}</p>
                     </div>
-                    <span className="font-mono-sm text-[10px] text-on-surface-variant bg-[#222] px-2 py-1 rounded">CLIENT</span>
+                    <span className="font-marketing-mono text-[10px] text-marketing-muted bg-marketing-border px-2 py-1">CLIENT</span>
                   </div>
                 ))}
               </div>
@@ -1346,12 +1346,12 @@ export default function AdminDashboard() {
 
           {/* PAYMENTS TAB */}
           {activeTab === 'payments' && (
-            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Razorpay Payments Ledger</h3>
+            <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+              <h3 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-6">Razorpay Payments Ledger</h3>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                   <thead>
-                    <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                    <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                       <th className="pb-3">Payment ID</th>
                       <th className="pb-3">Client Email</th>
                       <th className="pb-3">Amount</th>
@@ -1359,18 +1359,18 @@ export default function AdminDashboard() {
                       <th className="pb-3">Status</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#222]">
+                  <tbody className="divide-y divide-marketing-border">
                     {filteredPayments.map(pay => (
-                      <tr key={pay.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
-                        <td className="py-4 font-mono-sm text-xs truncate max-w-[120px]" title={pay.razorpay_payment_id || pay.id}>
+                      <tr key={pay.id} className="hover:bg-marketing-bg/45 transition-colors">
+                        <td className="py-4 font-marketing-mono text-xs truncate max-w-[120px]" title={pay.razorpay_payment_id || pay.id}>
                           {pay.razorpay_payment_id || 'Pending Receipt'}
                         </td>
                         <td className="py-4 text-xs">{pay.profiles?.email || 'N/A'}</td>
-                        <td className="py-4 font-mono-sm text-xs text-on-surface">${Number(pay.amount).toLocaleString()}</td>
-                        <td className="py-4 font-semibold text-on-surface capitalize">{pay.package_type}</td>
+                        <td className="py-4 font-marketing-mono text-xs text-marketing-fg">${Number(pay.amount).toLocaleString()}</td>
+                        <td className="py-4 font-semibold text-marketing-fg capitalize">{pay.package_type}</td>
                         <td className="py-4">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-mono-sm uppercase ${
-                            pay.status === 'completed' ? 'bg-green-500/10 text-[#4ade80]' : 'bg-primary-container/10 text-primary'
+                          <span className={`px-2 py-0.5 text-[10px] font-marketing-mono uppercase ${
+                            pay.status === 'completed' ? 'bg-marketing-accent/10 text-marketing-accent' : 'bg-marketing-accent/10 text-marketing-accent'
                           }`}>
                             {pay.status}
                           </span>
@@ -1387,35 +1387,35 @@ export default function AdminDashboard() {
           {activeTab === 'interns' && (
             <div className="space-y-6">
               {/* Intern Applications */}
-              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Pending Career Applications</h4>
+              <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Pending Career Applications</h4>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                  <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                     <thead>
-                      <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                      <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                         <th className="pb-3">Applicant</th>
                         <th className="pb-3">Details / Skills</th>
                         <th className="pb-3">Resume</th>
                         <th className="pb-3 text-right">Review</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#222]">
+                    <tbody className="divide-y divide-marketing-border">
                       {filteredApplications.map(app => (
-                        <tr key={app.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
+                        <tr key={app.id} className="hover:bg-marketing-bg/45 transition-colors">
                           <td className="py-4 text-xs">
-                            <p className="font-semibold text-on-surface">{app.full_name}</p>
-                            <p className="text-on-surface-variant mt-0.5">{app.email}</p>
-                            <p className="text-on-surface-variant">{app.phone || 'No phone'}</p>
+                            <p className="font-semibold text-marketing-fg">{app.full_name}</p>
+                            <p className="text-marketing-muted mt-0.5">{app.email}</p>
+                            <p className="text-marketing-muted">{app.phone || 'No phone'}</p>
                           </td>
                           <td className="py-4 text-xs">
-                            <p className="text-on-surface"><span className="text-primary font-semibold">Skills:</span> {app.skills || 'None'}</p>
-                            <p className="text-on-surface-variant"><span className="text-on-surface">Techs:</span> {app.technologies || 'None'}</p>
+                            <p className="text-marketing-fg"><span className="text-marketing-accent font-semibold">Skills:</span> {app.skills || 'None'}</p>
+                            <p className="text-marketing-muted"><span className="text-marketing-fg">Techs:</span> {app.technologies || 'None'}</p>
                           </td>
                           <td className="py-4 text-xs">
                             {app.resume_url ? (
                               <button 
                                 onClick={() => handleDownloadResume(app.resume_url!)}
-                                className="flex items-center gap-1.5 text-primary hover:underline cursor-pointer"
+                                className="flex items-center gap-1.5 text-marketing-accent hover:underline cursor-pointer"
                               >
                                 <Eye size={14} /> View Resume
                               </button>
@@ -1428,13 +1428,13 @@ export default function AdminDashboard() {
                               <div className="flex gap-2 justify-end">
                                 <button 
                                   onClick={() => handleApplicationAction(app.id, 'approved')}
-                                  className="p-1.5 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded cursor-pointer text-xs flex items-center gap-1"
+                                  className="p-1.5 bg-marketing-accent/10 hover:bg-marketing-accent/20 text-marketing-accent cursor-pointer text-xs flex items-center gap-1"
                                 >
                                   Approve
                                 </button>
                                 <button 
                                   onClick={() => handleApplicationAction(app.id, 'rejected')}
-                                  className="p-1.5 bg-error-container/20 hover:bg-error-container/40 text-error rounded cursor-pointer text-xs flex items-center gap-1"
+                                  className="p-1.5 bg-red-500/20 hover:bg-red-500/40 text-red-400 cursor-pointer text-xs flex items-center gap-1"
                                 >
                                   Reject
                                 </button>
@@ -1442,11 +1442,11 @@ export default function AdminDashboard() {
                             ) : app.status === 'approved' ? (
                               <div className="flex gap-2 justify-end items-center">
                                 {interns.some(i => i.email === app.email) ? (
-                                  <span className="font-mono-sm text-[10px] uppercase text-[#4ade80] tracking-widest bg-green-500/10 px-2 py-0.5 rounded">Registered</span>
+                                  <span className="font-marketing-mono text-[10px] uppercase text-marketing-accent tracking-widest bg-marketing-accent/10 px-2 py-0.5">Registered</span>
                                 ) : (
                                   <button
                                     onClick={() => handleInviteIntern(app)}
-                                    className="p-1.5 bg-primary-container/20 hover:bg-primary-container/30 text-primary-container rounded cursor-pointer text-[10px] font-semibold flex items-center gap-1"
+                                    className="p-1.5 bg-marketing-accent/20 hover:bg-marketing-accent/30 text-marketing-accent cursor-pointer text-[10px] font-semibold flex items-center gap-1"
                                     title="Send Supabase Invite Email"
                                   >
                                     Invite Intern
@@ -1454,14 +1454,14 @@ export default function AdminDashboard() {
                                 )}
                               </div>
                             ) : (
-                              <span className="font-mono-sm text-[10px] uppercase text-error tracking-widest bg-error-container/10 px-2 py-0.5 rounded">{app.status}</span>
+                              <span className="font-marketing-mono text-[10px] uppercase text-red-400 tracking-widest bg-red-500/10 px-2 py-0.5">{app.status}</span>
                             )}
                           </td>
                         </tr>
                       ))}
                       {filteredApplications.length === 0 && (
                         <tr>
-                          <td colSpan={4} className="py-8 text-center text-on-surface-variant">No career applications found.</td>
+                          <td colSpan={4} className="py-8 text-center text-marketing-muted">No career applications found.</td>
                         </tr>
                       )}
                     </tbody>
@@ -1471,31 +1471,31 @@ export default function AdminDashboard() {
 
               {/* Profiles Pending Onboarding */}
               {interns.filter(profile => !internsList.some(int => int.profile_id === profile.id)).length > 0 && (
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <UserPlus size={16} className="text-primary" /> Registered Interns Pending Onboarding
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                  <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <UserPlus size={16} className="text-marketing-accent" /> Registered Interns Pending Onboarding
                   </h4>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                    <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                       <thead>
-                        <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                        <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                           <th className="pb-3">Name</th>
                           <th className="pb-3">Email</th>
                           <th className="pb-3 text-right">Action</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#222]">
+                      <tbody className="divide-y divide-marketing-border">
                         {interns.filter(profile => !internsList.some(int => int.profile_id === profile.id)).map(profile => (
-                          <tr key={profile.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
-                            <td className="py-3 text-xs font-semibold text-on-surface">{profile.full_name || 'Anonymous Intern'}</td>
-                            <td className="py-3 text-xs font-mono-sm">{profile.email}</td>
+                          <tr key={profile.id} className="hover:bg-marketing-bg/45 transition-colors">
+                            <td className="py-3 text-xs font-semibold text-marketing-fg">{profile.full_name || 'Anonymous Intern'}</td>
+                            <td className="py-3 text-xs font-marketing-mono">{profile.email}</td>
                             <td className="py-3 text-right">
                               <button
                                 onClick={() => {
                                   setOnboardingProfile({ id: profile.id, name: profile.full_name || '', email: profile.email })
                                   setOnboardOpen(true)
                                 }}
-                                className="px-3 py-1 bg-primary-container text-white rounded text-xs hover:bg-[#d8600d] transition-colors cursor-pointer"
+                                className="px-3 py-1 bg-marketing-accent text-marketing-accent-ink text-xs hover:bg-marketing-fg transition-colors cursor-pointer"
                               >
                                 Onboard Intern
                               </button>
@@ -1509,12 +1509,12 @@ export default function AdminDashboard() {
               )}
 
               {/* Active Intern Cohort Roster */}
-              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Active Intern Cohort</h4>
+              <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Active Intern Cohort</h4>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                  <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                     <thead>
-                      <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                      <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                         <th className="pb-3">Intern ID</th>
                         <th className="pb-3">Name & Email</th>
                         <th className="pb-3">Department</th>
@@ -1523,25 +1523,25 @@ export default function AdminDashboard() {
                         <th className="pb-3 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#222]">
+                    <tbody className="divide-y divide-marketing-border">
                       {filteredCohortInterns.map(int => (
-                        <tr key={int.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
-                          <td className="py-4 font-mono-sm text-xs text-on-surface font-semibold">{int.intern_id}</td>
+                        <tr key={int.id} className="hover:bg-marketing-bg/45 transition-colors">
+                          <td className="py-4 font-marketing-mono text-xs text-marketing-fg font-semibold">{int.intern_id}</td>
                           <td className="py-4 text-xs">
-                            <p className="font-semibold text-on-surface">{int.profiles?.full_name}</p>
-                            <p className="text-on-surface-variant font-mono-sm mt-0.5">{int.profiles?.email}</p>
+                            <p className="font-semibold text-marketing-fg">{int.profiles?.full_name}</p>
+                            <p className="text-marketing-muted font-marketing-mono mt-0.5">{int.profiles?.email}</p>
                           </td>
-                          <td className="py-4 text-xs capitalize font-semibold text-on-surface">{int.department}</td>
+                          <td className="py-4 text-xs capitalize font-semibold text-marketing-fg">{int.department}</td>
                           <td className="py-4 text-xs">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-mono-sm uppercase font-semibold ${
-                              int.status === 'active' ? 'bg-[#2a1b12] text-primary' :
-                              int.status === 'completed' ? 'bg-green-500/10 text-green-400' :
-                              'bg-error-container/10 text-error'
+                            <span className={`px-2 py-0.5 text-[10px] font-marketing-mono uppercase font-semibold ${
+                              int.status === 'active' ? 'bg-marketing-accent/10 text-marketing-accent' :
+                              int.status === 'completed' ? 'bg-marketing-accent/10 text-marketing-accent' :
+                              'bg-red-500/10 text-red-400'
                             }`}>
                               {int.status}
                             </span>
                           </td>
-                          <td className="py-4 font-mono-sm text-xs text-on-surface">
+                          <td className="py-4 font-marketing-mono text-xs text-marketing-fg">
                             {int.start_date} {int.end_date ? `to ${int.end_date}` : '(Ongoing)'}
                           </td>
                           <td className="py-4 text-right">
@@ -1561,7 +1561,7 @@ export default function AdminDashboard() {
                                   })
                                   setIssueOpen(true)
                                 }}
-                                className="px-2 py-1 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-on-surface rounded text-[10px] font-semibold cursor-pointer"
+                                className="px-2 py-1 bg-marketing-bg hover:bg-marketing-border border border-marketing-border-strong text-marketing-fg text-[10px] font-semibold cursor-pointer"
                                 title="Issue Certificate"
                               >
                                 Issue Cert
@@ -1570,14 +1570,14 @@ export default function AdminDashboard() {
                                 <>
                                   <button
                                     onClick={() => handleUpdateInternStatus(int.id, 'completed')}
-                                    className="p-1 bg-green-500/10 hover:bg-green-500/20 text-green-400 rounded cursor-pointer"
+                                    className="p-1 bg-marketing-accent/10 hover:bg-marketing-accent/20 text-marketing-accent cursor-pointer"
                                     title="Complete Internship"
                                   >
                                     <CheckCircle2 size={14} />
                                   </button>
                                   <button
                                     onClick={() => handleUpdateInternStatus(int.id, 'revoked')}
-                                    className="p-1 bg-error-container/20 hover:bg-error-container/45 text-error rounded cursor-pointer"
+                                    className="p-1 bg-red-500/20 hover:bg-red-500/45 text-red-400 cursor-pointer"
                                     title="Revoke Internship"
                                   >
                                     <UserMinus size={14} />
@@ -1586,7 +1586,7 @@ export default function AdminDashboard() {
                               )}
                               <button
                                 onClick={() => handleUpdateInternStatus(int.id, 'archived')}
-                                className="p-1 hover:text-error transition-colors cursor-pointer"
+                                className="p-1 hover:text-red-400 transition-colors cursor-pointer"
                                 title="Archive (Soft Delete)"
                               >
                                 <Trash2 size={14} />
@@ -1594,7 +1594,7 @@ export default function AdminDashboard() {
                               <Link
                                 href={`/intern/${int.intern_id}`}
                                 target="_blank"
-                                className="p-1 hover:text-primary transition-colors flex items-center justify-center text-on-surface-variant"
+                                className="p-1 hover:text-marketing-accent transition-colors flex items-center justify-center text-marketing-muted"
                                 title="View Public Profile"
                               >
                                 <ExternalLink size={14} />
@@ -1605,7 +1605,7 @@ export default function AdminDashboard() {
                       ))}
                       {filteredCohortInterns.length === 0 && (
                         <tr>
-                          <td colSpan={6} className="py-8 text-center text-on-surface-variant">No interns in the cohort match the query.</td>
+                          <td colSpan={6} className="py-8 text-center text-marketing-muted">No interns in the cohort match the query.</td>
                         </tr>
                       )}
                     </tbody>
@@ -1616,18 +1616,18 @@ export default function AdminDashboard() {
               {/* Project Contributor Assignments Section */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
                 {/* Contributor Assignment Form */}
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 lg:col-span-1">
-                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <ClipboardList size={16} className="text-primary" /> Assign Project Contributor
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6 lg:col-span-1">
+                  <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <ClipboardList size={16} className="text-marketing-accent" /> Assign Project Contributor
                   </h4>
                   <form onSubmit={handleAssignContributor} className="space-y-4">
                     <div className="flex flex-col gap-1">
-                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Select Project</label>
+                      <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Select Project</label>
                       <select
                         required
                         value={contributorForm.projectId}
                         onChange={e => setContributorForm({ ...contributorForm, projectId: e.target.value })}
-                        className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary cursor-pointer w-full"
+                        className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 outline-none focus:border-marketing-accent cursor-pointer w-full"
                       >
                         <option value="">Select Project</option>
                         {projects.map(p => (
@@ -1637,12 +1637,12 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Select Intern</label>
+                      <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Select Intern</label>
                       <select
                         required
                         value={contributorForm.internId}
                         onChange={e => setContributorForm({ ...contributorForm, internId: e.target.value })}
-                        className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary cursor-pointer w-full"
+                        className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 outline-none focus:border-marketing-accent cursor-pointer w-full"
                       >
                         <option value="">Select Onboarded Intern</option>
                         {internsList.map(i => (
@@ -1652,11 +1652,11 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Attribution Role</label>
+                      <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Attribution Role</label>
                       <select
                         value={contributorForm.role}
                         onChange={e => setContributorForm({ ...contributorForm, role: e.target.value as any })}
-                        className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary cursor-pointer w-full"
+                        className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 outline-none focus:border-marketing-accent cursor-pointer w-full"
                       >
                         <option value="developer">Developer</option>
                         <option value="designer">Designer</option>
@@ -1666,32 +1666,32 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="flex flex-col gap-1">
-                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Contribution Summary</label>
+                      <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Contribution Summary</label>
                       <textarea
                         placeholder="Brief summary of their contributions (e.g. Developed the entire auth backend...)"
                         value={contributorForm.contributionSummary}
                         onChange={e => setContributorForm({ ...contributorForm, contributionSummary: e.target.value })}
-                        className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary w-full h-20 resize-none"
+                        className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 outline-none focus:border-marketing-accent w-full h-20 resize-none"
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">
                       <div className="flex flex-col gap-1">
-                        <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Start Date</label>
+                        <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Start Date</label>
                         <input
                           type="date"
                           value={contributorForm.startDate}
                           onChange={e => setContributorForm({ ...contributorForm, startDate: e.target.value })}
-                          className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2 focus:border-primary outline-none w-full"
+                          className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2 focus:border-marketing-accent outline-none w-full"
                         />
                       </div>
                       <div className="flex flex-col gap-1">
-                        <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">End Date</label>
+                        <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">End Date</label>
                         <input
                           type="date"
                           value={contributorForm.endDate}
                           onChange={e => setContributorForm({ ...contributorForm, endDate: e.target.value })}
-                          className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2 focus:border-primary outline-none w-full"
+                          className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2 focus:border-marketing-accent outline-none w-full"
                         />
                       </div>
                     </div>
@@ -1699,7 +1699,7 @@ export default function AdminDashboard() {
                     <button
                       type="submit"
                       disabled={submittingContributor}
-                      className="w-full bg-primary-container text-white py-2.5 rounded hover:bg-[#d8600d] transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full bg-marketing-accent text-marketing-accent-ink py-2.5 hover:bg-marketing-fg transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
                     >
                       {submittingContributor ? <Loader className="animate-spin" size={14} /> : <Plus size={14} />}
                       Assign Contributor
@@ -1708,12 +1708,12 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Assignment List */}
-                <div className="bg-[#111] border border-[#222] rounded-lg p-6 lg:col-span-2">
-                  <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Active Project Attributions</h4>
+                <div className="bg-marketing-bg-raised border border-marketing-border p-6 lg:col-span-2">
+                  <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Active Project Attributions</h4>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                    <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                       <thead>
-                        <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                        <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                           <th className="pb-3">Project</th>
                           <th className="pb-3">Contributor</th>
                           <th className="pb-3">Role</th>
@@ -1721,22 +1721,22 @@ export default function AdminDashboard() {
                           <th className="pb-3 text-right">Delete</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-[#222]">
+                      <tbody className="divide-y divide-marketing-border">
                         {contributorsList.map(c => (
-                          <tr key={c.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
-                            <td className="py-3 text-xs font-semibold text-on-surface">{c.projects?.title}</td>
+                          <tr key={c.id} className="hover:bg-marketing-bg/45 transition-colors">
+                            <td className="py-3 text-xs font-semibold text-marketing-fg">{c.projects?.title}</td>
                             <td className="py-3 text-xs">
-                              <p className="font-semibold text-on-surface">{c.interns?.profiles?.full_name}</p>
-                              <p className="text-[10px] text-on-surface-variant font-mono-sm">{c.interns?.intern_id}</p>
+                              <p className="font-semibold text-marketing-fg">{c.interns?.profiles?.full_name}</p>
+                              <p className="text-[10px] text-marketing-muted font-marketing-mono">{c.interns?.intern_id}</p>
                             </td>
                             <td className="py-3 text-xs">
-                              <span className="bg-[#222] px-2 py-0.5 rounded text-[10px] font-mono-sm capitalize text-on-surface">{c.role}</span>
+                              <span className="bg-marketing-border px-2 py-0.5 text-[10px] font-marketing-mono capitalize text-marketing-fg">{c.role}</span>
                             </td>
-                            <td className="py-3 text-xs font-mono-sm">{c.start_date || 'N/A'} {c.end_date ? `to ${c.end_date}` : ''}</td>
+                            <td className="py-3 text-xs font-marketing-mono">{c.start_date || 'N/A'} {c.end_date ? `to ${c.end_date}` : ''}</td>
                             <td className="py-3 text-right">
                               <button
                                 onClick={() => handleRemoveContributor(c.id)}
-                                className="p-1 hover:text-error transition-colors cursor-pointer"
+                                className="p-1 hover:text-red-400 transition-colors cursor-pointer"
                                 title="Remove Contributor"
                               >
                                 <Trash2 size={14} />
@@ -1746,7 +1746,7 @@ export default function AdminDashboard() {
                         ))}
                         {contributorsList.length === 0 && (
                           <tr>
-                            <td colSpan={5} className="py-8 text-center text-on-surface-variant">No contributor attributions assigned yet.</td>
+                            <td colSpan={5} className="py-8 text-center text-marketing-muted">No contributor attributions assigned yet.</td>
                           </tr>
                         )}
                       </tbody>
@@ -1756,38 +1756,38 @@ export default function AdminDashboard() {
               </div>
 
               {/* Audit Log Panel */}
-              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4 flex items-center gap-2">
-                  <Shield size={16} className="text-primary" /> Admin Security Audit Trail
+              <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4 flex items-center gap-2">
+                  <Shield size={16} className="text-marketing-accent" /> Admin Security Audit Trail
                 </h4>
-                <div className="overflow-y-auto max-h-72 divide-y divide-[#222222]">
+                <div className="overflow-y-auto max-h-72 divide-y divide-marketing-border">
                   {auditLogsList.map(log => (
-                    <div key={log.id} className="py-3 flex flex-col md:flex-row md:justify-between md:items-center text-xs gap-1 md:gap-4 hover:bg-[#1a1a1a]/30 px-2 transition-colors">
+                    <div key={log.id} className="py-3 flex flex-col md:flex-row md:justify-between md:items-center text-xs gap-1 md:gap-4 hover:bg-marketing-bg/30 px-2 transition-colors">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono-sm text-[10px] font-semibold text-primary uppercase bg-primary-container/10 px-1.5 py-0.5 rounded">
+                          <span className="font-marketing-mono text-[10px] font-semibold text-marketing-accent uppercase bg-marketing-accent/10 px-1.5 py-0.5">
                             {log.action}
                           </span>
-                          <span className="text-[10px] text-on-surface-variant font-mono-sm">
+                          <span className="text-[10px] text-marketing-muted font-marketing-mono">
                             Target: {log.target_type} ({log.target_id?.slice(0, 8)})
                           </span>
                         </div>
-                        <p className="text-on-surface-variant text-[11px]">
-                          Actor: <span className="text-on-surface font-semibold">{log.profiles?.full_name || log.profiles?.email || 'System'}</span>
+                        <p className="text-marketing-muted text-[11px]">
+                          Actor: <span className="text-marketing-fg font-semibold">{log.profiles?.full_name || log.profiles?.email || 'System'}</span>
                         </p>
                         {log.details && Object.keys(log.details).length > 0 && (
-                          <pre className="text-[10px] text-on-surface-variant font-mono-sm bg-black/40 p-1.5 rounded border border-[#222] max-w-xl overflow-x-auto mt-1">
+                          <pre className="text-[10px] text-marketing-muted font-marketing-mono bg-black/40 p-1.5 border border-marketing-border max-w-xl overflow-x-auto mt-1">
                             {JSON.stringify(log.details)}
                           </pre>
                         )}
                       </div>
-                      <span className="text-[10px] text-on-surface-variant/70 font-mono-sm shrink-0">
+                      <span className="text-[10px] text-marketing-muted/70 font-marketing-mono shrink-0">
                         {log.created_at ? new Date(log.created_at).toLocaleString() : 'N/A'}
                       </span>
                     </div>
                   ))}
                   {auditLogsList.length === 0 && (
-                    <div className="py-8 text-center text-on-surface-variant text-xs font-mono-sm">No audit logs found.</div>
+                    <div className="py-8 text-center text-marketing-muted text-xs font-marketing-mono">No audit logs found.</div>
                   )}
                 </div>
               </div>
@@ -1796,12 +1796,12 @@ export default function AdminDashboard() {
 
           {/* CERTIFICATES TAB */}
           {activeTab === 'certificates' && (
-            <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-              <h3 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-6">Verification Certificates Ledger</h3>
+            <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+              <h3 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-6">Verification Certificates Ledger</h3>
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                   <thead>
-                    <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                    <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                       <th className="pb-3">Certificate ID</th>
                       <th className="pb-3">Intern Cohort</th>
                       <th className="pb-3">Certificate Title</th>
@@ -1810,25 +1810,25 @@ export default function AdminDashboard() {
                       <th className="pb-3 text-right">Verification Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#222]">
+                  <tbody className="divide-y divide-marketing-border">
                     {filteredCertificates.map(cert => (
-                      <tr key={cert.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
-                        <td className="py-4 font-mono-sm text-xs text-on-surface font-semibold">{cert.certificate_id}</td>
+                      <tr key={cert.id} className="hover:bg-marketing-bg/45 transition-colors">
+                        <td className="py-4 font-marketing-mono text-xs text-marketing-fg font-semibold">{cert.certificate_id}</td>
                         <td className="py-4 text-xs">
-                          <p className="font-semibold text-on-surface">{cert.interns?.profiles?.full_name}</p>
-                          <p className="text-[10px] text-on-surface-variant font-mono-sm">{cert.interns?.intern_id}</p>
+                          <p className="font-semibold text-marketing-fg">{cert.interns?.profiles?.full_name}</p>
+                          <p className="text-[10px] text-marketing-muted font-marketing-mono">{cert.interns?.intern_id}</p>
                         </td>
-                        <td className="py-4 text-xs font-semibold text-on-surface">{cert.title}</td>
+                        <td className="py-4 text-xs font-semibold text-marketing-fg">{cert.title}</td>
                         <td className="py-4 text-xs">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-mono-sm uppercase font-semibold ${
-                            cert.status === 'active' ? 'bg-green-500/10 text-green-400' : 'bg-error-container/10 text-error'
+                          <span className={`px-2 py-0.5 text-[10px] font-marketing-mono uppercase font-semibold ${
+                            cert.status === 'active' ? 'bg-marketing-accent/10 text-marketing-accent' : 'bg-red-500/10 text-red-400'
                           }`}>
                             {cert.status}
                           </span>
                         </td>
-                        <td className="py-4 font-mono-sm text-xs text-on-surface">
+                        <td className="py-4 font-marketing-mono text-xs text-marketing-fg">
                           <p>Issued: {cert.issued_at ? new Date(cert.issued_at).toLocaleDateString() : 'N/A'}</p>
-                          {cert.valid_until && <p className="text-on-surface-variant">Expires: {new Date(cert.valid_until).toLocaleDateString()}</p>}
+                          {cert.valid_until && <p className="text-marketing-muted">Expires: {new Date(cert.valid_until).toLocaleDateString()}</p>}
                         </td>
                         <td className="py-4 text-right">
                           <div className="flex gap-2 justify-end">
@@ -1837,7 +1837,7 @@ export default function AdminDashboard() {
                                 href={cert.qr_code_url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="px-2 py-1 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-on-surface rounded text-[10px] font-semibold cursor-pointer"
+                                className="px-2 py-1 bg-marketing-bg hover:bg-marketing-border border border-marketing-border-strong text-marketing-fg text-[10px] font-semibold cursor-pointer"
                                 title="View QR Code"
                               >
                                 View QR
@@ -1846,7 +1846,7 @@ export default function AdminDashboard() {
                             <Link
                               href={`/verify/${cert.certificate_id}`}
                               target="_blank"
-                              className="p-1 hover:text-primary transition-colors flex items-center justify-center text-on-surface-variant"
+                              className="p-1 hover:text-marketing-accent transition-colors flex items-center justify-center text-marketing-muted"
                               title="Verify Certificate link"
                             >
                               <ExternalLink size={15} />
@@ -1858,7 +1858,7 @@ export default function AdminDashboard() {
                                   setRevocationReason('')
                                   setRevokeOpen(true)
                                 }}
-                                className="p-1 bg-error-container/20 hover:bg-error-container/45 text-error rounded cursor-pointer"
+                                className="p-1 bg-red-500/20 hover:bg-red-500/45 text-red-400 cursor-pointer"
                                 title="Revoke Certificate"
                               >
                                 <ShieldAlert size={15} />
@@ -1870,7 +1870,7 @@ export default function AdminDashboard() {
                     ))}
                     {filteredCertificates.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="py-8 text-center text-on-surface-variant">No certificates match search criteria.</td>
+                        <td colSpan={6} className="py-8 text-center text-marketing-muted">No certificates match search criteria.</td>
                       </tr>
                     )}
                   </tbody>
@@ -1883,27 +1883,27 @@ export default function AdminDashboard() {
           {activeTab === 'careers' && (
             <div className="space-y-6">
               {/* Provision New Job Posting */}
-              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Create New Job Posting</h4>
+              <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Create New Job Posting</h4>
                 <form onSubmit={handleCreateJobPosting} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="flex flex-col gap-1">
-                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Job Title</label>
+                      <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Job Title</label>
                       <input 
                         type="text" 
                         placeholder="e.g. AI Engineering Intern"
                         required
                         value={newJob.title}
                         onChange={e => setNewJob({ ...newJob, title: e.target.value })}
-                        className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface w-full"
+                        className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg w-full"
                       />
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Track / Department</label>
+                      <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Track / Department</label>
                       <select 
                         value={newJob.track}
                         onChange={e => setNewJob({ ...newJob, track: e.target.value })}
-                        className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface cursor-pointer w-full"
+                        className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg cursor-pointer w-full"
                       >
                         <option value="Full Stack">Full Stack</option>
                         <option value="Frontend">Frontend</option>
@@ -1915,31 +1915,31 @@ export default function AdminDashboard() {
                       </select>
                     </div>
                     <div className="flex flex-col gap-1">
-                      <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Requirements / Skills (comma-separated)</label>
+                      <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Requirements / Skills (comma-separated)</label>
                       <input 
                         type="text" 
                         placeholder="TypeScript, SQL, Project Management"
                         value={newJob.requirements}
                         onChange={e => setNewJob({ ...newJob, requirements: e.target.value })}
-                        className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface w-full"
+                        className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg w-full"
                       />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Job Description</label>
+                    <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Job Description</label>
                     <textarea 
                       placeholder="Enter detailed job description..."
                       required
                       value={newJob.description}
                       onChange={e => setNewJob({ ...newJob, description: e.target.value })}
-                      className="bg-[#0B0B0B] border border-[#222] rounded p-3 text-xs outline-none focus:border-primary text-on-surface w-full h-24 resize-none"
+                      className="bg-marketing-bg border border-marketing-border p-3 text-xs outline-none focus:border-marketing-accent text-marketing-fg w-full h-24 resize-none"
                     />
                   </div>
                   <div className="flex justify-end">
                     <button 
                       type="submit" 
                       disabled={creatingJob}
-                      className="bg-primary-container text-white px-6 py-2.5 rounded hover:bg-[#d8600d] transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
+                      className="bg-marketing-accent text-marketing-accent-ink px-6 py-2.5 hover:bg-marketing-fg transition-colors flex items-center justify-center gap-2 text-xs font-bold cursor-pointer"
                     >
                       {creatingJob ? <Loader className="animate-spin" size={14} /> : <Plus size={14} />}
                       Create Job Posting
@@ -1949,12 +1949,12 @@ export default function AdminDashboard() {
               </div>
 
               {/* Active Job Postings List */}
-              <div className="bg-[#111] border border-[#222] rounded-lg p-6">
-                <h4 className="font-label-md text-xs font-semibold text-on-surface uppercase tracking-widest mb-4">Job Postings Ledger</h4>
+              <div className="bg-marketing-bg-raised border border-marketing-border p-6">
+                <h4 className="font-marketing-mono text-xs font-semibold text-marketing-fg uppercase tracking-widest mb-4">Job Postings Ledger</h4>
                 <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm font-body-md text-on-surface-variant">
+                  <table className="w-full text-left text-sm font-marketing-sans text-marketing-muted">
                     <thead>
-                      <tr className="border-b border-[#222] font-mono-sm text-[10px] uppercase text-on-surface-variant/70 tracking-widest pb-3">
+                      <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                         <th className="pb-3">Title</th>
                         <th className="pb-3">Track</th>
                         <th className="pb-3">Skills / Requirements</th>
@@ -1963,42 +1963,42 @@ export default function AdminDashboard() {
                         <th className="pb-3 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#222]">
+                    <tbody className="divide-y divide-marketing-border">
                       {jobPostings.map(job => (
-                        <tr key={job.id} className="hover:bg-[#1a1a1a]/45 transition-colors">
-                          <td className="py-4 font-semibold text-on-surface text-xs">{job.title}</td>
-                          <td className="py-4 text-xs font-semibold text-primary">{job.track}</td>
+                        <tr key={job.id} className="hover:bg-marketing-bg/45 transition-colors">
+                          <td className="py-4 font-semibold text-marketing-fg text-xs">{job.title}</td>
+                          <td className="py-4 text-xs font-semibold text-marketing-accent">{job.track}</td>
                           <td className="py-4 text-xs">
                             <div className="flex flex-wrap gap-1">
                               {job.requirements?.map((req, idx) => (
-                                <span key={idx} className="bg-[#222] px-2 py-0.5 rounded text-[10px] text-on-surface-variant">{req}</span>
+                                <span key={idx} className="bg-marketing-border px-2 py-0.5 text-[10px] text-marketing-muted">{req}</span>
                               ))}
                             </div>
                           </td>
                           <td className="py-4 text-xs">
-                            <span className={`px-2.5 py-0.5 rounded text-[10px] font-mono-sm uppercase font-semibold border ${
+                            <span className={`px-2.5 py-0.5 text-[10px] font-marketing-mono uppercase font-semibold border ${
                               job.status === 'open' 
-                                ? 'bg-green-500/10 text-[#4ade80] border-green-500/20' 
-                                : 'bg-[#222] text-on-surface-variant border-[#333]'
+                                ? 'bg-marketing-accent/10 text-marketing-accent border-green-500/20' 
+                                : 'bg-marketing-border text-marketing-muted border-marketing-border-strong'
                             }`}>
                               {job.status}
                             </span>
                           </td>
-                          <td className="py-4 font-mono-sm text-[10px] text-on-surface-variant">
+                          <td className="py-4 font-marketing-mono text-[10px] text-marketing-muted">
                             {job.created_at ? new Date(job.created_at).toLocaleDateString() : 'N/A'}
                           </td>
                           <td className="py-4 text-right">
                             <div className="flex gap-2 justify-end">
                               <button
                                 onClick={() => handleToggleJobStatus(job.id, job.status)}
-                                className="px-2 py-1 bg-[#1a1a1a] hover:bg-[#222] border border-[#333] text-on-surface rounded text-[10px] font-semibold cursor-pointer"
+                                className="px-2 py-1 bg-marketing-bg hover:bg-marketing-border border border-marketing-border-strong text-marketing-fg text-[10px] font-semibold cursor-pointer"
                                 title="Toggle Status"
                               >
                                 {job.status === 'open' ? 'Close Posting' : 'Open Posting'}
                               </button>
                               <button
                                 onClick={() => handleDeleteJobPosting(job.id)}
-                                className="p-1 hover:text-error transition-colors cursor-pointer text-on-surface-variant"
+                                className="p-1 hover:text-red-400 transition-colors cursor-pointer text-marketing-muted"
                                 title="Delete Posting"
                               >
                                 <Trash2 size={15} />
@@ -2009,7 +2009,7 @@ export default function AdminDashboard() {
                       ))}
                       {jobPostings.length === 0 && (
                         <tr>
-                          <td colSpan={6} className="py-8 text-center text-on-surface-variant">No job postings found.</td>
+                          <td colSpan={6} className="py-8 text-center text-marketing-muted">No job postings found.</td>
                         </tr>
                       )}
                     </tbody>
@@ -2027,15 +2027,15 @@ export default function AdminDashboard() {
       {/* 1. Onboarding Form Dialog */}
       {onboardOpen && onboardingProfile && (
         <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#111] border border-[#222] rounded-lg max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-[#222] pb-3">
+          <div className="bg-marketing-bg-raised border border-marketing-border max-w-md w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-marketing-border pb-3">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">Onboard Intern Record</h3>
-                <p className="text-[10px] text-on-surface-variant font-mono-sm">Profile: {onboardingProfile.email}</p>
+                <h3 className="text-sm font-bold text-marketing-fg uppercase tracking-wider">Onboard Intern Record</h3>
+                <p className="text-[10px] text-marketing-muted font-marketing-mono">Profile: {onboardingProfile.email}</p>
               </div>
               <button 
                 onClick={() => { setOnboardOpen(false); setOnboardingProfile(null); }} 
-                className="text-on-surface-variant hover:text-on-surface cursor-pointer"
+                className="text-marketing-muted hover:text-marketing-fg cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -2043,11 +2043,11 @@ export default function AdminDashboard() {
             
             <form onSubmit={handleOnboardIntern} className="space-y-4">
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Department</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Department</label>
                 <select
                   value={onboardingForm.department}
                   onChange={e => setOnboardingForm({ ...onboardingForm, department: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary cursor-pointer w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 outline-none focus:border-marketing-accent cursor-pointer w-full"
                 >
                   <option value="engineering">Engineering</option>
                   <option value="design">Design</option>
@@ -2058,74 +2058,74 @@ export default function AdminDashboard() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Start Date</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Start Date</label>
                 <input
                   type="date"
                   required
                   value={onboardingForm.startDate}
                   onChange={e => setOnboardingForm({ ...onboardingForm, startDate: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Short Biography</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Short Biography</label>
                 <textarea
                   placeholder="Tell us about this intern..."
                   value={onboardingForm.bio}
                   onChange={e => setOnboardingForm({ ...onboardingForm, bio: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary w-full h-20 resize-none"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 outline-none focus:border-marketing-accent w-full h-20 resize-none"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Skills (Comma-separated)</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Skills (Comma-separated)</label>
                 <input
                   type="text"
                   placeholder="React, TypeScript, Next.js, Figma"
                   value={onboardingForm.skills}
                   onChange={e => setOnboardingForm({ ...onboardingForm, skills: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">GitHub Profile URL</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">GitHub Profile URL</label>
                 <input
                   type="url"
                   placeholder="https://github.com/username"
                   value={onboardingForm.githubUrl}
                   onChange={e => setOnboardingForm({ ...onboardingForm, githubUrl: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">LinkedIn Profile URL</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">LinkedIn Profile URL</label>
                 <input
                   type="url"
                   placeholder="https://linkedin.com/in/username"
                   value={onboardingForm.linkedinUrl}
                   onChange={e => setOnboardingForm({ ...onboardingForm, linkedinUrl: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Portfolio URL</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Portfolio URL</label>
                 <input
                   type="url"
                   placeholder="https://myportfolio.com"
                   value={onboardingForm.portfolioUrl}
                   onChange={e => setOnboardingForm({ ...onboardingForm, portfolioUrl: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submittingOnboard}
-                className="w-full bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+                className="w-full bg-marketing-accent text-marketing-accent-ink py-3 hover:bg-marketing-fg transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
               >
                 {submittingOnboard ? <Loader className="animate-spin" size={14} /> : <UserCheck size={14} />}
                 Confirm Onboarding
@@ -2138,15 +2138,15 @@ export default function AdminDashboard() {
       {/* 2. Certificate Issuance Modal */}
       {issueOpen && selectedIntern && (
         <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#111] border border-[#222] rounded-lg max-w-md w-full p-6 space-y-4">
-            <div className="flex justify-between items-center border-b border-[#222] pb-3">
+          <div className="bg-marketing-bg-raised border border-marketing-border max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-marketing-border pb-3">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">Issue Verification Certificate</h3>
-                <p className="text-[10px] text-on-surface-variant font-mono-sm">Recipient: {selectedIntern.profiles?.full_name} ({selectedIntern.intern_id})</p>
+                <h3 className="text-sm font-bold text-marketing-fg uppercase tracking-wider">Issue Verification Certificate</h3>
+                <p className="text-[10px] text-marketing-muted font-marketing-mono">Recipient: {selectedIntern.profiles?.full_name} ({selectedIntern.intern_id})</p>
               </div>
               <button 
                 onClick={() => { setIssueOpen(false); setSelectedIntern(null); }} 
-                className="text-on-surface-variant hover:text-on-surface cursor-pointer"
+                className="text-marketing-muted hover:text-marketing-fg cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -2154,40 +2154,40 @@ export default function AdminDashboard() {
             
             <form onSubmit={handleIssueCertificate} className="space-y-4">
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Certificate Title</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Certificate Title</label>
                 <input
                   type="text"
                   required
                   value={issuanceForm.title}
                   onChange={e => setIssuanceForm({ ...issuanceForm, title: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Description / Achievement Summary</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Description / Achievement Summary</label>
                 <textarea
                   placeholder="Detail what achievements this certificate acknowledges..."
                   value={issuanceForm.description}
                   onChange={e => setIssuanceForm({ ...issuanceForm, description: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 outline-none focus:border-primary w-full h-24 resize-none"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 outline-none focus:border-marketing-accent w-full h-24 resize-none"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Validity Limit (Optional Expiration)</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Validity Limit (Optional Expiration)</label>
                 <input
                   type="date"
                   value={issuanceForm.validUntil}
                   onChange={e => setIssuanceForm({ ...issuanceForm, validUntil: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submittingIssue}
-                className="w-full bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+                className="w-full bg-marketing-accent text-marketing-accent-ink py-3 hover:bg-marketing-fg transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
               >
                 {submittingIssue ? <Loader className="animate-spin" size={14} /> : <Award size={14} />}
                 Generate & Publish Certificate
@@ -2200,15 +2200,15 @@ export default function AdminDashboard() {
       {/* 3. Certificate Revocation Modal */}
       {revokeOpen && selectedCert && (
         <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#111] border border-[#222] rounded-lg max-w-md w-full p-6 space-y-4">
-            <div className="flex justify-between items-center border-b border-[#222] pb-3">
+          <div className="bg-marketing-bg-raised border border-marketing-border max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-marketing-border pb-3">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-error uppercase tracking-wider">Revoke Certificate</h3>
-                <p className="text-[10px] text-on-surface-variant font-mono-sm">ID: {selectedCert.certificate_id}</p>
+                <h3 className="text-sm font-bold text-red-400 uppercase tracking-wider">Revoke Certificate</h3>
+                <p className="text-[10px] text-marketing-muted font-marketing-mono">ID: {selectedCert.certificate_id}</p>
               </div>
               <button 
                 onClick={() => { setRevokeOpen(false); setSelectedCert(null); }} 
-                className="text-on-surface-variant hover:text-on-surface cursor-pointer"
+                className="text-marketing-muted hover:text-marketing-fg cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -2216,18 +2216,18 @@ export default function AdminDashboard() {
             
             <form onSubmit={handleRevokeCertificate} className="space-y-4">
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Reason for Revocation</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Reason for Revocation</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Intern did not meet cohort requirements / disciplinary action"
                   value={revocationReason}
                   onChange={e => setRevocationReason(e.target.value)}
-                  className="bg-[#0B0B0B] border border-error-container/30 text-on-surface text-xs rounded p-2.5 focus:border-error outline-none w-full"
+                  className="bg-marketing-bg border border-red-500/30 text-marketing-fg text-xs p-2.5 focus:border-red-500 outline-none w-full"
                 />
               </div>
 
-              <div className="bg-error-container/10 border border-error-container/20 rounded p-3 text-[11px] text-error flex items-start gap-2">
+              <div className="bg-red-500/10 border border-red-500/20 p-3 text-[11px] text-red-400 flex items-start gap-2">
                 <ShieldAlert size={16} className="shrink-0 mt-0.5" />
                 <p>
                   <strong>Warning:</strong> Revocation is a soft-delete status update but will immediately invalidate the certificate public verify page. This action cannot be easily undone.
@@ -2237,7 +2237,7 @@ export default function AdminDashboard() {
               <button
                 type="submit"
                 disabled={submittingRevoke}
-                className="w-full bg-error-container text-error hover:bg-error-container/85 py-3 rounded transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full bg-red-500 text-white hover:bg-red-600 py-3 transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
               >
                 {submittingRevoke ? <Loader className="animate-spin" size={14} /> : <ShieldAlert size={14} />}
                 Confirm Certificate Revocation
@@ -2250,15 +2250,15 @@ export default function AdminDashboard() {
       {/* 4. Showcase Settings Modal */}
       {showcaseOpen && showcaseProject && (
         <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-[#111] border border-[#222] rounded-lg max-w-md w-full p-6 space-y-4">
-            <div className="flex justify-between items-center border-b border-[#222] pb-3">
+          <div className="bg-marketing-bg-raised border border-marketing-border max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-marketing-border pb-3">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-on-surface uppercase tracking-wider">Public Showcase Settings</h3>
-                <p className="text-[10px] text-on-surface-variant font-mono-sm">Project: {showcaseProject.title}</p>
+                <h3 className="text-sm font-bold text-marketing-fg uppercase tracking-wider">Public Showcase Settings</h3>
+                <p className="text-[10px] text-marketing-muted font-marketing-mono">Project: {showcaseProject.title}</p>
               </div>
               <button 
                 onClick={() => { setShowcaseOpen(false); setShowcaseProject(null); }} 
-                className="text-on-surface-variant hover:text-on-surface cursor-pointer"
+                className="text-marketing-muted hover:text-marketing-fg cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -2271,39 +2271,39 @@ export default function AdminDashboard() {
                   id="isShowcaseCheckbox"
                   checked={showcaseForm.isShowcase}
                   onChange={e => setShowcaseForm({ ...showcaseForm, isShowcase: e.target.checked })}
-                  className="bg-[#0B0B0B] border border-[#222] rounded outline-none focus:ring-primary w-4 h-4 cursor-pointer text-primary"
+                  className="bg-marketing-bg border border-marketing-border outline-none focus:ring-marketing-accent w-4 h-4 cursor-pointer text-marketing-accent"
                 />
-                <label htmlFor="isShowcaseCheckbox" className="font-semibold text-xs text-on-surface cursor-pointer">
+                <label htmlFor="isShowcaseCheckbox" className="font-semibold text-xs text-marketing-fg cursor-pointer">
                   Feature in Public Portfolio Showcase
                 </label>
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Showcase Image URL</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Showcase Image URL</label>
                 <input
                   type="url"
                   placeholder="https://mybucket.supabase.co/storage/v1/object/public/showcase/img.jpg"
                   value={showcaseForm.showcaseImageUrl}
                   onChange={e => setShowcaseForm({ ...showcaseForm, showcaseImageUrl: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <div className="flex flex-col gap-1">
-                <label className="font-mono-sm text-[10px] text-on-surface-variant uppercase">Showcase Tech Tags (Comma-separated)</label>
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Showcase Tech Tags (Comma-separated)</label>
                 <input
                   type="text"
                   placeholder="Next.js, Tailwind CSS, Supabase, PostgreSQL"
                   value={showcaseForm.showcaseTags}
                   onChange={e => setShowcaseForm({ ...showcaseForm, showcaseTags: e.target.value })}
-                  className="bg-[#0B0B0B] border border-[#222] text-on-surface text-xs rounded p-2.5 focus:border-primary outline-none w-full"
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submittingShowcase}
-                className="w-full bg-primary-container text-white py-3 rounded hover:bg-[#d8600d] transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
+                className="w-full bg-marketing-accent text-marketing-accent-ink py-3 hover:bg-marketing-fg transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer mt-2"
               >
                 {submittingShowcase ? <Loader className="animate-spin" size={14} /> : <Settings size={14} />}
                 Save Showcase Configuration
