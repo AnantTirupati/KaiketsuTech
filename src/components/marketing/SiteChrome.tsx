@@ -1,8 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import TopNavBar from "@/components/shared/TopNavBar";
-import Footer from "@/components/shared/Footer";
 import SmoothScroll from "@/components/marketing/SmoothScroll";
 import TerminalIntro from "@/components/marketing/TerminalIntro";
 import MarketingNav from "@/components/marketing/MarketingNav";
@@ -15,23 +13,25 @@ import PageTransition from "@/components/marketing/PageTransition";
  * font-marketing-sans/font-marketing-mono resolve correctly for pages in the
  * bare-passthrough bucket below too, not just the marketing bucket.
  *
- * Three buckets, checked in order:
+ * Two buckets, checked in order:
  *
  * 1. Marketing routes get the full v2 theme (TerminalIntro, MarketingNav,
- *    MarketingFooter, smooth scroll).
- * 2. Explicitly listed legacy routes — dashboard, auth/*, intern, verify —
- *    keep rendering exactly as before: TopNavBar + Footer, unchanged (both
- *    already self-hide on /auth and /dashboard via their own pathname
- *    checks, so /auth/update-password etc. already render bare today).
- * 3. Anything matching neither renders bare, no chrome added here. This
- *    covers two different cases: real 404s (not-found.tsx supplies its own
- *    complete themed chrome — double-wrapping it here would stack two navs
- *    and two footers), and the login/register/forgot-password/request-project
- *    auth-adjacent pages, which supply their own minimal self-contained
- *    header rather than either nav (request-project used to sit in the
- *    legacy bucket, which put TopNavBar directly behind its own fixed
- *    header — both fixed top-0 z-50, fighting for the same screen space;
- *    this bucket is also the fix for that).
+ *    MarketingFooter, smooth scroll) — includes /verify and /intern/[id]:
+ *    both are genuinely public pages (anyone checking a certificate or an
+ *    intern's profile, not a logged-in app view), so they get real site nav.
+ * 2. Everything else renders bare, no chrome added here. This covers several
+ *    different cases, each supplying its own presentation instead of relying
+ *    on SiteChrome: real 404s (not-found.tsx has its own complete themed
+ *    chrome); login/register/forgot-password/request-project (their own
+ *    minimal self-contained AuthShell/header); /dashboard (its own internal
+ *    TopAppBar/sidebar, unrelated to either site nav); and /auth/* (no
+ *    visible chrome needed at all — just the bare form/redirect content).
+ *
+ *    The old TopNavBar/Footer components that used to serve this bucket were
+ *    deleted once every remaining route stopped needing them (they only ever
+ *    rendered visibly outside /auth and /dashboard, and every such route is
+ *    now in the marketing bucket or has its own self-contained chrome) —
+ *    see git history if a route ever needs that generic nav+footer back.
  *
  * A route-group restructuring (moving these page files under an app/(marketing)
  * folder) was the more "idiomatic" way to scope a different layout, but it
@@ -48,19 +48,15 @@ const MARKETING_ROUTES = new Set([
   "/services",
   "/portfolio",
   "/pricing",
+  "/verify",
 ]);
 
 // Routes with dynamic sub-paths that should also get the marketing theme —
-// e.g. /showcase/[slug] case-study pages. Exact-match the rest above rather
-// than prefix-matching everything, so a typo'd or future out-of-scope route
+// e.g. /showcase/[slug] case-study pages, /verify/[certificateId] results,
+// /intern/[internId] public profiles. Exact-match the rest above rather than
+// prefix-matching everything, so a typo'd or future out-of-scope route
 // sharing a prefix (there isn't one today) can't accidentally opt in.
-const MARKETING_PREFIXES = ["/showcase/"];
-
-const LEGACY_PREFIXES = ["/auth", "/dashboard", "/intern", "/verify"];
-
-function matchesPrefix(pathname: string, prefixes: string[]) {
-  return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
-}
+const MARKETING_PREFIXES = ["/showcase/", "/verify/", "/intern/"];
 
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -77,16 +73,6 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
           <MarketingFooter />
         </TerminalIntro>
       </div>
-    );
-  }
-
-  if (matchesPrefix(pathname, LEGACY_PREFIXES)) {
-    return (
-      <>
-        <TopNavBar />
-        <main className="flex-1 flex flex-col">{children}</main>
-        <Footer />
-      </>
     );
   }
 
