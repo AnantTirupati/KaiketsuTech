@@ -1,8 +1,6 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
 import TopNavBar from "@/components/shared/TopNavBar";
 import Footer from "@/components/shared/Footer";
 import SmoothScroll from "@/components/marketing/SmoothScroll";
@@ -12,21 +10,28 @@ import MarketingFooter from "@/components/marketing/MarketingFooter";
 import PageTransition from "@/components/marketing/PageTransition";
 
 /**
- * Root layout renders every route through here. Three buckets, checked in
- * order:
+ * Root layout renders every route through here. Geist's font CSS variables
+ * are registered globally on <body> in layout.tsx (not here) specifically so
+ * font-marketing-sans/font-marketing-mono resolve correctly for pages in the
+ * bare-passthrough bucket below too, not just the marketing bucket.
+ *
+ * Three buckets, checked in order:
  *
  * 1. Marketing routes get the full v2 theme (TerminalIntro, MarketingNav,
  *    MarketingFooter, smooth scroll).
- * 2. Explicitly listed legacy routes — authenticated areas (dashboard, auth,
- *    login/register/forgot-password, intern, verify) and /request-project
- *    (its own bespoke chrome-free wizard, by design — see that page) — keep
- *    rendering exactly as before: TopNavBar + Footer, unchanged.
- * 3. Anything matching neither is an actual 404 (not a page we forgot to
- *    theme): usePathname() reflects whatever URL the visitor actually typed,
- *    which can't be enumerated in advance. Rendered bare, no chrome added
- *    here — src/app/not-found.tsx supplies its own complete marketing-themed
- *    chrome, and double-wrapping it in TopNavBar/Footer here would stack two
- *    navs and two footers.
+ * 2. Explicitly listed legacy routes — dashboard, auth/*, intern, verify —
+ *    keep rendering exactly as before: TopNavBar + Footer, unchanged (both
+ *    already self-hide on /auth and /dashboard via their own pathname
+ *    checks, so /auth/update-password etc. already render bare today).
+ * 3. Anything matching neither renders bare, no chrome added here. This
+ *    covers two different cases: real 404s (not-found.tsx supplies its own
+ *    complete themed chrome — double-wrapping it here would stack two navs
+ *    and two footers), and the login/register/forgot-password/request-project
+ *    auth-adjacent pages, which supply their own minimal self-contained
+ *    header rather than either nav (request-project used to sit in the
+ *    legacy bucket, which put TopNavBar directly behind its own fixed
+ *    header — both fixed top-0 z-50, fighting for the same screen space;
+ *    this bucket is also the fix for that).
  *
  * A route-group restructuring (moving these page files under an app/(marketing)
  * folder) was the more "idiomatic" way to scope a different layout, but it
@@ -51,7 +56,6 @@ const MARKETING_ROUTES = new Set([
 // sharing a prefix (there isn't one today) can't accidentally opt in.
 const MARKETING_PREFIXES = ["/showcase/"];
 
-const LEGACY_ROUTES = new Set(["/login", "/register", "/forgot-password", "/request-project", "/start-project"]);
 const LEGACY_PREFIXES = ["/auth", "/dashboard", "/intern", "/verify"];
 
 function matchesPrefix(pathname: string, prefixes: string[]) {
@@ -65,9 +69,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     MARKETING_ROUTES.has(pathname) || MARKETING_PREFIXES.some((p) => pathname.startsWith(p));
   if (isMarketing) {
     return (
-      <div
-        className={`${GeistSans.variable} ${GeistMono.variable} bg-marketing-bg text-marketing-fg font-marketing-sans antialiased`}
-      >
+      <div className="bg-marketing-bg text-marketing-fg font-marketing-sans antialiased">
         <SmoothScroll />
         <TerminalIntro>
           <MarketingNav />
@@ -78,8 +80,7 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     );
   }
 
-  const isLegacy = LEGACY_ROUTES.has(pathname) || matchesPrefix(pathname, LEGACY_PREFIXES);
-  if (isLegacy) {
+  if (matchesPrefix(pathname, LEGACY_PREFIXES)) {
     return (
       <>
         <TopNavBar />

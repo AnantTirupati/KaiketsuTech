@@ -1,7 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
 import MarketingNav from '@/components/marketing/MarketingNav'
 import MarketingFooter from '@/components/marketing/MarketingFooter'
 
@@ -20,9 +18,7 @@ export const metadata: Metadata = {
  */
 export default function NotFound() {
   return (
-    <div
-      className={`${GeistSans.variable} ${GeistMono.variable} flex min-h-screen flex-col bg-marketing-bg text-marketing-fg font-marketing-sans antialiased`}
-    >
+    <div className="flex min-h-screen flex-col bg-marketing-bg text-marketing-fg font-marketing-sans antialiased">
       <MarketingNav />
       <main className="flex flex-1 flex-col items-center justify-center px-[6vw] py-[10vh] text-center">
         <div className="mb-4 font-marketing-mono text-xs uppercase tracking-[0.14em] text-marketing-accent">

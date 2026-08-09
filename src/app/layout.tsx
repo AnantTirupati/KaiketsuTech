@@ -1,4 +1,6 @@
 import type { Metadata } from 'next'
+import { GeistSans } from 'geist/font/sans'
+import { GeistMono } from 'geist/font/mono'
 import { ToastProvider } from '@/components/ui/Toast'
 import SiteChrome from '@/components/marketing/SiteChrome'
 import './globals.css'
@@ -44,7 +46,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark h-full antialiased" data-scroll-behavior="smooth">
-      <body className="min-h-full bg-background text-on-surface flex flex-col">
+      <body
+        className={`${GeistSans.variable} ${GeistMono.variable} min-h-full bg-background text-on-surface flex flex-col`}
+      >
         <ToastProvider>
           <SiteChrome>{children}</SiteChrome>
         </ToastProvider>
