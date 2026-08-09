@@ -12,16 +12,26 @@ import MarketingFooter from "@/components/marketing/MarketingFooter";
 import PageTransition from "@/components/marketing/PageTransition";
 
 /**
- * Root layout renders every route through here. Authenticated areas
- * (dashboard, auth, login/register/forgot-password, intern, verify, api) and
- * /request-project (its own bespoke chrome-free wizard, by design — see that
- * page) must keep rendering exactly as before: TopNavBar + Footer, unchanged.
- * Everything actually public now gets the v2 theme, per the user.
+ * Root layout renders every route through here. Three buckets, checked in
+ * order:
+ *
+ * 1. Marketing routes get the full v2 theme (TerminalIntro, MarketingNav,
+ *    MarketingFooter, smooth scroll).
+ * 2. Explicitly listed legacy routes — authenticated areas (dashboard, auth,
+ *    login/register/forgot-password, intern, verify) and /request-project
+ *    (its own bespoke chrome-free wizard, by design — see that page) — keep
+ *    rendering exactly as before: TopNavBar + Footer, unchanged.
+ * 3. Anything matching neither is an actual 404 (not a page we forgot to
+ *    theme): usePathname() reflects whatever URL the visitor actually typed,
+ *    which can't be enumerated in advance. Rendered bare, no chrome added
+ *    here — src/app/not-found.tsx supplies its own complete marketing-themed
+ *    chrome, and double-wrapping it in TopNavBar/Footer here would stack two
+ *    navs and two footers.
  *
  * A route-group restructuring (moving these page files under an app/(marketing)
  * folder) was the more "idiomatic" way to scope a different layout, but it
  * would have meant physically moving the out-of-scope route folders too — a
- * much larger, riskier diff than this one pathname check.
+ * much larger, riskier diff than this pathname check.
  */
 const MARKETING_ROUTES = new Set([
   "/",
@@ -41,12 +51,35 @@ const MARKETING_ROUTES = new Set([
 // sharing a prefix (there isn't one today) can't accidentally opt in.
 const MARKETING_PREFIXES = ["/showcase/"];
 
+const LEGACY_ROUTES = new Set(["/login", "/register", "/forgot-password", "/request-project", "/start-project"]);
+const LEGACY_PREFIXES = ["/auth", "/dashboard", "/intern", "/verify"];
+
+function matchesPrefix(pathname: string, prefixes: string[]) {
+  return prefixes.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+}
+
 export default function SiteChrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+
   const isMarketing =
     MARKETING_ROUTES.has(pathname) || MARKETING_PREFIXES.some((p) => pathname.startsWith(p));
+  if (isMarketing) {
+    return (
+      <div
+        className={`${GeistSans.variable} ${GeistMono.variable} bg-marketing-bg text-marketing-fg font-marketing-sans antialiased`}
+      >
+        <SmoothScroll />
+        <TerminalIntro>
+          <MarketingNav />
+          <PageTransition>{children}</PageTransition>
+          <MarketingFooter />
+        </TerminalIntro>
+      </div>
+    );
+  }
 
-  if (!isMarketing) {
+  const isLegacy = LEGACY_ROUTES.has(pathname) || matchesPrefix(pathname, LEGACY_PREFIXES);
+  if (isLegacy) {
     return (
       <>
         <TopNavBar />
@@ -56,16 +89,5 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
     );
   }
 
-  return (
-    <div
-      className={`${GeistSans.variable} ${GeistMono.variable} bg-marketing-bg text-marketing-fg font-marketing-sans antialiased`}
-    >
-      <SmoothScroll />
-      <TerminalIntro>
-        <MarketingNav />
-        <PageTransition>{children}</PageTransition>
-        <MarketingFooter />
-      </TerminalIntro>
-    </div>
-  );
+  return <>{children}</>;
 }
