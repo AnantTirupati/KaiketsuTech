@@ -89,7 +89,7 @@ export default function MarketingNav() {
 
         <div className="hidden md:block">
           <Link
-            href={signedIn ? dashboardHref : "/contact"}
+            href={signedIn ? dashboardHref : "/login?redirect=/request-project"}
             className="rounded-full bg-marketing-accent px-5 py-2 text-sm font-semibold text-marketing-accent-ink transition-colors hover:bg-marketing-fg"
           >
             {signedIn ? "Dashboard" : "Start a project"}
@@ -126,7 +126,7 @@ export default function MarketingNav() {
                 </Link>
               ))}
               <Link
-                href={signedIn ? dashboardHref : "/contact"}
+                href={signedIn ? dashboardHref : "/login?redirect=/request-project"}
                 onClick={() => setOpen(false)}
                 className="py-3 text-lg text-marketing-accent"
               >
