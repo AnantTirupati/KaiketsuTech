@@ -8,6 +8,7 @@ export type MarketingProject = {
   description: string;
   stack: string[];
   url?: string;
+  image?: string;
   highlights: string[];
 };
 
@@ -31,6 +32,7 @@ export const marketingProjects: MarketingProject[] = [
       "A multi-page site for a real English-medium CBSE school in Bhadohi, Uttar Pradesh, covering admissions enquiries and application tracking, an academic calendar and notices system, staged curriculum pages from Play Group through Class XII, a photo gallery, and a parent portal login.",
     stack: ["Next.js", "TypeScript"],
     url: "https://www.riseuppublicschool.com",
+    image: "/riseup.png",
     highlights: [
       "Online admission enquiry + application tracking",
       "Notices, circulars, and an academic calendar that actually gets updated",
@@ -47,6 +49,7 @@ export const marketingProjects: MarketingProject[] = [
     description:
       "Every prior attendance method has a known exploit: paper roll call gets proxy answers, QR/web logins get forwarded by screenshot, GPS geofencing gets spoofed by mock-location apps. AirGated verifies attendance entirely on the local network — no cloud, no GPS — using device-bound asymmetric key signing (RSA-2048/SHA-256), link-layer MAC binding resolved via ARP, and a latency-based proximity gate. It's a working prototype: the full pipeline (registration → signing → check-in) has completed end-to-end on a real device, and two live multi-device impersonation attempts were both correctly blocked. It is explicitly not yet a deployable classroom tool.",
     stack: ["Python", "FastAPI", "WebCrypto", "SQLite", "WebSockets"],
+    image: "/airgated.png",
     highlights: [
       "Device-bound RSA-2048 signing, no server-side password to steal",
       "Link-layer MAC binding via live ARP resolution",
@@ -64,6 +67,7 @@ export const marketingProjects: MarketingProject[] = [
       "The site for Robo Rumble 3.0, CSJMU's annual robotics festival — Robo Wars, RC flying, line-following, esports, and an innovation track, with a prize pool above ₹1,50,000. Built to handle event registration for a multi-track college fest.",
     stack: ["Next.js"],
     url: "https://roborumble.in",
+    image: "/roborumble.png",
     highlights: ["Multi-track event registration", "Built for a real college fest, not a demo"],
   },
   {
@@ -77,6 +81,7 @@ export const marketingProjects: MarketingProject[] = [
       "A premium car-rental and tour-package site for a North India travel operator — fleet selection with per-km pricing, an FAQ block answering route-specific questions (fares, toll handling, sightseeing inclusions), and a large set of route-specific landing pages built for local search.",
     stack: ["Next.js"],
     url: "https://www.bansaltravels.online",
+    image: "/bansaltravels.png",
     highlights: ["Fleet + per-km fare display", "Programmatic route landing pages for local SEO"],
   },
   {
@@ -90,6 +95,7 @@ export const marketingProjects: MarketingProject[] = [
       "A service and booking site for a Vedic astrology practice — product pages (numerology, match-making, Prashna Kundali), service pages (Kundli overview, palm reading, personalized consultation), and one-tap WhatsApp booking on every page.",
     stack: ["Next.js"],
     url: "https://www.devine-astro-talk.com",
+    image: "/devine-astro.png",
     highlights: ["WhatsApp-first booking flow", "Structured product + service catalog"],
   },
   {
@@ -103,6 +109,7 @@ export const marketingProjects: MarketingProject[] = [
       "A conversion-focused landing page for a Hindi-medium digital marketing course — curriculum breakdown, mentor bio, student review wall, and an offer-comparison section, built to take a visitor from cold traffic to enrollment on one page.",
     stack: ["Next.js"],
     url: "https://devinedigitalacademy.co.in",
+    image: "/devine-academy.png",
     highlights: ["Full curriculum + mentor section", "Review wall pulling real student feedback"],
   },
 ];
