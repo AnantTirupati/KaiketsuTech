@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ShieldCheck, ShieldX, Clock, User, Calendar, Code, ArrowLeft, ExternalLink } from "lucide-react";
 import type { VerificationResult } from "@/types/intern.types";
@@ -23,7 +24,21 @@ export default function VerificationResultClient({ result, certificateId }: Prop
 
   const config = statusConfig[result.status];
 
+  const [avatarError, setAvatarError] = useState(false);
+
   const formatDepartment = (dept: string) => (dept.toLowerCase() === "management" ? "Management Intern" : dept);
+
+  const formatTenureMonthYear = (dateStr?: string | null) => {
+    if (!dateStr) return "";
+    const parts = dateStr.split("T")[0].split("-");
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      return new Date(year, month, day).toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+    }
+    return new Date(dateStr).toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+  };
 
   return (
     <section className="kt-section" style={{ paddingTop: "clamp(96px,12vh,160px)" }}>
@@ -57,8 +72,33 @@ export default function VerificationResultClient({ result, certificateId }: Prop
             <KtReveal as="article" index={1} className="kt-cell">
               <div style={{ border: "1px solid var(--line)", background: "var(--sf-1)", padding: "clamp(24px,2.6vw,36px)", height: "100%" }}>
                 <div style={{ marginBottom: 22, display: "flex", alignItems: "center", gap: 16 }}>
-                  <div style={{ display: "flex", height: 52, width: 52, alignItems: "center", justifyContent: "center", border: "1px solid var(--line)", color: "var(--ink)" }}>
-                    <User size={22} />
+                  <div
+                    style={{
+                      display: "flex",
+                      height: 52,
+                      width: 52,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "1px solid var(--line)",
+                      background: "var(--sf-2)",
+                      color: "var(--ink)",
+                      overflow: "hidden",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {result.intern.avatar_url && !avatarError ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={result.intern.avatar_url}
+                        alt={result.intern.name || result.intern.intern_id}
+                        referrerPolicy="no-referrer"
+                        crossOrigin="anonymous"
+                        onError={() => setAvatarError(true)}
+                        style={{ height: "100%", width: "100%", objectFit: "cover", display: "block" }}
+                      />
+                    ) : (
+                      <User size={22} />
+                    )}
                   </div>
                   <div>
                     <h2 className="kt-t-h3">{result.intern.name || "KaiketsuTech Intern"}</h2>
@@ -83,10 +123,10 @@ export default function VerificationResultClient({ result, certificateId }: Prop
                     <Calendar size={15} style={{ color: "var(--ink-mute)", flexShrink: 0 }} />
                     <span style={{ color: "var(--ink-mute)" }}>Period:</span>
                     <span style={{ color: "var(--ink)", fontWeight: 500 }}>
-                      {new Date(result.intern.start_date).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
+                      {formatTenureMonthYear(result.intern.start_date)}
                       {" — "}
                       {result.intern.end_date
-                        ? new Date(result.intern.end_date).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
+                        ? formatTenureMonthYear(result.intern.end_date)
                         : "Present"}
                     </span>
                   </div>

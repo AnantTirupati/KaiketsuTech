@@ -9,7 +9,7 @@ export async function PATCH(
   try {
     const { id } = await params
     const body = await request.json()
-    const { status, endDate } = body
+    const { status, endDate, startDate } = body
 
     const validStatuses = ['active', 'completed', 'revoked', 'archived']
     if (!status || !validStatuses.includes(status)) {
@@ -40,6 +40,10 @@ export async function PATCH(
     // Build update payload — never hard delete
     const updatePayload: Record<string, unknown> = { status }
 
+    if (startDate) {
+      updatePayload.start_date = startDate
+    }
+
     if (status === 'completed' || status === 'revoked') {
       updatePayload.end_date = endDate || new Date().toISOString().split('T')[0]
     }
@@ -63,7 +67,7 @@ export async function PATCH(
       action: `intern.${status}`,
       target_type: 'intern',
       target_id: id,
-      details: { new_status: status, end_date: updatePayload.end_date || null },
+      details: { new_status: status, start_date: updatePayload.start_date || null, end_date: updatePayload.end_date || null },
     })
 
     return NextResponse.json({ success: true, intern })

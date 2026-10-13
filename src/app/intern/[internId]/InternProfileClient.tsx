@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { User, Calendar, Code, ExternalLink, Award, ArrowLeft, Briefcase, Globe, Download, FileText } from "lucide-react";
 import { KtReveal } from "@/components/marketing/kt/KtReveal";
@@ -58,9 +59,22 @@ export default function InternProfileClient({ data }: { data: InternData }) {
   const { intern, contributions, certificates, application } = data;
   const profile = intern.profiles;
   const name = profile?.full_name || "KaiketsuTech Intern";
+  const [imgError, setImgError] = useState(false);
 
   const formatDepartment = (dept: string) => (dept.toLowerCase() === "management" ? "Management Intern" : dept);
   const isActive = intern.status === "active";
+
+  const formatTenureMonthYear = (dateStr?: string | null) => {
+    if (!dateStr) return "";
+    const parts = dateStr.split("T")[0].split("-");
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      return new Date(year, month, day).toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+    }
+    return new Date(dateStr).toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+  };
 
   return (
     <section className="kt-section" style={{ paddingTop: "clamp(96px,12vh,160px)" }}>
@@ -94,9 +108,16 @@ export default function InternProfileClient({ data }: { data: InternData }) {
                 overflow: "hidden",
               }}
             >
-              {profile?.avatar_url ? (
+              {profile?.avatar_url && !imgError ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={profile.avatar_url} alt={name} style={{ height: "100%", width: "100%", objectFit: "cover" }} />
+                <img
+                  src={profile.avatar_url}
+                  alt={name}
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
+                  onError={() => setImgError(true)}
+                  style={{ height: "100%", width: "100%", objectFit: "cover" }}
+                />
               ) : (
                 <User size={38} />
               )}
@@ -124,10 +145,10 @@ export default function InternProfileClient({ data }: { data: InternData }) {
                     <span style={{ color: "var(--line-bold)" }}>•</span>
                     <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
                       <Calendar size={14} style={{ color: "var(--ink-mute)" }} />
-                      {new Date(intern.start_date).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}
+                      {formatTenureMonthYear(intern.start_date)}
                       {" — "}
                       {intern.end_date
-                        ? new Date(intern.end_date).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
+                        ? formatTenureMonthYear(intern.end_date)
                         : "Present"}
                     </span>
                   </div>

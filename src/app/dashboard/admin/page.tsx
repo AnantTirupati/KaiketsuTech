@@ -101,6 +101,13 @@ export default function AdminDashboard() {
   })
   const [submittingOnboard, setSubmittingOnboard] = useState(false)
 
+  // Completion Modal State (Choose Custom Dates)
+  const [completeOpen, setCompleteOpen] = useState(false)
+  const [completingIntern, setCompletingIntern] = useState<InternWithProfile | null>(null)
+  const [internStartDate, setInternStartDate] = useState('')
+  const [completionDate, setCompletionDate] = useState(new Date().toISOString().split('T')[0])
+  const [submittingComplete, setSubmittingComplete] = useState(false)
+
   // Certificate Issuance Modal State
   const [issueOpen, setIssueOpen] = useState(false)
   const [selectedIntern, setSelectedIntern] = useState<InternWithProfile | null>(null)
@@ -538,37 +545,21 @@ export default function AdminDashboard() {
 
       if (!app) throw new Error('Application not found')
 
-      // 1. Update application status
+      if (status === 'approved') {
+        // Run full invite/sync workflow to keep auth metadata, profiles, and applications synchronized
+        await handleInviteIntern(app)
+        return
+      }
+
+      // 1. Update application status for rejection
       const { error: appErr } = await supabase
         .from('intern_applications')
-        .update({ status })
+        .update({ status: 'rejected' })
         .eq('id', appId)
 
       if (appErr) throw appErr
 
-      // 2. If approved, look up existing user profile by email and upgrade role to 'intern'
-      if (status === 'approved') {
-        const { data: userProfile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('email', app.email)
-          .maybeSingle()
-
-        if (userProfile) {
-          const { error: roleErr } = await supabase
-            .from('profiles')
-            .update({ role: 'intern' })
-            .eq('id', userProfile.id)
-
-          if (roleErr) throw roleErr
-          toast('Application approved. User promoted to Intern role.', 'success')
-        } else {
-          toast('Application approved. Role will assign upon candidate registration.', 'success')
-        }
-      } else {
-        toast('Application rejected.', 'success')
-      }
-
+      toast('Application rejected.', 'success')
       reloadData()
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Action failed.'
@@ -577,7 +568,7 @@ export default function AdminDashboard() {
   }
 
   const handleInviteIntern = async (application: Database['public']['Tables']['intern_applications']['Row']) => {
-    toast(`Inviting ${application.full_name}...`, 'info')
+    toast(`Processing intern access for ${application.full_name}...`, 'info')
     try {
       const response = await fetch('/api/invite-intern', {
         method: 'POST',
@@ -597,11 +588,24 @@ export default function AdminDashboard() {
         throw new Error(result.error || 'Invitation failed')
       }
 
-      toast(`Invitation email successfully sent to ${application.email}`, 'success')
-      reloadData()
+      if (result.alreadyRegistered) {
+        toast(
+          result.message || `Candidate already has an account. Role upgraded to Intern. They can sign in directly.`,
+          'info'
+        )
+      } else if (result.emailSent) {
+        toast(
+          result.message || `Invitation email successfully dispatched to ${application.email}.`,
+          'success'
+        )
+      } else {
+        toast(result.message || 'Operation completed successfully.', 'success')
+      }
+
+      await reloadData()
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Invitation failed'
-      toast(`${message}. Please verify SUPABASE_SERVICE_ROLE_KEY configuration.`, 'error')
+      toast(`${message}. You can try again.`, 'error')
     }
   }
 
@@ -697,6 +701,35 @@ export default function AdminDashboard() {
       reloadData()
     } catch (err: any) {
       toast(err.message || 'Failed to update status', 'error')
+    }
+  }
+
+  const handleCompleteInternship = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!completingIntern) return
+    setSubmittingComplete(true)
+    try {
+      const res = await fetch(`/api/interns/${completingIntern.id}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'completed',
+          startDate: internStartDate || completingIntern.start_date,
+          endDate: completionDate || new Date().toISOString().split('T')[0]
+        })
+      })
+
+      const result = await res.json()
+      if (!res.ok) throw new Error(result.error || 'Failed to complete internship')
+
+      toast(`Internship for ${completingIntern.profiles?.full_name || completingIntern.intern_id} marked as completed on ${completionDate}.`, 'success')
+      setCompleteOpen(false)
+      setCompletingIntern(null)
+      reloadData()
+    } catch (err: any) {
+      toast(err.message || 'Failed to update status', 'error')
+    } finally {
+      setSubmittingComplete(false)
     }
   }
 
@@ -1441,13 +1474,13 @@ export default function AdminDashboard() {
                               </div>
                             ) : app.status === 'approved' ? (
                               <div className="flex gap-2 justify-end items-center">
-                                {interns.some(i => i.email === app.email) ? (
+                                {interns.some(i => i.email?.toLowerCase().trim() === app.email?.toLowerCase().trim()) ? (
                                   <span className="font-marketing-mono text-[10px] uppercase text-marketing-accent tracking-widest bg-marketing-accent/10 px-2 py-0.5">Registered</span>
                                 ) : (
                                   <button
                                     onClick={() => handleInviteIntern(app)}
                                     className="p-1.5 bg-marketing-accent/20 hover:bg-marketing-accent/30 text-marketing-accent cursor-pointer text-[10px] font-semibold flex items-center gap-1"
-                                    title="Send Supabase Invite Email"
+                                    title="Send Supabase Invite Email or Sync Intern Role"
                                   >
                                     Invite Intern
                                   </button>
@@ -1569,9 +1602,14 @@ export default function AdminDashboard() {
                               {int.status === 'active' && (
                                 <>
                                   <button
-                                    onClick={() => handleUpdateInternStatus(int.id, 'completed')}
+                                    onClick={() => {
+                                      setCompletingIntern(int)
+                                      setInternStartDate(int.start_date || '')
+                                      setCompletionDate(new Date().toISOString().split('T')[0])
+                                      setCompleteOpen(true)
+                                    }}
                                     className="p-1 bg-marketing-accent/10 hover:bg-marketing-accent/20 text-marketing-accent cursor-pointer"
-                                    title="Complete Internship"
+                                    title="Complete Internship (Choose End Date)"
                                   >
                                     <CheckCircle2 size={14} />
                                   </button>
@@ -1583,6 +1621,20 @@ export default function AdminDashboard() {
                                     <UserMinus size={14} />
                                   </button>
                                 </>
+                              )}
+                              {int.status === 'completed' && (
+                                <button
+                                  onClick={() => {
+                                    setCompletingIntern(int)
+                                    setInternStartDate(int.start_date || '')
+                                    setCompletionDate(int.end_date || new Date().toISOString().split('T')[0])
+                                    setCompleteOpen(true)
+                                  }}
+                                  className="p-1 bg-marketing-bg hover:bg-marketing-border border border-marketing-border text-marketing-accent cursor-pointer text-[10px]"
+                                  title="Edit Completion Date"
+                                >
+                                  <Calendar size={13} />
+                                </button>
                               )}
                               <button
                                 onClick={() => handleUpdateInternStatus(int.id, 'archived')}
@@ -2308,6 +2360,86 @@ export default function AdminDashboard() {
                 {submittingShowcase ? <Loader className="animate-spin" size={14} /> : <Settings size={14} />}
                 Save Showcase Configuration
               </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 5. Mark Internship Completed Modal with Date Picker */}
+      {completeOpen && completingIntern && (
+        <div className="fixed inset-0 bg-black/85 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-marketing-bg-raised border border-marketing-border max-w-md w-full p-6 space-y-4">
+            <div className="flex justify-between items-center border-b border-marketing-border pb-3">
+              <div className="space-y-0.5">
+                <h3 className="text-sm font-bold text-marketing-fg uppercase tracking-wider">
+                  {completingIntern.status === 'completed' ? 'Update Completion Date' : 'Mark Internship as Completed'}
+                </h3>
+                <p className="text-[10px] text-marketing-muted font-marketing-mono">
+                  Intern: {completingIntern.profiles?.full_name} ({completingIntern.intern_id})
+                </p>
+              </div>
+              <button 
+                onClick={() => { setCompleteOpen(false); setCompletingIntern(null); }} 
+                className="text-marketing-muted hover:text-marketing-fg cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleCompleteInternship} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex flex-col gap-1">
+                  <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Department</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={completingIntern.department}
+                    className="bg-marketing-bg/50 border border-marketing-border text-marketing-muted text-xs p-2.5 outline-none w-full capitalize cursor-not-allowed"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Start Date</label>
+                  <input
+                    type="date"
+                    required
+                    value={internStartDate}
+                    onChange={e => setInternStartDate(e.target.value)}
+                    className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full font-marketing-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-1">
+                <label className="font-marketing-mono text-[10px] text-marketing-muted uppercase">Official Completion Date</label>
+                <input
+                  type="date"
+                  required
+                  value={completionDate}
+                  onChange={e => setCompletionDate(e.target.value)}
+                  className="bg-marketing-bg border border-marketing-border text-marketing-fg text-xs p-2.5 focus:border-marketing-accent outline-none w-full font-marketing-mono"
+                />
+                <p className="text-[10px] text-marketing-muted mt-0.5">
+                  Choose the exact end date. This will be recorded in the database and shown on their verified public profile.
+                </p>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => { setCompleteOpen(false); setCompletingIntern(null); }}
+                  className="flex-1 bg-marketing-bg hover:bg-marketing-border border border-marketing-border text-marketing-fg py-2.5 text-xs font-semibold cursor-pointer transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingComplete}
+                  className="flex-1 bg-marketing-accent text-marketing-accent-ink py-2.5 hover:bg-marketing-fg transition-colors font-bold text-xs flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {submittingComplete ? <Loader className="animate-spin" size={14} /> : <CheckCircle2 size={14} />}
+                  {completingIntern.status === 'completed' ? 'Save Date' : 'Confirm Completion'}
+                </button>
+              </div>
             </form>
           </div>
         </div>

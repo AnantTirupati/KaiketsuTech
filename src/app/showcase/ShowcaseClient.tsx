@@ -152,7 +152,7 @@ export default function ShowcaseClient({ projects }: { projects: ShowcaseProject
                                 >
                                   <div className="w-5 h-5 rounded-full bg-primary-container/10 flex items-center justify-center text-primary shrink-0">
                                     {intern.profiles?.avatar_url ? (
-                                      <img src={intern.profiles.avatar_url} alt="" className="w-full h-full rounded-full object-cover" />
+                                      <img src={intern.profiles.avatar_url} alt="" referrerPolicy="no-referrer" className="w-full h-full rounded-full object-cover" />
                                     ) : (
                                       <User size={10} />
                                     )}

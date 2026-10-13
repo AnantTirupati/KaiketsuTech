@@ -5,11 +5,14 @@ import { createClient } from '@supabase/supabase-js'
 
 export async function POST(request: Request) {
   try {
-    const { email, fullName, applicationId } = await request.json()
+    const { email: rawEmail, fullName: rawFullName, applicationId } = await request.json()
 
-    if (!email || !fullName || !applicationId) {
+    if (!rawEmail || !rawFullName || !applicationId) {
       return NextResponse.json({ error: 'Missing parameters' }, { status: 400 })
     }
+
+    const email = String(rawEmail).trim().toLowerCase()
+    const fullName = String(rawFullName).trim()
 
     // 1. Input Validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -22,8 +25,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid applicationId format' }, { status: 400 })
     }
 
-    if (typeof fullName !== 'string' || fullName.trim().length < 2 || fullName.trim().length > 100) {
-      return NextResponse.json({ error: 'Invalid full name' }, { status: 400 })
+    if (fullName.length < 2 || fullName.length > 100) {
+      return NextResponse.json({ error: 'Invalid full name length' }, { status: 400 })
     }
 
     // 2. Authenticate calling user using cookies context
@@ -69,19 +72,99 @@ export async function POST(request: Request) {
     const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     if (!serviceRoleKey || serviceRoleKey === 'placeholder-service-role-key') {
       console.error('Critical Error: SUPABASE_SERVICE_ROLE_KEY is not configured or is a placeholder in .env.local.')
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+      return NextResponse.json({ error: 'Internal server error: service role key missing' }, { status: 500 })
     }
 
     const supabaseAdmin = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      serviceRoleKey
+      serviceRoleKey,
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
     )
 
+    // Helper: promote existing user to intern consistently across auth and profiles
+    const promoteExistingUserToIntern = async (existingUser: { id: string; user_metadata?: Record<string, unknown>; app_metadata?: Record<string, unknown> }) => {
+      // 1. Update auth.users metadata
+      const { error: updateAuthErr } = await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
+        user_metadata: {
+          ...existingUser.user_metadata,
+          role: 'intern',
+          full_name: fullName || (existingUser.user_metadata?.full_name as string)
+        }
+      })
+      if (updateAuthErr) {
+        console.error('Error updating auth metadata for existing user:', updateAuthErr)
+        throw new Error(`Failed to update auth metadata: ${updateAuthErr.message}`)
+      }
+
+      // 2. Update public.profiles table
+      const { error: profileErr } = await supabaseAdmin
+        .from('profiles')
+        .upsert({
+          id: existingUser.id,
+          email,
+          role: 'intern',
+          full_name: fullName || (existingUser.user_metadata?.full_name as string) || ''
+        })
+      if (profileErr) {
+        console.error('Error updating profiles table for existing user:', profileErr)
+        throw new Error(`Failed to update profile role: ${profileErr.message}`)
+      }
+
+      // 3. Update application status to approved
+      const { error: appErr } = await supabaseAdmin
+        .from('intern_applications')
+        .update({ status: 'approved' })
+        .eq('id', applicationId)
+
+      if (appErr) {
+        console.error('Update application status error:', appErr)
+      }
+
+      const provider =
+        (existingUser.app_metadata?.provider as string) ||
+        (Array.isArray(existingUser.app_metadata?.providers) ? (existingUser.app_metadata.providers[0] as string) : null) ||
+        'email'
+
+      const isGoogle = provider === 'google'
+
+      return {
+        success: true,
+        alreadyRegistered: true,
+        emailSent: false,
+        provider,
+        message: isGoogle
+          ? `Candidate already has an account via Google OAuth. Their role has been upgraded to Intern. They can sign in directly with Google (no invite email was needed).`
+          : `Candidate already has an existing account. Their role has been upgraded to Intern. They can sign in directly using their existing account credentials.`
+      }
+    }
+
+    // Check if user already exists in auth.users
+    let existingUser = null
+    const { data: listData, error: listErr } = await supabaseAdmin.auth.admin.listUsers({
+      page: 1,
+      perPage: 1000
+    })
+
+    if (!listErr && listData?.users) {
+      existingUser = listData.users.find(u => u.email?.toLowerCase() === email)
+    }
+
+    if (existingUser) {
+      const result = await promoteExistingUserToIntern(existingUser)
+      return NextResponse.json(result)
+    }
+
+    // User is new: dispatch official Supabase Auth invitation email
     const { origin } = new URL(request.url)
     const redirectTo = `${origin}/auth/callback?next=/auth/update-password`
-    
-    const { data, error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(
-      email.trim(),
+
+    const { data: inviteData, error: inviteErr } = await supabaseAdmin.auth.admin.inviteUserByEmail(
+      email,
       {
         redirectTo,
         data: {
@@ -93,60 +176,42 @@ export async function POST(request: Request) {
 
     if (inviteErr) {
       console.error('Invite error:', inviteErr)
-      
-      // If user already exists, update their metadata and role to 'intern' and approve application
-      const isEmailExists = inviteErr.code === 'email_exists' || 
-                            inviteErr.status === 422 ||
-                            (inviteErr.message && inviteErr.message.includes('already been registered'))
-                            
+
+      const isEmailExists =
+        inviteErr.code === 'email_exists' ||
+        inviteErr.status === 422 ||
+        (inviteErr.message && inviteErr.message.toLowerCase().includes('already'))
+
       if (isEmailExists) {
-        console.log(`User ${email} already exists. Attempting to update role to intern...`)
-        const { data: listData, error: listErr } = await supabaseAdmin.auth.admin.listUsers()
-        if (!listErr && listData?.users) {
-          const existingUser = listData.users.find(u => u.email?.toLowerCase() === email.trim().toLowerCase())
-          if (existingUser) {
-            // Update user to have the intern role and metadata
-            const { error: updateErr } = await supabaseAdmin.auth.admin.updateUserById(existingUser.id, {
-              user_metadata: {
-                ...existingUser.user_metadata,
-                role: 'intern',
-                full_name: fullName
-              }
-            })
-            
-            if (updateErr) {
-              console.error('Error updating existing user to intern role:', updateErr)
-              return NextResponse.json({ 
-                error: `User already exists but failed to update their role: ${updateErr.message}` 
-              }, { status: 500 })
-            }
-            
-            // Update the application status to 'approved' in the database
-            const { error: appErr } = await supabase
-              .from('intern_applications')
-              .update({ status: 'approved' })
-              .eq('id', applicationId)
-
-            if (appErr) {
-              console.error('Update application status error:', appErr)
-            }
-
-            return NextResponse.json({ 
-              success: true, 
-              message: 'User was already registered. Their role has been updated to intern.',
-              user: existingUser 
-            })
-          }
+        const { data: retryList } = await supabaseAdmin.auth.admin.listUsers()
+        const retryUser = retryList?.users?.find(u => u.email?.toLowerCase() === email)
+        if (retryUser) {
+          const result = await promoteExistingUserToIntern(retryUser)
+          return NextResponse.json(result)
         }
       }
-      
-      return NextResponse.json({ 
-        error: inviteErr.message || 'User invitation failed' 
+
+      // If invite failed, do NOT update application status to approved
+      return NextResponse.json({
+        success: false,
+        emailSent: false,
+        error: inviteErr.message || 'User invitation email failed to send'
       }, { status: inviteErr.status || 500 })
     }
 
-    // 5. Update intern application status to 'approved' in the database
-    const { error: appErr } = await supabase
+    // Invitation email was successfully confirmed sent by Supabase
+    const invitedUser = inviteData?.user
+    if (invitedUser) {
+      await supabaseAdmin.from('profiles').upsert({
+        id: invitedUser.id,
+        email,
+        role: 'intern',
+        full_name: fullName
+      })
+    }
+
+    // Synchronize application status to 'approved'
+    const { error: appErr } = await supabaseAdmin
       .from('intern_applications')
       .update({ status: 'approved' })
       .eq('id', applicationId)
@@ -155,9 +220,16 @@ export async function POST(request: Request) {
       console.error('Update application status error:', appErr)
     }
 
-    return NextResponse.json({ success: true, user: data.user })
-  } catch (err: any) {
+    return NextResponse.json({
+      success: true,
+      alreadyRegistered: false,
+      emailSent: true,
+      message: `Invitation email successfully dispatched to ${email}.`,
+      user: invitedUser
+    })
+  } catch (err: unknown) {
     console.error('Invite API catch error:', err)
-    return NextResponse.json({ error: err?.message || 'Internal server error' }, { status: 500 })
+    const message = err instanceof Error ? err.message : 'Internal server error'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
