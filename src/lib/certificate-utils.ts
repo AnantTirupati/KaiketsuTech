@@ -4,7 +4,26 @@
 
 import QRCode from 'qrcode'
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.kaiketsutech.online'
+/**
+ * Resolve the public production site URL for certificates and QR codes.
+ * Ensures localhost / 127.0.0.1 is NEVER encoded in certificate QR codes,
+ * because physical device scans cannot reach localhost.
+ */
+export function getProductionSiteUrl(siteUrlOverride?: string): string {
+  // If explicitly overridden and not localhost, use it
+  if (siteUrlOverride && !siteUrlOverride.includes('localhost') && !siteUrlOverride.includes('127.0.0.1')) {
+    return siteUrlOverride.replace(/\/$/, '')
+  }
+
+  // If env var is set and not localhost, use it
+  const envUrl = process.env.NEXT_PUBLIC_SITE_URL
+  if (envUrl && !envUrl.includes('localhost') && !envUrl.includes('127.0.0.1')) {
+    return envUrl.replace(/\/$/, '')
+  }
+
+  // Fallback to official production domain
+  return 'https://www.kaiketsutech.online'
+}
 
 /**
  * Generate a unique certificate ID in the format KT-XXXX-YYMM
@@ -33,8 +52,9 @@ export function generateInternId(sequenceNum: number): string {
 /**
  * Build the public verification URL for a certificate
  */
-export function buildVerificationUrl(certificateId: string): string {
-  return `${SITE_URL}/verify/${certificateId}`
+export function buildVerificationUrl(certificateId: string, siteUrl?: string): string {
+  const base = getProductionSiteUrl(siteUrl)
+  return `${base}/verify/${certificateId}`
 }
 
 /**
@@ -42,7 +62,7 @@ export function buildVerificationUrl(certificateId: string): string {
  * Encodes the verification URL for the given certificate ID
  */
 export async function generateQRCodeDataUri(certificateId: string, siteUrl?: string): Promise<string> {
-  const url = siteUrl ? `${siteUrl}/verify/${certificateId}` : buildVerificationUrl(certificateId)
+  const url = buildVerificationUrl(certificateId, siteUrl)
   const dataUri = await QRCode.toDataURL(url, {
     errorCorrectionLevel: 'H',
     type: 'image/png',

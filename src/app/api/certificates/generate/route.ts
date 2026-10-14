@@ -51,10 +51,9 @@ export async function POST(request: Request) {
       retries++
     }
 
-    // Generate QR code (using dynamic request origin to avoid localhost issues on other devices)
+    // Generate QR code ensuring live production URL is encoded (never localhost)
     const requestUrl = new URL(request.url)
-    const siteUrl = requestUrl.origin
-    const qrCodeUrl = await generateQRCodeDataUri(certId, siteUrl)
+    const qrCodeUrl = await generateQRCodeDataUri(certId, requestUrl.origin)
 
     // Insert certificate
     const { data: certificate, error: certErr } = await supabase.from('certificates').insert({
