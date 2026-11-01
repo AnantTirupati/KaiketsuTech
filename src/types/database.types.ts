@@ -175,10 +175,12 @@ export type Database = {
           full_name: string
           github_url: string | null
           id: string
+          job_posting_id: string | null
           linkedin_url: string | null
           phone: string | null
           portfolio_url: string | null
           resume_url: string | null
+          role_title: string | null
           skills: string | null
           status: string | null
           technologies: string | null
@@ -190,10 +192,12 @@ export type Database = {
           full_name: string
           github_url?: string | null
           id?: string
+          job_posting_id?: string | null
           linkedin_url?: string | null
           phone?: string | null
           portfolio_url?: string | null
           resume_url?: string | null
+          role_title?: string | null
           skills?: string | null
           status?: string | null
           technologies?: string | null
@@ -205,10 +209,12 @@ export type Database = {
           full_name?: string
           github_url?: string | null
           id?: string
+          job_posting_id?: string | null
           linkedin_url?: string | null
           phone?: string | null
           portfolio_url?: string | null
           resume_url?: string | null
+          role_title?: string | null
           skills?: string | null
           status?: string | null
           technologies?: string | null

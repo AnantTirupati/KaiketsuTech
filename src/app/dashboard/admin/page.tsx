@@ -204,6 +204,7 @@ export default function AdminDashboard() {
     return (
       (app.full_name || '').toLowerCase().includes(term) ||
       (app.email || '').toLowerCase().includes(term) ||
+      (app.role_title || '').toLowerCase().includes(term) ||
       (app.skills || '').toLowerCase().includes(term) ||
       (app.technologies || '').toLowerCase().includes(term) ||
       (app.phone || '').toLowerCase().includes(term)
@@ -1427,6 +1428,7 @@ export default function AdminDashboard() {
                     <thead>
                       <tr className="border-b border-marketing-border font-marketing-mono text-[10px] uppercase text-marketing-muted/70 tracking-widest pb-3">
                         <th className="pb-3">Applicant</th>
+                        <th className="pb-3">Role</th>
                         <th className="pb-3">Details / Skills</th>
                         <th className="pb-3">Resume</th>
                         <th className="pb-3 text-right">Review</th>
@@ -1439,6 +1441,13 @@ export default function AdminDashboard() {
                             <p className="font-semibold text-marketing-fg">{app.full_name}</p>
                             <p className="text-marketing-muted mt-0.5">{app.email}</p>
                             <p className="text-marketing-muted">{app.phone || 'No phone'}</p>
+                          </td>
+                          <td className="py-4 text-xs">
+                            {app.role_title ? (
+                              <p className="text-marketing-fg capitalize">{app.role_title}</p>
+                            ) : (
+                              <p className="text-marketing-muted italic">Not recorded</p>
+                            )}
                           </td>
                           <td className="py-4 text-xs">
                             <p className="text-marketing-fg"><span className="text-marketing-accent font-semibold">Skills:</span> {app.skills || 'None'}</p>
@@ -1494,7 +1503,7 @@ export default function AdminDashboard() {
                       ))}
                       {filteredApplications.length === 0 && (
                         <tr>
-                          <td colSpan={4} className="py-8 text-center text-marketing-muted">No career applications found.</td>
+                          <td colSpan={5} className="py-8 text-center text-marketing-muted">No career applications found.</td>
                         </tr>
                       )}
                     </tbody>

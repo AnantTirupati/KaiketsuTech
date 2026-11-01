@@ -15,6 +15,7 @@ function ApplyFormContent() {
   const supabase = createClient();
 
   const [roleTitle, setRoleTitle] = useState("General Internship");
+  const [jobPostingId, setJobPostingId] = useState<string | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -41,6 +42,7 @@ function ApplyFormContent() {
             if (data?.title) {
               // eslint-disable-next-line react-hooks/set-state-in-effect
               setRoleTitle(data.title);
+              setJobPostingId(roleParam);
             }
           });
       } else {
@@ -103,6 +105,8 @@ function ApplyFormContent() {
         github_url: githubUrl,
         linkedin_url: linkedinUrl,
         resume_url: resumePath,
+        job_posting_id: jobPostingId,
+        role_title: roleTitle,
         status: "pending",
       });
 
