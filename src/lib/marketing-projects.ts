@@ -89,6 +89,25 @@ export const marketingProjects: MarketingProject[] = [
     ],
   },
   {
+    slug: "astro-komal-kalra",
+    name: "Astro Komal Kalra",
+    kind: "client",
+    category: "Consultation · Booking",
+    status: "Live",
+    year: "2026",
+    oneLiner: "Booking and payment platform for a Vedic astrology and tarot practice.",
+    description:
+      "A full consultation platform for a practising astrologer. Clients browse services, choose a time slot, pay online and manage their bookings, in English and Punjabi, alongside free tools, a blog and an FAQ. The practitioner runs the whole practice from an admin console covering the calendar, clients, revenue and refunds. Slots are held during checkout so two people cannot book the same time, and every payment is verified on the server.",
+    stack: ["Next.js", "TypeScript", "Supabase", "Razorpay", "Tailwind CSS"],
+    url: "https://www.astrokomalkalra.com",
+    image: "/work/astro-komal-kalra.jpg",
+    highlights: [
+      "Online booking with payment, refunds and a practitioner admin console",
+      "Slot holds that prevent double booking",
+      "Bilingual (English and Punjabi) with free tools and a blog",
+    ],
+  },
+  {
     slug: "made-to-adore",
     name: "Made to Adore",
     kind: "client",
