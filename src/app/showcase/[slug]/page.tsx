@@ -77,7 +77,7 @@ export default async function CaseStudyPage({ params }: Props) {
           <KtReveal as="div" index={2} style={{ marginTop: "clamp(24px,3vw,40px)" }}>
             <img
               src={project.image}
-              alt={`${project.name} homepage`}
+              alt={project.imageAlt ?? `${project.name} homepage`}
               style={{ width: "100%", height: "auto", border: "1px solid var(--line)", display: "block" }}
             />
           </KtReveal>

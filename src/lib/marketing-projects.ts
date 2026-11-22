@@ -1,7 +1,7 @@
 import { AAKSHANT, ANANT } from "@/lib/team";
 
 export type ProjectKind = "client" | "product" | "sample";
-export type ProjectStatus = "Live" | "Prototype" | "Preprint" | "Sample";
+export type ProjectStatus = "Live" | "Prototype" | "Preprint" | "Sample" | "Ongoing";
 
 export type ProjectCredit = { name: string; role: string; href: string };
 export type ProjectLink = { label: string; href: string };
@@ -24,6 +24,8 @@ export type MarketingProject = {
    */
   paused?: boolean;
   image?: string;
+  /** Describes the image when it is not a homepage screenshot. */
+  imageAlt?: string;
   highlights: string[];
   /** Secondary links: source, research paper, and so on. */
   links?: ProjectLink[];
@@ -54,6 +56,8 @@ export function statusLabel(project: Pick<MarketingProject, "status" | "paused">
       return "● published";
     case "Sample":
       return "● sample build";
+    case "Ongoing":
+      return "◐ ongoing";
   }
 }
 
@@ -86,6 +90,25 @@ export const marketingProjects: MarketingProject[] = [
       "Online admission enquiry and application tracking",
       "Notices, circulars and an academic calendar",
       "Parent portal login",
+    ],
+  },
+  {
+    slug: "astro-komal-kalra",
+    name: "Astro Komal Kalra",
+    kind: "client",
+    category: "Consultation · Booking",
+    status: "Live",
+    year: "2026",
+    oneLiner: "Booking and payment platform for a Vedic astrology and tarot practice.",
+    description:
+      "A full consultation platform for a practising astrologer. Clients browse services, choose a time slot, pay online and manage their bookings, in English and Punjabi, alongside free tools, a blog and an FAQ. The practitioner runs the whole practice from an admin console covering the calendar, clients, revenue and refunds. Slots are held during checkout so two people cannot book the same time, and every payment is verified on the server.",
+    stack: ["Next.js", "TypeScript", "Supabase", "Razorpay", "Tailwind CSS"],
+    url: "https://www.astrokomalkalra.com",
+    image: "/work/astro-komal-kalra.jpg",
+    highlights: [
+      "Online booking with payment, refunds and a practitioner admin console",
+      "Slot holds that prevent double booking",
+      "Bilingual (English and Punjabi) with free tools and a blog",
     ],
   },
   {
@@ -289,6 +312,28 @@ export const marketingProjects: MarketingProject[] = [
     ],
     links: [{ label: "Source", href: "https://github.com/unexperiencedone/normie" }],
     credits: [{ ...AAKSHANT, role: "Author" }],
+  },
+  {
+    slug: "emotion-monitoring",
+    name: "Lightweight Emotion Monitoring",
+    kind: "product",
+    category: "Well-being · Edge AI",
+    status: "Ongoing",
+    year: "2026",
+    oneLiner: "On-device stress and well-being indicators from a person's face, voice and words, with nothing leaving the device.",
+    description:
+      "Health monitoring usually tracks heart rate, temperature and oxygen, while stress and low mood are only checked occasionally through a form or a conversation. Our first use case is continuous stress and well-being monitoring. Three small models read a person's face, voice and words. A fusion layer weights each by how confident it is, and can answer \u201cnot sure\u201d instead of forcing a label, so a hospital or care team is not flooded with false alarms. A time layer smooths the readings into a current emotion and an overall mood, and turns the mood into simple indicators: stable, flat, volatile, escalating or de-escalating. Everything runs on small devices such as a phone or a Raspberry Pi, so no audio or video of the person ever leaves the device. On recordings of 15 actors the system had never seen, the fused result reaches 75.7% accuracy, against 76.5% for human raters on the same clips. The system is under active development. Next uses include classroom engagement, remote check-ins and accessibility.",
+    stack: ["Python", "PyTorch", "ONNX Runtime", "DistilBERT", "OpenCV", "scikit-learn"],
+    image: "/work/emotion-monitoring.jpg",
+    imageAlt: "Chart of accuracy on 15 unseen actors: voice 69%, face 58% and the fused system 76%, compared with human raters at 47%, 70% and 76%",
+    highlights: [
+      "Stress and well-being indicators: stable, flat, volatile, escalating, de-escalating",
+      "Runs fully on-device, so audio and video never leave the person's device",
+      "75.7% accuracy on unseen people against 76.5% for human raters",
+      "Answers 38% of clips at 90% accuracy and flags the rest as uncertain",
+      "Text model shrunk from 268 MB to 56.5 MB, about 15 ms per sentence on one CPU core",
+    ],
+    credits: [{ ...AAKSHANT, role: "Project lead" }],
   },
   {
     slug: "airgated",
