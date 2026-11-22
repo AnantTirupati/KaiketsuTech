@@ -40,9 +40,9 @@ export const founders: TeamMember[] = [
   {
     slug: "mukesh-yadav",
     name: "Mukesh Yadav",
-    role: "VP",
+    role: "Co-founder & VP",
     focus: "Management & Hiring",
-    bio: "VP of Management and Hiring at KaiketsuTech. Leads recruitment, intern cohorts and team operations.",
+    bio: "Co-founder and VP of Management and Hiring at KaiketsuTech. Leads recruitment, intern cohorts and team operations.",
     links: [{ label: "LinkedIn", href: "https://www.linkedin.com/in/mukesh-yadav-550971377/" }],
   },
 ];
