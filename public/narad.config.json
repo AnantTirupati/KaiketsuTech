@@ -1,0 +1,213 @@
+{
+  "site": {
+    "id": "kaiketsutech-online",
+    "name": "KaiketsuTech",
+    "base_url": "https://www.kaiketsutech.online",
+    "summary": "KaiketsuTech is a student-run software company that builds websites, mobile apps and AI systems for clients, runs its own products, and trains student developers through intern cohorts."
+  },
+  "bot": {
+    "enabled": true,
+    "allow_visitor_hide": true,
+    "display_name": "Guide",
+    "avatar": null
+  },
+  "theme": {
+    "accent_color": "#A7A6A6",
+    "position": "bottom-right"
+  },
+  "sections": [
+    {
+      "id": "services",
+      "title": "Services",
+      "description": "The four things we do: web platforms, mobile apps, AI systems and security research.",
+      "selector": "#services",
+      "route": null,
+      "priority": 1,
+      "aliases": [
+        "what we offer",
+        "web development",
+        "mobile apps",
+        "ai systems",
+        "security research",
+        "offerings"
+      ]
+    },
+    {
+      "id": "our-work",
+      "title": "Our work",
+      "description": "Client projects delivered for real businesses, each with a live link.",
+      "selector": "#client",
+      "route": "/showcase",
+      "priority": 2,
+      "aliases": [
+        "projects",
+        "clients",
+        "case studies",
+        "examples",
+        "sample websites",
+        "previous work"
+      ]
+    },
+    {
+      "id": "products",
+      "title": "Our products",
+      "description": "Products we build and run ourselves, such as NutriSafe, Narad, Nova and Normie.",
+      "selector": "#product",
+      "route": "/showcase",
+      "priority": 3,
+      "aliases": [
+        "nutrisafe",
+        "narad",
+        "nova",
+        "normie",
+        "apps you built",
+        "own products"
+      ]
+    },
+    {
+      "id": "research",
+      "title": "Research papers",
+      "description": "Our engineering papers, including the Nova preprint on Zenodo.",
+      "selector": "#research",
+      "route": "/portfolio",
+      "aliases": [
+        "paper",
+        "publication",
+        "zenodo",
+        "preprint",
+        "airgated paper",
+        "published"
+      ]
+    },
+    {
+      "id": "pricing",
+      "title": "Pricing",
+      "description": "Fixed website packages and what each one includes.",
+      "selector": "#website-packages",
+      "route": "/pricing",
+      "priority": 4,
+      "aliases": [
+        "how much",
+        "cost",
+        "rates",
+        "packages",
+        "price",
+        "quote"
+      ]
+    },
+    {
+      "id": "leadership",
+      "title": "Leadership",
+      "description": "The founders and senior team behind KaiketsuTech.",
+      "selector": "#leadership",
+      "route": "/about",
+      "aliases": [
+        "founders",
+        "team",
+        "who runs this",
+        "ceo",
+        "co-founder",
+        "anant",
+        "aakshant",
+        "mukesh"
+      ]
+    },
+    {
+      "id": "cohorts",
+      "title": "Intern cohorts",
+      "description": "The student developers who have trained and shipped with us, grouped by cohort.",
+      "selector": "#cohort-list",
+      "route": "/cohorts",
+      "aliases": [
+        "interns",
+        "students",
+        "batch",
+        "internship",
+        "cohort"
+      ]
+    },
+    {
+      "id": "careers",
+      "title": "Careers",
+      "description": "Open roles and how hiring works.",
+      "selector": "#open-roles",
+      "route": "/careers",
+      "aliases": [
+        "jobs",
+        "hiring",
+        "join",
+        "apply",
+        "work with you",
+        "vacancies"
+      ]
+    },
+    {
+      "id": "verify",
+      "title": "Verify a certificate",
+      "description": "Check an internship certificate by its ID or QR code.",
+      "selector": "#verify-certificate",
+      "route": "/verify",
+      "aliases": [
+        "certificate",
+        "check certificate",
+        "verification",
+        "validate",
+        "intern id",
+        "qr"
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "description": "Send us a short description of your project and we reply within two working days.",
+      "selector": "#contact-form",
+      "route": "/contact",
+      "conversion": true,
+      "aliases": [
+        "get in touch",
+        "start a project",
+        "email",
+        "talk to you",
+        "hire you",
+        "enquiry",
+        "reach you"
+      ]
+    }
+  ],
+  "owner_answers": [
+    {
+      "key": "reply-time",
+      "triggers": [
+        "reply",
+        "how long",
+        "response time",
+        "turnaround"
+      ],
+      "answer": "We reply to every enquiry within two working days with a scope and a price, or an explanation if we are not the right fit.",
+      "section": "contact"
+    },
+    {
+      "key": "location",
+      "triggers": [
+        "where",
+        "based",
+        "location",
+        "located",
+        "city"
+      ],
+      "answer": "KaiketsuTech is a remote-first team based in Kanpur, Uttar Pradesh, India."
+    }
+  ],
+  "matching": {
+    "fuzzy_threshold": 0.35
+  },
+  "llm": {
+    "enabled": true,
+    "endpoint": "https://web-assistant-plugin.vercel.app/api/classify"
+  },
+  "analytics": {
+    "enabled": false,
+    "endpoint": null,
+    "require_consent": true
+  }
+}

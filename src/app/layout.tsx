@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
+import Script from 'next/script'
 import { ToastProvider } from '@/components/ui/Toast'
 import SiteChrome from '@/components/marketing/SiteChrome'
 import './globals.css'
@@ -52,6 +53,11 @@ export default function RootLayout({
         <ToastProvider>
           <SiteChrome>{children}</SiteChrome>
         </ToastProvider>
+        <Script
+          src="https://web-assistant-plugin.vercel.app/narad.min.js"
+          data-config="/narad.config.json"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   )

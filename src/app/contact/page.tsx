@@ -121,7 +121,7 @@ function ContactContent() {
         lede="One paragraph is enough to start. We reply within two working days with a scope and a price, or an explanation if we are not the right fit."
       />
 
-      <section className="kt-section kt-s--light">
+      <section id="contact-form" className="kt-section kt-s--light">
         <div className="kt-wrap">
           <KtReveal as="form" onSubmit={handleSubmit} className="kt-form">
             <div className="kt-field">

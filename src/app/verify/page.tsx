@@ -48,7 +48,7 @@ export default function VerifyPage() {
 
   return (
     <>
-      <section className="kt-pagehead">
+      <section id="verify-certificate" className="kt-pagehead">
         <div className="kt-pagehead-field" aria-hidden="true" style={{ opacity: 1 }}>
           <img src="/images/banners/verify_banner.jpg" alt="" style={{ width: "100%", height: "100%", objectFit: "cover", opacity: 0.35 }} />
         </div>

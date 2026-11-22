@@ -49,7 +49,7 @@ export default async function CareersPage() {
         lede="We are a small team and grow deliberately. We value what you have built over what your resume lists. If none of the roles below fit but you can build, get in touch anyway."
       />
 
-      <section className="kt-section kt-s--light">
+      <section id="open-roles" className="kt-section kt-s--light">
         <div className="kt-wrap">
           <div className="kt-sec-head">
             <div>

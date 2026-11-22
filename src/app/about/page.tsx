@@ -126,7 +126,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="kt-section kt-s--light">
+      <section id="leadership" className="kt-section kt-s--light">
         <div className="kt-wrap">
           <div className="kt-sec-head">
             <div>

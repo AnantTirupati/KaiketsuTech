@@ -182,7 +182,7 @@ export default function Pricing() {
       />
 
       {/* Web packages — unchanged pricing/checkout logic, restyled only */}
-      <section className="kt-section kt-s--light">
+      <section id="website-packages" className="kt-section kt-s--light">
         <div className="kt-wrap">
           <KtReveal as="p" className="kt-t-mono kt-eyebrow">
             Websites
