@@ -16,6 +16,7 @@ import {
   type ProjectKind,
 } from "@/lib/marketing-projects";
 import { founders } from "@/lib/team";
+import { researchPapers } from "@/lib/research";
 
 export const metadata: Metadata = {
   title: "Portfolio",
@@ -52,8 +53,6 @@ const groups: [ProjectKind, MarketingProject[]][] = [
   ["sample", sampleProjects],
 ];
 
-const nova = productProjects.find((p) => p.slug === "nova");
-
 export default async function PortfolioPage() {
   const engagements = await fetchShowcaseProjects();
   let band = 0;
@@ -80,18 +79,20 @@ export default async function PortfolioPage() {
           <div className="kt-sec-head">
             <div>
               <KtReveal as="p" className="kt-t-mono kt-eyebrow">
-                Founders
+                Leadership
               </KtReveal>
               <KtReveal as="h2" index={1} className="kt-t-h2">
-                The people behind the work.
+                The people behind KaiketsuTech.
               </KtReveal>
             </div>
           </div>
-          <div className="kt-grid kt-grid-2">
+          <div className="kt-grid kt-grid-3">
             {founders.map((f, i) => (
               <KtReveal as="article" key={f.slug} index={i}>
                 <KtCell theme="light">
-                  <p className="kt-t-mono">{f.role}</p>
+                  <p className="kt-t-mono">
+                    {f.role} · {f.focus}
+                  </p>
                   <h3 className="kt-t-h3">{f.name}</h3>
                   <p className="kt-t-small">{f.bio}</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 18, marginTop: "auto", paddingTop: 12 }}>
@@ -115,55 +116,60 @@ export default async function PortfolioPage() {
         </div>
       </section>
 
-      {/* Published research */}
-      {nova && (
-        <section className={nextBand()}>
-          <div className="kt-wrap">
-            <div className="kt-sec-head">
-              <div>
-                <KtReveal as="p" className="kt-t-mono kt-eyebrow">
-                  Published research
-                </KtReveal>
-                <KtReveal as="h2" index={1} className="kt-t-h2" style={{ maxWidth: "22ch" }}>
-                  An engineering paper on Zenodo.
-                </KtReveal>
-              </div>
-              <KtReveal as="p" index={2} className="kt-t-body kt-lede">
-                Co-founder Aakshant Kumar is the sole author of a public preprint describing Nova, the voice assistant
-                that automates desktop work.
+      {/* Research */}
+      <section className={nextBand()} id="research">
+        <div className="kt-wrap">
+          <div className="kt-sec-head">
+            <div>
+              <KtReveal as="p" className="kt-t-mono kt-eyebrow">
+                Research
+              </KtReveal>
+              <KtReveal as="h2" index={1} className="kt-t-h2" style={{ maxWidth: "22ch" }}>
+                Engineering papers behind our products.
               </KtReveal>
             </div>
-            <KtReveal as="article" index={2}>
-              <KtCell theme="dark">
-                <p className="kt-t-mono">Preprint · v1 · 7 November 2026</p>
-                <h3 className="kt-t-h3" style={{ maxWidth: "40ch" }}>
-                  Writing Itself Out of the Job: Design and Autobiographical Deployment of a Cost-Ordered,
-                  Self-Automating Desktop Voice Assistant
-                </h3>
-                <p className="kt-t-small" style={{ maxWidth: "70ch" }}>
-                  Aakshant Kumar · DOI 10.5281/zenodo.24026001. The paper describes an assistant that sends each
-                  request down the cheapest path able to complete it, and learns repeated jobs as automations. In its
-                  30-day deployment, 70% of 185 requests never reached a paid model.
-                </p>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 22, marginTop: "auto", paddingTop: 12 }}>
-                  <a
-                    href="https://zenodo.org/records/24026001"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="kt-link-arrow"
-                    style={{ display: "inline-flex" }}
-                  >
-                    Read the paper
-                  </a>
-                  <Link href="/showcase/nova" className="kt-link-arrow" style={{ display: "inline-flex" }}>
-                    About Nova
-                  </Link>
-                </div>
-              </KtCell>
+            <KtReveal as="p" index={2} className="kt-t-body kt-lede">
+              Co-founder Aakshant Kumar is the sole author of both papers. The Nova preprint is published on Zenodo; the
+              AirGated manuscript is shown here as a preview ahead of publication.
             </KtReveal>
           </div>
-        </section>
-      )}
+          <div className="kt-grid kt-grid-2">
+            {researchPapers.map((paper, i) => (
+              <KtReveal as="article" key={paper.slug} index={i}>
+                <KtCell theme="dark">
+                  <p className="kt-t-mono">
+                    {paper.status === "Published" ? "● Published" : "○ Preview, not yet published"} · {paper.meta}
+                  </p>
+                  <h3 className="kt-t-h3">{paper.title}</h3>
+                  <p className="kt-t-small" style={{ color: "var(--ink-mute)" }}>
+                    {paper.authors}
+                    {paper.doi ? ` · DOI ${paper.doi}` : ""}
+                  </p>
+                  <p className="kt-t-small">{paper.abstract}</p>
+                  <ul style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {paper.findings.slice(0, 3).map((f) => (
+                      <li key={f} className="kt-t-small" style={{ display: "flex", gap: 10 }}>
+                        <span aria-hidden="true" style={{ marginTop: 8, height: 4, width: 4, flexShrink: 0, borderRadius: "50%", background: "var(--ink)" }} />
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 22, marginTop: "auto", paddingTop: 12 }}>
+                    {paper.href && (
+                      <a href={paper.href} target="_blank" rel="noopener noreferrer" className="kt-link-arrow" style={{ display: "inline-flex" }}>
+                        Read the paper
+                      </a>
+                    )}
+                    <Link href={`/showcase/${paper.project}`} className="kt-link-arrow" style={{ display: "inline-flex" }}>
+                      About {paper.project === "nova" ? "Nova" : "AirGated"}
+                    </Link>
+                  </div>
+                </KtCell>
+              </KtReveal>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Products, client work, samples */}
       {groups.map(([kind, projects]) => (

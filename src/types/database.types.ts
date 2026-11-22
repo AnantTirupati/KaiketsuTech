@@ -238,6 +238,9 @@ export type Database = {
           created_at: string | null
           updated_at: string | null
           deleted_at: string | null
+          member_type: string
+          designation: string | null
+          leadership_title: string | null
         }
         Insert: {
           id?: string
@@ -255,6 +258,9 @@ export type Database = {
           created_at?: string | null
           updated_at?: string | null
           deleted_at?: string | null
+          member_type?: string
+          designation?: string | null
+          leadership_title?: string | null
         }
         Update: {
           id?: string
@@ -272,6 +278,9 @@ export type Database = {
           created_at?: string | null
           updated_at?: string | null
           deleted_at?: string | null
+          member_type?: string
+          designation?: string | null
+          leadership_title?: string | null
         }
         Relationships: [
           {

@@ -6,7 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 
 interface SidebarProps {
-  userRole: 'admin' | 'client' | 'intern'
+  userRole: 'admin' | 'client' | 'intern' | 'senior'
   userName: string
   userEmail: string
 }
@@ -32,6 +32,14 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
           { name: 'Interns', href: '#', icon: 'school' },
           { name: 'Analytics', href: '#', icon: 'monitoring' },
           { name: 'Internal Tools', href: '#', icon: 'settings' },
+        ]
+      case 'senior':
+        return [
+          { name: 'Dashboard', href: '/dashboard/senior', icon: 'dashboard' },
+          { name: 'Projects', href: '#', icon: 'account_tree' },
+          { name: 'Allocations', href: '#', icon: 'folder_open' },
+          { name: 'Sprint Tasks', href: '#', icon: 'checklist' },
+          { name: 'Interns', href: '#', icon: 'school' },
         ]
       case 'intern':
         return [

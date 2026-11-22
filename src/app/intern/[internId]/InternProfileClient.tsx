@@ -8,6 +8,8 @@ import { KtReveal } from "@/components/marketing/kt/KtReveal";
 interface InternData {
   intern: Record<string, unknown> & {
     intern_id: string;
+    designation?: string | null;
+    leadership_title?: string | null;
     department: string;
     start_date: string;
     end_date: string | null;
@@ -139,7 +141,7 @@ export default function InternProfileClient({ data }: { data: InternData }) {
                         className="kt-t-mono"
                         style={{ border: "1px solid var(--line)", padding: "4px 10px", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}
                       >
-                        {formatDepartment(intern.department)}
+                        {intern.designation || formatDepartment(intern.department)}
                       </span>
                     </span>
                     <span style={{ color: "var(--line-bold)" }}>•</span>

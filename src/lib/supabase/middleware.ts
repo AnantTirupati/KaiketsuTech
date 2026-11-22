@@ -60,6 +60,11 @@ export async function updateSession(request: NextRequest) {
       url.pathname = `/dashboard/${role}`
       return NextResponse.redirect(url)
     }
+    if (path.startsWith('/dashboard/senior') && role !== 'senior') {
+      const url = request.nextUrl.clone()
+      url.pathname = `/dashboard/${role}`
+      return NextResponse.redirect(url)
+    }
     if (path.startsWith('/dashboard/intern') && role !== 'intern') {
       const url = request.nextUrl.clone()
       url.pathname = `/dashboard/${role}`

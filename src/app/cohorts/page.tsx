@@ -27,13 +27,26 @@ type CohortIntern = {
 async function fetchInterns(): Promise<CohortIntern[]> {
   try {
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
-    const { data } = await supabase
+    const base = "intern_id, department, start_date, end_date, status, skills, profiles (full_name)";
+    // Senior team members are listed on the About page, not in a cohort. The
+    // member_type column may not exist yet on an older database, so fall back
+    // to the original query if the first one is rejected.
+    const withType = await supabase
       .from("interns")
-      .select("intern_id, department, start_date, end_date, status, skills, profiles (full_name)")
+      .select(base)
+      .is("deleted_at", null)
+      .in("status", ["active", "completed"])
+      .neq("member_type", "senior")
+      .order("start_date", { ascending: false });
+    if (!withType.error) return (withType.data as unknown as CohortIntern[]) ?? [];
+
+    const fallback = await supabase
+      .from("interns")
+      .select(base)
       .is("deleted_at", null)
       .in("status", ["active", "completed"])
       .order("start_date", { ascending: false });
-    return (data as unknown as CohortIntern[]) ?? [];
+    return (fallback.data as unknown as CohortIntern[]) ?? [];
   } catch {
     return [];
   }

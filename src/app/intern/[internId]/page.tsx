@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const { data: intern } = await supabase
     .from('interns')
-    .select('intern_id, department, profiles (full_name)')
+    .select('intern_id, department, designation, leadership_title, profiles (full_name)')
     .eq('intern_id', internId)
     .maybeSingle()
 
@@ -21,8 +21,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const name = profile?.full_name || internId
 
   return {
-    title: `${name} — KaiketsuTech Intern`,
-    description: `View the profile and contributions of ${name}, a ${intern?.department || ''} intern at KaiketsuTech.`,
+    title: `${name} — KaiketsuTech`,
+    description: intern?.designation
+      ? `View the profile and contributions of ${name}, ${intern.designation} at KaiketsuTech.`
+      : `View the profile and contributions of ${name}, a ${intern?.department || ''} intern at KaiketsuTech.`,
   }
 }
 
