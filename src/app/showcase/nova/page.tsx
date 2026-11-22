@@ -175,7 +175,9 @@ export default function NovaLandingPage() {
                 Self-Automating Desktop Voice Assistant
               </h3>
               <p className="kt-t-small" style={{ maxWidth: "70ch" }}>
-                Aakshant Kumar. In a 30-day deployment, 70% of 185 requests never reached a paid model.
+                Aakshant Kumar. In a 30-day deployment, 70% of 185 requests never reached a paid model: 24% were
+                answered by scripts and 46% by a free model alone. The paper also reports three measurement errors
+                that inflated the apparent savings, and a port from Windows to Ubuntu on Wayland.
               </p>
               <div style={{ marginTop: "auto", paddingTop: 12, display: "flex", gap: 22, flexWrap: "wrap" }}>
                 <a

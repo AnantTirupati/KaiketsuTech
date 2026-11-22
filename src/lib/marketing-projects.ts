@@ -299,13 +299,13 @@ export const marketingProjects: MarketingProject[] = [
     year: "2026",
     oneLiner: "Offline classroom attendance that resists proxying, screenshots and GPS spoofing.",
     description:
-      "Paper roll call invites proxy answers, QR and web logins can be forwarded as screenshots, and GPS geofencing can be spoofed. AirGated verifies attendance entirely on the local network, with no cloud and no GPS, using device-bound RSA-2048 signing, link-layer MAC binding resolved through ARP, and a latency-based proximity check. The full pipeline has run end to end on a real device, and both live multi-device impersonation attempts were blocked. It is a prototype and not yet a deployable classroom tool.",
-    stack: ["Python", "FastAPI", "WebCrypto", "SQLite", "WebSockets"],
+      "Paper roll call invites proxy answers, QR and web logins can be forwarded as screenshots, and GPS geofencing can be spoofed. AirGated verifies attendance entirely on the classroom network, with no cloud and no GPS. A check-in is accepted only if six gates pass: a fresh single-use nonce, a server-measured round trip of at most 20 ms, a matching link-layer address, a signature from a non-extractable browser key, a blink liveness test with a face match, and a one-roll-number-per-device limit. It has been tried with real students and phones, and a research paper describing it is in preparation. It is a prototype and not yet a deployable classroom tool.",
+    stack: ["Python", "FastAPI", "WebCrypto", "SQLite", "WebSockets", "OpenCV", "MediaPipe"],
     image: "/airgated.png",
     highlights: [
-      "Device-bound signing; no password to steal",
-      "Link-layer MAC binding via ARP",
-      "2 of 2 live impersonation attempts blocked",
+      "Six independent gates, all decided by the server",
+      "Works with no internet, cloud service or app install",
+      "Runs on Windows and Ubuntu hosts; research paper in preparation",
     ],
     links: [{ label: "Source", href: "https://github.com/unexperiencedone/airgated-" }],
   },

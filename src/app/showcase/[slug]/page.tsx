@@ -4,6 +4,7 @@ import { KtReveal } from "@/components/marketing/kt/KtReveal";
 import { KtRevealLink } from "@/components/marketing/kt/KtRevealLink";
 import { KtCtaSection } from "@/components/marketing/kt/KtCtaSection";
 import { KIND_LABEL, marketingProjects, statusLabel } from "@/lib/marketing-projects";
+import { paperFor } from "@/lib/research";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -27,6 +28,7 @@ export default async function CaseStudyPage({ params }: Props) {
   const { slug } = await params;
   const project = marketingProjects.find((p) => p.slug === slug);
   if (!project) notFound();
+  const paper = paperFor(project.slug);
 
   return (
     <article className="kt-section" style={{ paddingTop: "clamp(96px,12vh,160px)" }}>
@@ -92,6 +94,37 @@ export default async function CaseStudyPage({ params }: Props) {
               What it does
             </h2>
             <p className="kt-t-body">{project.description}</p>
+
+            {paper && (
+              <>
+                <h2
+                  className="kt-t-mono"
+                  style={{ textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--ink-mute)", marginTop: 40, marginBottom: 16 }}
+                >
+                  Research paper · {paper.status === "Published" ? "published" : "preview, not yet published"}
+                </h2>
+                <p className="kt-t-small" style={{ color: "var(--ink)" }}>{paper.title}</p>
+                <p className="kt-t-small" style={{ color: "var(--ink-mute)", marginTop: 6 }}>
+                  {paper.authors} · {paper.meta}
+                </p>
+                <p className="kt-t-small" style={{ marginTop: 14 }}>{paper.abstract}</p>
+                <ul style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 14 }}>
+                  {paper.findings.map((f) => (
+                    <li key={f} style={{ display: "flex", alignItems: "flex-start", gap: 12 }} className="kt-t-small">
+                      <span aria-hidden="true" style={{ marginTop: 8, height: 4, width: 4, flexShrink: 0, borderRadius: "50%", background: "var(--ink)" }} />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                {paper.href && (
+                  <p style={{ marginTop: 16 }}>
+                    <a href={paper.href} target="_blank" rel="noopener noreferrer" className="kt-link-arrow" style={{ display: "inline-flex" }}>
+                      Read the paper{paper.doi ? ` (DOI ${paper.doi})` : ""}
+                    </a>
+                  </p>
+                )}
+              </>
+            )}
 
             <h2
               className="kt-t-mono"
