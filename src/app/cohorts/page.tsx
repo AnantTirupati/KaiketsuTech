@@ -109,7 +109,7 @@ export default async function CohortsPage() {
       />
 
       {cohorts.length === 0 ? (
-        <section className="kt-section kt-s--light">
+        <section id="cohort-list" className="kt-section kt-s--light">
           <div className="kt-wrap">
             <KtReveal
               as="div"
@@ -134,7 +134,7 @@ export default async function CohortsPage() {
         </section>
       ) : (
         cohorts.map(([key, members], ci) => (
-          <section key={key} className={ci % 2 === 0 ? "kt-section kt-s--light" : "kt-section"}>
+          <section key={key} id={ci === 0 ? "cohort-list" : undefined} className={ci % 2 === 0 ? "kt-section kt-s--light" : "kt-section"}>
             <div className="kt-wrap">
               <div className="kt-sec-head">
                 <div>
