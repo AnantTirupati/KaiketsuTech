@@ -160,7 +160,7 @@ export default function MarketingFooter() {
             <a href="#">Security</a>
             <a href="#">Accessibility</a>
           </div>
-          <p className="kt-t-mono">Founded by Anant Tirupati &amp; Aakshant Kumar</p>
+          <p className="kt-t-mono">Founded by Anant Tirupati, Aakshant Kumar &amp; Mukesh Yadav</p>
         </div>
       </div>
 

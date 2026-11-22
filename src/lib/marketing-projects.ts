@@ -205,7 +205,6 @@ export const marketingProjects: MarketingProject[] = [
       "A conversion-focused landing page for a Hindi-medium digital marketing course: curriculum breakdown, mentor profile, student reviews and an offer comparison, designed to take a visitor from first click to enrolment on a single page.",
     stack: ["Next.js"],
     url: "https://devinedigitalacademy.co.in",
-    paused: true,
     image: "/devine-academy.png",
     highlights: ["Full curriculum and mentor section", "Student review wall"],
   },
