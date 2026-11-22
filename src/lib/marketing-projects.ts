@@ -189,7 +189,6 @@ export const marketingProjects: MarketingProject[] = [
       "A service and booking site for a Vedic astrology practice: product pages (numerology, match-making, Prashna Kundali), service pages (Kundli overview, palm reading, personal consultation), and one-tap WhatsApp booking on every page.",
     stack: ["Next.js"],
     url: "https://www.devine-astro-talk.com",
-    paused: true,
     image: "/devine-astro.png",
     highlights: ["WhatsApp-first booking flow", "Structured product and service catalogue"],
   },
