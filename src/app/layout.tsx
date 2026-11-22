@@ -56,6 +56,7 @@ export default function RootLayout({
         <Script
           src="https://web-assistant-plugin.vercel.app/narad.min.js"
           data-config="/narad.config.json"
+          data-site="kaiketsutech-online-b1fc"
           strategy="afterInteractive"
         />
       </body>
