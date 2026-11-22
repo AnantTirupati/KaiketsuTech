@@ -80,18 +80,20 @@ export default async function PortfolioPage() {
           <div className="kt-sec-head">
             <div>
               <KtReveal as="p" className="kt-t-mono kt-eyebrow">
-                Founders
+                Leadership
               </KtReveal>
               <KtReveal as="h2" index={1} className="kt-t-h2">
-                The people behind the work.
+                The people behind KaiketsuTech.
               </KtReveal>
             </div>
           </div>
-          <div className="kt-grid kt-grid-2">
+          <div className="kt-grid kt-grid-3">
             {founders.map((f, i) => (
               <KtReveal as="article" key={f.slug} index={i}>
                 <KtCell theme="light">
-                  <p className="kt-t-mono">{f.role}</p>
+                  <p className="kt-t-mono">
+                    {f.role} · {f.focus}
+                  </p>
                   <h3 className="kt-t-h3">{f.name}</h3>
                   <p className="kt-t-small">{f.bio}</p>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: 18, marginTop: "auto", paddingTop: 12 }}>

@@ -45,9 +45,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Intern record already exists for this profile' }, { status: 409 })
     }
 
-    // Generate intern ID based on current count
-    const { count } = await supabase.from('interns').select('*', { count: 'exact', head: true })
-    const internId = generateInternId((count || 0) + 1)
+    // Generate the next ID from the highest existing number, not the row count,
+    // so removing a record never makes the next ID collide with an existing one.
+    const { data: allIds } = await supabase.from('interns').select('intern_id')
+    const highest = (allIds || []).reduce((max: number, r: { intern_id: string }) => {
+      const n = parseInt(r.intern_id.replace(/^KT-INT-/, ''), 10)
+      return Number.isFinite(n) && n > max ? n : max
+    }, 0)
+    const internId = generateInternId(highest + 1)
 
     // Insert intern record
     const { data: intern, error: internErr } = await supabase.from('interns').insert({
