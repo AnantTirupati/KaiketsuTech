@@ -4,11 +4,20 @@ import { KtReveal } from "@/components/marketing/kt/KtReveal";
 import { KtRevealLink } from "@/components/marketing/kt/KtRevealLink";
 import { KtCtaSection } from "@/components/marketing/kt/KtCtaSection";
 import { KtCell } from "@/components/marketing/kt/KtCell";
-import { marketingProjects } from "@/lib/marketing-projects";
+import { ProjectGrid } from "@/components/marketing/ProjectGrid";
+import {
+  KIND_BLURB,
+  KIND_LABEL,
+  clientProjects,
+  productProjects,
+  sampleProjects,
+  type ProjectKind,
+  type MarketingProject,
+} from "@/lib/marketing-projects";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "Real sites, real clients — the work KaiketsuTech has actually shipped.",
+  description: "Client projects, our own products and sample websites from KaiketsuTech, each with a live link.",
 };
 
 const engagementTypes = [
@@ -26,6 +35,12 @@ const engagementTypes = [
   },
 ];
 
+const groups: [ProjectKind, MarketingProject[]][] = [
+  ["client", clientProjects],
+  ["product", productProjects],
+  ["sample", sampleProjects],
+];
+
 export default function ShowcasePage() {
   return (
     <>
@@ -34,54 +49,34 @@ export default function ShowcasePage() {
         imageSrc="/images/banners/showcase_banner.jpg"
         title={
           <>
-            Things we
+            Our work,
             <br />
-            have shipped.
+            live on the web.
           </>
         }
-        lede="Every project here is either live at a real URL or a working prototype with an honest status label. Nothing on this page is a mockup."
+        lede="Client projects delivered for real organisations, products we build and run ourselves, and sample websites that show what we can do for your industry. Each one links to its live site."
       />
 
-      <section className="kt-section kt-s--light">
-        <div className="kt-wrap">
-          <div className="kt-work-grid">
-            {marketingProjects.map((project, i) => (
-              <KtRevealLink
-                key={project.slug}
-                index={i}
-                className="kt-work-card"
-                href={`/showcase/${project.slug}`}
-              >
-                <div className="kt-work-thumb">
-                  {project.image ? (
-                    <img src={project.image} alt="" className="kt-work-thumb-img" aria-hidden="true" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <div className="kt-u-halftone" aria-hidden="true" />
-                  )}
-                  <div className="kt-work-cap">
-                    <span
-                      className="kt-t-mono"
-                      style={{
-                        display: "inline-block",
-                        marginBottom: 10,
-                        color: project.status === "Live" ? "var(--ink)" : "var(--ink-mute)",
-                      }}
-                    >
-                      {project.status === "Live" ? "● live" : "○ prototype"}
-                    </span>
-                    <h3 className="kt-t-h3">{project.name}</h3>
-                    <div className="kt-work-meta">
-                      <span className="kt-t-mono">{project.category}</span>
-                      <span className="kt-t-mono">{project.year}</span>
-                      <span className="kt-t-mono">{project.stack[0]}</span>
-                    </div>
-                  </div>
-                </div>
-              </KtRevealLink>
-            ))}
+      {groups.map(([kind, projects], gi) => (
+        <section key={kind} id={kind} className={gi % 2 === 0 ? "kt-section kt-s--light" : "kt-section"}>
+          <div className="kt-wrap">
+            <div className="kt-sec-head">
+              <div>
+                <KtReveal as="p" className="kt-t-mono kt-eyebrow">
+                  {String(projects.length).padStart(2, "0")} projects
+                </KtReveal>
+                <KtReveal as="h2" index={1} className="kt-t-h2">
+                  {KIND_LABEL[kind]}
+                </KtReveal>
+              </div>
+              <KtReveal as="p" index={2} className="kt-t-body kt-lede">
+                {KIND_BLURB[kind]}
+              </KtReveal>
+            </div>
+            <ProjectGrid projects={projects} />
           </div>
-        </div>
-      </section>
+        </section>
+      ))}
 
       <section className="kt-section">
         <div className="kt-wrap">
@@ -115,10 +110,10 @@ export default function ShowcasePage() {
       </section>
 
       <KtCtaSection
-        title="Want the long version of any of these?"
-        body="We can walk you through the repo, the decisions, and what we would do differently now."
+        title="Want something like these for your business?"
+        body="Tell us what you need and we will come back with a scope and a price."
         primary={{ href: "/contact", label: "Start a project" }}
-        secondary={{ href: "/portfolio", label: "See the full portfolio" }}
+        secondary={{ href: "/portfolio", label: "Company portfolio" }}
         variant="light"
       />
     </>

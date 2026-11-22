@@ -5,35 +5,36 @@ import { KtReveal } from "@/components/marketing/kt/KtReveal";
 import { KtCtaSection } from "@/components/marketing/kt/KtCtaSection";
 import { KtCell } from "@/components/marketing/kt/KtCell";
 import { KtLinkButton } from "@/components/marketing/kt/KtButton";
-import { marketingProjects } from "@/lib/marketing-projects";
+import { clientProjects, productProjects } from "@/lib/marketing-projects";
+import { founders } from "@/lib/team";
 
 export const metadata: Metadata = {
   title: "About",
-  description: "KaiketsuTech is a crew of student developers who build real client work together.",
+  description: "KaiketsuTech is a student-run software company, founded by Anant Tirupati and Aakshant Kumar, that builds websites, products and AI systems for clients.",
 };
 
 const commitments = [
   {
     title: "Senior review, always",
-    desc: "Every deliverable gets reviewed by someone who has shipped production code before, not just by whoever wrote it.",
+    desc: "Every deliverable is reviewed by an engineer who has shipped production code, in addition to its author.",
   },
   {
     title: "Bad news early",
-    desc: "If a scope, deadline, or approach isn't working, you hear it the week it happens — not at the handover call.",
+    desc: "If a scope, deadline or approach is not working, you hear about it that week, not at handover.",
   },
   {
     title: "No lock-in",
-    desc: "You get the repo, the deployment access, and documentation written for whoever comes after us. Nothing is held back for leverage.",
+    desc: "You receive the repository, deployment access and documentation written for whoever maintains it next.",
   },
   {
-    title: "We turn work down",
-    desc: "If we're not the right crew for it, or we don't have the capacity to do it properly, we'll say so instead of taking the money.",
+    title: "Honest scoping",
+    desc: "If a project is a poor fit, or we do not have the capacity to do it properly, we will say so before work begins.",
   },
 ];
 
 const stats = [
-  { n: String(marketingProjects.length), label: "Projects shipped" },
-  { n: "4", label: "Disciplines" },
+  { n: String(clientProjects.length), label: "Client projects" },
+  { n: String(productProjects.length), label: "Own products" },
   { n: "2026", label: "Founded" },
   { n: "100%", label: "Code ownership, yours" },
 ];
@@ -53,10 +54,9 @@ export default function AboutPage() {
         }
         lede={
           <>
-            KaiketsuTech started as a handful of friends who kept getting asked to build things — school websites,
-            event registration pages, booking systems — and realized we&rsquo;d rather do it as a crew than one-off
-            freelance gigs. The name is literal: kaiketsu is the Japanese word for &ldquo;solution.&rdquo;
-            That&rsquo;s the whole job description.
+            KaiketsuTech began when friends who were regularly asked to build school websites, event registration
+            pages and booking systems decided to do that work together as a company. Kaiketsu is the Japanese word for
+            &ldquo;solution,&rdquo; which is what we aim to deliver on every project.
           </>
         }
       />
@@ -71,9 +71,8 @@ export default function AboutPage() {
               <KtCell theme="light">
                 <h2 className="kt-t-h3">How we&rsquo;re structured</h2>
                 <p className="kt-t-body" style={{ marginTop: 12 }}>
-                  Two things happen under one roof. Client work — real sites and systems for real businesses and
-                  institutions, built and shipped by the crew. And crew-building — we scout student developers who
-                  can already ship, bring them in, and grow the team as the work grows.
+                  We do two things. We build websites and systems for businesses and institutions, and we train
+                  student developers who can already ship, growing the team as the work grows.
                 </p>
               </KtCell>
             </KtReveal>
@@ -81,9 +80,9 @@ export default function AboutPage() {
               <KtCell theme="light">
                 <h2 className="kt-t-h3">What funds what</h2>
                 <p className="kt-t-body" style={{ marginTop: 12 }}>
-                  Client work isn&rsquo;t a side hustle to our own ideas — it&rsquo;s the funding model for them.
-                  Revenue from shipping other people&rsquo;s products is what lets us spend time on research work,
-                  and on bringing on more student developers as interns rather than treating the crew as fixed.
+                  Client work funds our own products and research. Revenue from delivering client projects lets us
+                  build products such as NutriSafe and Narad, publish engineering research, and bring on more student
+                  developers as interns.
                 </p>
               </KtCell>
             </KtReveal>
@@ -127,32 +126,54 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="kt-section kt-s--light" style={{ overflow: "hidden", position: "relative" }}>
-        <div
-          className="kt-u-fade-b"
-          aria-hidden="true"
-          style={{ position: "absolute", inset: 0, zIndex: 0, color: "var(--ink)", opacity: 0.07 }}
-        >
-          <div className="kt-u-halftone" style={{ width: "100%", height: "100%" }} />
-        </div>
-        <div className="kt-wrap" style={{ position: "relative", zIndex: 2 }}>
-          <KtReveal as="p" className="kt-t-mono kt-eyebrow">
-            The crew
-          </KtReveal>
-          <KtReveal as="h2" index={1} className="kt-t-h2" style={{ maxWidth: "22ch" }}>
-            Team profiles are going up here as the crew signs off on photos and bios.
-          </KtReveal>
-          <KtReveal as="p" index={2} className="kt-t-body" style={{ maxWidth: "56ch", marginTop: 22 }}>
-            This section is intentionally not filled with placeholder headshots. Check the{" "}
-            <Link className="kt-link-arrow" href="/careers" style={{ display: "inline-flex" }}>
-              careers page
-            </Link>{" "}
-            if you want to be one of the names that lands here.
-          </KtReveal>
+      <section className="kt-section kt-s--light">
+        <div className="kt-wrap">
+          <div className="kt-sec-head">
+            <div>
+              <KtReveal as="p" className="kt-t-mono kt-eyebrow">
+                Leadership
+              </KtReveal>
+              <KtReveal as="h2" index={1} className="kt-t-h2">
+                Founders.
+              </KtReveal>
+            </div>
+            <KtReveal as="p" index={2} className="kt-t-body kt-lede">
+              KaiketsuTech is led by its two founders, who also build. See their work on the{" "}
+              <Link className="kt-link-arrow" href="/portfolio" style={{ display: "inline-flex" }}>
+                portfolio page
+              </Link>
+              .
+            </KtReveal>
+          </div>
+          <div className="kt-grid kt-grid-2">
+            {founders.map((f, i) => (
+              <KtReveal as="article" key={f.slug} index={i}>
+                <KtCell theme="light">
+                  <p className="kt-t-mono">{f.role}</p>
+                  <h3 className="kt-t-h3">{f.name}</h3>
+                  <p className="kt-t-small">{f.bio}</p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 18, marginTop: "auto", paddingTop: 12 }}>
+                    {f.links.map((l) => (
+                      <a
+                        key={l.href}
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="kt-link-arrow"
+                        style={{ display: "inline-flex" }}
+                      >
+                        {l.label}
+                      </a>
+                    ))}
+                  </div>
+                </KtCell>
+              </KtReveal>
+            ))}
+          </div>
           <KtReveal as="div" index={3} className="kt-cta-row" style={{ marginTop: 32 }}>
-            <KtLinkButton href="/careers" label="Open roles" theme="dark" kind="secondary" />
-            <Link className="kt-link-arrow" href="/contact">
-              Work with us
+            <KtLinkButton href="/cohorts" label="Meet the interns" theme="dark" kind="secondary" />
+            <Link className="kt-link-arrow" href="/careers">
+              Open roles
             </Link>
           </KtReveal>
         </div>
@@ -160,10 +181,10 @@ export default function AboutPage() {
 
       <KtCtaSection
         variant="dark"
-        title="Still reading?"
-        body="You now know more about how we're structured than most of our clients do. Come build something with us."
+        title="Work with us"
+        body="Tell us what you want to build and we will reply within two working days."
         primary={{ href: "/contact", label: "Start a project" }}
-        secondary={{ href: "/showcase", label: "See the work" }}
+        secondary={{ href: "/portfolio", label: "View portfolio" }}
       />
     </>
   );

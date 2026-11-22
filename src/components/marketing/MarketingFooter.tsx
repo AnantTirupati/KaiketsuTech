@@ -28,13 +28,15 @@ const companyLinks = [
   { href: "/portfolio", label: "Portfolio" },
   { href: "/pricing", label: "Pricing" },
   { href: "/about", label: "About" },
+  { href: "/cohorts", label: "Cohorts" },
+  { href: "/login", label: "Log in" },
   { href: "/services", label: "Services" },
   { href: "/contact", label: "Contact" },
   { href: "/careers", label: "Careers" },
   { href: "/verify", label: "Verify" },
 ];
 
-const sectors = ["Logistics", "Fintech", "Legal tech", "Consumer", "Education", "Health", "Climate"];
+const sectors = ["Education", "E-commerce", "Travel", "Health", "Events", "Hospitality", "Fitness"];
 const services = ["Web platforms", "Mobile apps", "AI systems", "Security research", "Design systems", "API architecture"];
 
 export default function MarketingFooter() {
@@ -83,8 +85,8 @@ export default function MarketingFooter() {
           <div>
             <p className="kt-t-mono kt-foot-label">Working with us</p>
             <p className="kt-t-small">
-              Fixed scope, fixed price, and the code in your organisation from the first commit. Every enquiry gets a
-              reply from an engineer, including the ones we turn down.
+              Fixed scope, fixed price, and the code in your organisation from the first commit. Every enquiry receives
+              a reply from an engineer.
             </p>
           </div>
         </div>
@@ -118,7 +120,7 @@ export default function MarketingFooter() {
             <div className="kt-foot-field">
               <p className="kt-t-mono">Studio</p>
               <p className="kt-val">
-                Remote-first crew.
+                Remote-first team.
                 <br />
                 Kanpur, Uttar Pradesh, India.
               </p>
@@ -151,14 +153,14 @@ export default function MarketingFooter() {
         </div>
 
         <div className="kt-foot-legal">
-          <p className="kt-t-mono">&copy; {new Date().getFullYear()} KaiketsuTech &mdash; a student-run studio</p>
+          <p className="kt-t-mono">&copy; {new Date().getFullYear()} KaiketsuTech &mdash; a student-run software company</p>
           <div className="kt-foot-policies kt-t-mono">
             <a href="#">Privacy</a>
             <a href="#">Terms</a>
             <a href="#">Security</a>
             <a href="#">Accessibility</a>
           </div>
-          <p className="kt-t-mono">Built monochrome. No gradient without a job.</p>
+          <p className="kt-t-mono">Founded by Anant Tirupati &amp; Aakshant Kumar</p>
         </div>
       </div>
 

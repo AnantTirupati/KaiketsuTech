@@ -31,9 +31,11 @@ import { KtNavButton } from "@/components/marketing/kt/KtButton";
 
 const links = [
   { href: "/showcase", label: "Work" },
+  { href: "/portfolio", label: "Portfolio" },
   { href: "/services", label: "Services" },
   { href: "/pricing", label: "Pricing" },
   { href: "/about", label: "About" },
+  { href: "/cohorts", label: "Cohorts" },
   { href: "/careers", label: "Careers" },
   { href: "/verify", label: "Verify" },
   { href: "/contact", label: "Contact" },
@@ -108,6 +110,11 @@ export default function MarketingNav() {
               </Link>
             ))}
           </nav>
+          {!signedIn && (
+            <Link className="kt-login-inline hidden md:block" href="/login" style={{ fontSize: 14, color: "var(--ink-soft)" }}>
+              Log in
+            </Link>
+          )}
           <div className="hidden md:block">
             <KtNavButton href={ctaHref} label={ctaLabel} theme="dark" />
           </div>
@@ -140,6 +147,11 @@ export default function MarketingNav() {
             <Link className="kt-pill" href={ctaHref} onClick={() => setOpen(false)}>
               {ctaLabel}
             </Link>
+            {!signedIn && (
+              <Link className="kt-ghost-menu" href="/login" onClick={() => setOpen(false)}>
+                Log in
+              </Link>
+            )}
             <Link className="kt-ghost-menu" href="/" onClick={() => setOpen(false)}>
               Back to home
             </Link>

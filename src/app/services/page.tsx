@@ -52,10 +52,10 @@ const capabilities = [
 ];
 
 const benefits = [
-  { title: "Repo access day one", desc: "You're a collaborator on the actual repository from the first commit, not a spectator waiting for a reveal." },
-  { title: "Weekly demos", desc: "A working build, shown against a live environment, every week — not a status update slide." },
+  { title: "Repo access day one", desc: "You are a collaborator on the repository from the first commit." },
+  { title: "Weekly demos", desc: "A working build, shown against a live environment, every week — not a slide deck." },
   { title: "Written handover", desc: "Documentation for the next engineer, whether that's you, your team, or whoever we hand off to." },
-  { title: "Two weeks post-launch", desc: "We stay on past launch at no extra cost, because that's when things actually break." },
+  { title: "Two weeks post-launch", desc: "We stay on past launch at no extra cost, because most issues surface after launch." },
 ];
 
 export default function Services() {
@@ -71,7 +71,7 @@ export default function Services() {
             solutions.
           </>
         }
-        lede="From a five-page website to the MLOps foundation running a production model — scoped and built by the people who'll actually maintain it."
+        lede="From a five-page website to the MLOps foundation running a production model — scoped and built by the people who will maintain it."
       />
 
       <section className="kt-section kt-s--light">
@@ -127,7 +127,7 @@ export default function Services() {
 
       <KtCtaSection
         title="Not sure which of these you need?"
-        body="Tell us what you're building and we'll tell you honestly which of these actually applies — sometimes it's fewer than you'd think."
+        body="Tell us what you're building and we will tell you which of these applies to you."
         primary={{ href: "/contact", label: "Talk to us" }}
         secondary={{ href: "/pricing", label: "View pricing" }}
       />
