@@ -15,7 +15,11 @@ export const founders: TeamMember[] = [
     name: "Anant Tirupati",
     role: "Founder & CEO",
     bio: "Founder and CEO of KaiketsuTech. Main contributor to NutriSafe and author of the gym and restaurant sample sites in our portfolio.",
-    links: [{ label: "GitHub", href: "https://github.com/AnantTirupati" }],
+    links: [
+      { label: "Portfolio", href: "https://portfolio-one-blond-30.vercel.app" },
+      { label: "GitHub", href: "https://github.com/AnantTirupati" },
+      { label: "LinkedIn", href: "https://www.linkedin.com/in/ananttirupati/" },
+    ],
   },
   {
     slug: "aakshant-kumar",

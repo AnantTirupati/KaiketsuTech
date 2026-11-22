@@ -152,6 +152,7 @@ export const marketingProjects: MarketingProject[] = [
     image: "/roborumble.png",
     highlights: ["Multi-track event registration", "Delivered for the live festival"],
     links: [{ label: "Source", href: "https://github.com/milliondreamsblog/Roborumble3.0" }],
+    credits: bothFounders,
   },
   {
     slug: "devine-astro-talk",
@@ -250,6 +251,23 @@ export const marketingProjects: MarketingProject[] = [
       { label: "Source", href: "https://github.com/unexperiencedone/assistant-" },
     ],
     credits: [{ ...AAKSHANT, role: "Author" }],
+  },
+  {
+    slug: "ai-presentation-generator",
+    name: "AI Presentation Generator",
+    kind: "product",
+    category: "Productivity · AI",
+    status: "Live",
+    year: "2026",
+    oneLiner: "Turns a short prompt into an editable slide deck, with outline, text, speaker notes and charts.",
+    description:
+      "Describe a topic and the app generates slide outlines, body text and speaker notes with language models, then lays them out on an editable slide canvas with chart visualisations and exports to PowerPoint. Includes sign-in and a credit-based free tier.",
+    stack: ["React", "TypeScript", "Vite", "Firebase", "Clerk", "Recharts"],
+    url: "https://ai-ppt-generator-seven.vercel.app",
+    image: "/work/ai-presentation-generator.jpg",
+    highlights: ["Prompt to full deck, with speaker notes", "Editable slide canvas and charts", "PowerPoint export"],
+    links: [{ label: "Source", href: "https://github.com/AnantTirupati/AIpptGenerator" }],
+    credits: [{ ...ANANT, role: ANANT.role }],
   },
   {
     slug: "normie",
