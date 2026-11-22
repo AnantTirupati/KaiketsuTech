@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { KtReveal } from "@/components/marketing/kt/KtReveal";
 import { KtRevealLink } from "@/components/marketing/kt/KtRevealLink";
 import { KtCtaSection } from "@/components/marketing/kt/KtCtaSection";
-import { marketingProjects } from "@/lib/marketing-projects";
+import { KIND_LABEL, marketingProjects, statusLabel } from "@/lib/marketing-projects";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -47,17 +47,17 @@ export default async function CaseStudyPage({ params }: Props) {
         >
           <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 16 }}>
             <span className="kt-t-mono" style={{ textTransform: "uppercase", letterSpacing: "0.14em" }}>
-              {project.category}
+              {KIND_LABEL[project.kind]} · {project.category}
             </span>
             <span
               className="kt-t-mono"
               style={{
                 textTransform: "uppercase",
                 letterSpacing: "0.1em",
-                color: project.status === "Live" ? "var(--ink)" : "var(--ink-mute)",
+                color: project.paused || project.status === "Prototype" ? "var(--ink-mute)" : "var(--ink)",
               }}
             >
-              {project.status === "Live" ? "● live" : "○ prototype — not yet production"}
+              {statusLabel(project)}
             </span>
             <span className="kt-t-mono" style={{ color: "var(--ink-mute)" }}>
               {project.year}
@@ -71,11 +71,21 @@ export default async function CaseStudyPage({ params }: Props) {
           </p>
         </KtReveal>
 
+        {project.image && (
+          <KtReveal as="div" index={2} style={{ marginTop: "clamp(24px,3vw,40px)" }}>
+            <img
+              src={project.image}
+              alt={`${project.name} homepage`}
+              style={{ width: "100%", height: "auto", border: "1px solid var(--line)", display: "block" }}
+            />
+          </KtReveal>
+        )}
+
         <KtReveal
           as="div"
-          index={2}
+          index={3}
           className="grid grid-cols-1 lg:grid-cols-[2fr_1fr]"
-          style={{ marginTop: "clamp(48px,6vw,80px)", gap: "clamp(32px,4vw,64px)" }}
+          style={{ marginTop: "clamp(40px,5vw,72px)", gap: "clamp(32px,4vw,64px)" }}
         >
           <div>
             <h2 className="kt-t-mono" style={{ textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--ink-mute)", marginBottom: 16 }}>
@@ -122,17 +132,51 @@ export default async function CaseStudyPage({ params }: Props) {
                 ))}
               </div>
             </div>
-            {project.url && (
+            {(project.url || project.links?.length) && (
               <div>
                 <h2
                   className="kt-t-mono"
                   style={{ textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--ink-mute)", marginBottom: 12 }}
                 >
-                  Live
+                  Links
                 </h2>
-                <a href={project.url} target="_blank" rel="noopener noreferrer" className="kt-link-arrow">
-                  {project.url.replace(/^https?:\/\//, "")}
-                </a>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
+                  {project.url && !project.paused && (
+                    <a href={project.url} target="_blank" rel="noopener noreferrer" className="kt-link-arrow">
+                      Visit {project.url.replace(/^https?:\/\/(www\.)?/, "")}
+                    </a>
+                  )}
+                  {project.url && project.paused && (
+                    <p className="kt-t-small" style={{ color: "var(--ink-mute)" }}>
+                      The live site is temporarily offline.
+                    </p>
+                  )}
+                  {project.links?.map((l) => (
+                    <a key={l.href} href={l.href} target="_blank" rel="noopener noreferrer" className="kt-link-arrow">
+                      {l.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
+            {project.credits && project.credits.length > 0 && (
+              <div>
+                <h2
+                  className="kt-t-mono"
+                  style={{ textTransform: "uppercase", letterSpacing: "0.14em", color: "var(--ink-mute)", marginBottom: 12 }}
+                >
+                  Contributors
+                </h2>
+                <ul style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {project.credits.map((c) => (
+                    <li key={c.name} className="kt-t-small">
+                      <a href={c.href} target="_blank" rel="noopener noreferrer" style={{ color: "var(--ink)" }}>
+                        {c.name}
+                      </a>
+                      <span style={{ color: "var(--ink-mute)" }}> — {c.role}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>

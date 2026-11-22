@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const hiringSteps = [
   {
     title: "Send something",
-    desc: "A repo, a project, a writeup. A CV alone tells us almost nothing useful.",
+    desc: "A repo, a project, a writeup. A CV alone tells us little.",
   },
   {
     title: "Paid trial task",
@@ -43,10 +43,10 @@ export default async function CareersPage() {
         imageSrc="/images/banners/about_banner.jpg"
         title={
           <>
-            Join the crew.
+            Join the team.
           </>
         }
-        lede="We’re small on purpose and growing deliberately. We care about what you’ve shipped, not what your resume says you know. Roles below are a starting point — if none fit but you can build, reach out anyway."
+        lede="We are a small team and grow deliberately. We value what you have built over what your resume lists. If none of the roles below fit but you can build, get in touch anyway."
       />
 
       <section className="kt-section kt-s--light">
@@ -149,7 +149,7 @@ export default async function CareersPage() {
 
       <KtCtaSection
         title="Nothing here fits you?"
-        body="Send us what you build anyway. Most of the crew arrived that way. You can also reach out directly at careers@kaiketsutech.online."
+        body="Send us what you have built. You can also write to careers@kaiketsutech.online."
         primary={{ href: "/contact", label: "Start a project" }}
         secondary={{ href: "/showcase", label: "See the work" }}
         variant="light"

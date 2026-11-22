@@ -13,12 +13,12 @@ const trustPoints = [
   {
     idx: "Response time",
     title: "Two working days",
-    desc: "Every enquiry gets a real reply from a person, including the ones we turn down.",
+    desc: "Every enquiry receives a reply from a person.",
   },
   {
     idx: "First call",
     title: "Thirty minutes",
-    desc: "With the engineers who would actually build it, not a salesperson.",
+    desc: "With the engineers who would build it.",
   },
   {
     idx: "Quote",
@@ -118,7 +118,7 @@ function ContactContent() {
             you&rsquo;re building.
           </>
         }
-        lede="One paragraph is enough to start. We reply within two working days with a scope and a number, or an honest reason we're not the right crew for it."
+        lede="One paragraph is enough to start. We reply within two working days with a scope and a price, or an explanation if we are not the right fit."
       />
 
       <section className="kt-section kt-s--light">
@@ -282,8 +282,8 @@ function ContactContent() {
       </section>
 
       <KtCtaSection
-        title="Or just read the work first."
-        body="Recent builds, what they run on, and what we'd do differently now."
+        title="Prefer to see our work first?"
+        body="Client projects, our own products and sample websites, each with a live link."
         primary={{ href: "/showcase", label: "See the work" }}
         secondary={{ href: "/pricing", label: "See pricing" }}
         variant="light"

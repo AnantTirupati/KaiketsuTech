@@ -7,12 +7,12 @@ import { KtMarquee } from "@/components/marketing/kt/KtMarquee";
 import { KtReveal } from "@/components/marketing/kt/KtReveal";
 import { KtRevealLink } from "@/components/marketing/kt/KtRevealLink";
 import { KtCell } from "@/components/marketing/kt/KtCell";
-import { marketingProjects } from "@/lib/marketing-projects";
+import { clientProjects, productProjects } from "@/lib/marketing-projects";
 
 export const metadata: Metadata = {
   title: { absolute: "KaiketsuTech — Kaiketsu means solution. That's the job." },
   description:
-    "A crew of student developers shipping real client work — web, mobile, AI and security research — while we build out the next generation of the team.",
+    "A student-run software company building websites, mobile apps, AI systems and security research for clients, and developing the next generation of engineers.",
 };
 
 const capabilities = [
@@ -84,13 +84,13 @@ const steps = [
 // site actually offers, and the reply-time commitment already published on
 // /contact.
 const stats = [
-  { n: String(marketingProjects.length), label: "Projects shipped" },
-  { n: "4", label: "Service disciplines" },
+  { n: String(clientProjects.length), label: "Client projects" },
+  { n: String(productProjects.length), label: "Own products" },
   { n: "2d", label: "Median reply time" },
   { n: "100%", label: "Code ownership, yours" },
 ];
 
-const featured = marketingProjects.slice(0, 4);
+const featured = [...clientProjects.slice(0, 2), ...productProjects.slice(0, 2)];
 
 export default function Home() {
   return (
@@ -122,8 +122,8 @@ export default function Home() {
             <HeadlineParticles text={"That’s the job."} theme="dark" />
           </h1>
           <p className="kt-sub">
-            We&rsquo;re a crew of student developers shipping real client work — web, mobile, AI, and security
-            research — while we build out the next generation of the team.
+            A student-run software company building websites, mobile apps, AI systems and security research for
+            clients, and training the next generation of engineers.
           </p>
           <KtActionRow theme="dark" big primary={{ href: "/contact", label: "Start a project" }} secondary={{ href: "/showcase", label: "See the work" }} />
         </main>
@@ -140,13 +140,13 @@ export default function Home() {
                 What we are
               </KtReveal>
               <KtReveal as="h2" index={1} className="kt-t-h1" style={{ maxWidth: "16ch" }}>
-                A small crew that ships, not a body shop that bills.
+                A small team that builds what it scopes.
               </KtReveal>
             </div>
             <KtReveal as="p" index={2} className="kt-t-body kt-lede">
-              We take a narrow number of projects at a time so the people who scoped your work are the people who
-              write it. Every engagement ends with a repo you own, a deployment you control, and documentation
-              written for whoever comes next.
+              We take on a limited number of projects at a time, so the people who scope your work are the people who
+              build it. Every engagement ends with a repository you own, a deployment you control and documentation
+              for whoever maintains it next.
             </KtReveal>
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function Home() {
                 Services
               </KtReveal>
               <KtReveal as="h2" index={1} className="kt-t-h2">
-                Four things, done properly.
+                What we do.
               </KtReveal>
             </div>
             <KtRevealLink index={2} className="kt-link-arrow" href="/services">
@@ -197,11 +197,11 @@ export default function Home() {
                 Selected work
               </KtReveal>
               <KtReveal as="h2" index={1} className="kt-t-h2">
-                Recent builds.
+                Selected projects.
               </KtReveal>
             </div>
             <KtRevealLink index={2} className="kt-link-arrow" href="/showcase">
-              Full archive
+              All work
             </KtRevealLink>
           </div>
 
@@ -238,12 +238,11 @@ export default function Home() {
                 Process
               </KtReveal>
               <KtReveal as="h2" index={1} className="kt-t-h2">
-                Four weeks to something running.
+                From brief to launch.
               </KtReveal>
             </div>
             <KtReveal as="p" index={2} className="kt-t-body kt-lede">
-              No discovery phase that bills for a month and produces a slide deck. We scope in days, build in
-              public, and hand over something you can deploy yourself.
+              We scope in days, show progress every week and hand over something you can deploy and run yourself.
             </KtReveal>
           </div>
 
@@ -284,15 +283,14 @@ export default function Home() {
             Why students
           </KtReveal>
           <KtReveal as="h2" index={1} className="kt-t-h2" style={{ maxWidth: "20ch" }}>
-            The people learning your stack this year are the ones who will still be curious about it next year.
+            Student engineers bring current skills, and every project is reviewed by experienced developers.
           </KtReveal>
           <KtReveal as="p" index={2} className="kt-t-body" style={{ maxWidth: "52ch", marginTop: 22 }}>
-            Every project we take on trains someone into it. That is the point of the studio, and it is why our
-            rates look the way they do — you are getting senior review over hungry engineers, not juniors billed as
-            seniors.
+            Each project we take on is also training for the next generation of engineers. That keeps our rates
+            accessible while senior developers review every deliverable.
           </KtReveal>
           <KtReveal as="div" index={3} className="kt-cta-row" style={{ marginTop: 32 }}>
-            <KtLinkButton href="/about" label="How the crew works" theme="dark" kind="secondary" />
+            <KtLinkButton href="/about" label="About KaiketsuTech" theme="dark" kind="secondary" />
             <Link className="kt-link-arrow" href="/careers">
               Join us
             </Link>
@@ -308,11 +306,11 @@ export default function Home() {
               Start a project
             </KtReveal>
             <KtReveal as="h2" index={1} className="kt-t-h1">
-              Tell us what you&rsquo;re building.
+              Tell us what you need built.
             </KtReveal>
             <KtReveal as="p" index={2} className="kt-t-body" style={{ marginTop: 18 }}>
-              Send a paragraph. We&rsquo;ll come back within two working days with a scope and a number, or an
-              honest reason we&rsquo;re not the right crew for it.
+              Send us a short description. We reply within two working days with a scope and a price, or an
+              explanation if we are not the right fit.
             </KtReveal>
             <KtReveal as="div" index={3}>
               <KtActionRow theme="light" primary={{ href: "/contact", label: "Start a project" }} secondary={{ href: "/pricing", label: "See pricing" }} />

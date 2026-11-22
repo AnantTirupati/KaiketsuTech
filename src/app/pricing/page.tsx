@@ -387,7 +387,7 @@ export default function Pricing() {
 
       <KtCtaSection
         title="Unsure which one fits?"
-        body="Talk directly with the engineers who'd build it — we'll help you find the right scope before you commit to one."
+        body="Talk directly with the engineers who would build it and agree the right scope before you commit."
         primary={{ href: "/contact?subject=consulting", label: "Schedule a consultation" }}
         variant="light"
       />

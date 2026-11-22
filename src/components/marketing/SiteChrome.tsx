@@ -43,6 +43,7 @@ const MARKETING_ROUTES = new Set([
   "/about",
   "/apply",
   "/careers",
+  "/cohorts",
   "/contact",
   "/showcase",
   "/services",
