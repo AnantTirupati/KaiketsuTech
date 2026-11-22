@@ -252,6 +252,27 @@ export const marketingProjects: MarketingProject[] = [
     credits: [{ ...AAKSHANT, role: "Author" }],
   },
   {
+    slug: "normie",
+    name: "Normie",
+    kind: "product",
+    category: "Database · AI",
+    status: "Live",
+    year: "2026",
+    oneLiner: "A PostgreSQL copilot that designs, normalises and secures your database, and asks before it changes anything.",
+    description:
+      "Describe what you are building in plain English and Normie designs the schema, normalises it, writes the SQL and the database roles, and holds every change for your approval before it runs. Built for people who need a correct relational database without being database experts, and for DBMS students: each syllabus topic is mapped to where Normie uses it. The steps that decide correctness (closure, candidate keys, normal forms and SQL validation) are plain code, not model output.",
+    stack: ["Python", "FastAPI", "PostgreSQL", "PydanticAI", "Next.js", "Docker"],
+    url: "https://normie-db.duckdns.org",
+    image: "/work/normie.jpg",
+    highlights: [
+      "Schema design, normalisation and role generation",
+      "Every change held for approval before it runs",
+      "Correctness checks written as code, with unit tests",
+    ],
+    links: [{ label: "Source", href: "https://github.com/unexperiencedone/normie" }],
+    credits: [{ ...AAKSHANT, role: "Author" }],
+  },
+  {
     slug: "airgated",
     name: "AirGated",
     kind: "product",

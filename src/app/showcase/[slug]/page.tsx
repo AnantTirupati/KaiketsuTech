@@ -183,6 +183,12 @@ export default async function CaseStudyPage({ params }: Props) {
         </KtReveal>
       </div>
 
+      {project.kind === "product" && (
+        <p className="kt-t-mono" style={{ marginTop: 40, color: "var(--ink-mute)" }}>
+          &copy; 2026 KaiketsuTech. {project.name} is a KaiketsuTech product. All rights reserved.
+        </p>
+      )}
+
       <div style={{ marginTop: "clamp(64px,8vw,96px)" }}>
         <KtCtaSection
           title="Want something built like this?"
